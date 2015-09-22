@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
-ENV["GUBG"] = "#{ENV["HOME"]}/gubg" unless ENV.has_key?("GUBG")
+ENV["gubg"] = "#{ENV["HOME"]}/gubg" unless ENV.has_key?("gubg")
 system("gvim --remote-tab-silent #{ARGV[0]}")
 system("wmctrl -a GVIM")

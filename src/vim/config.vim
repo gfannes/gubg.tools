@@ -1,5 +1,5 @@
-"source $GUBG/vim/colors/darkblue.vim
-"source $GUBG/vim/colors/ir_black.vim
+"source $gubg/vim/colors/darkblue.vim
+"source $gubg/vim/colors/ir_black.vim
 colorscheme desert
 set smartindent
 set tabstop=4
@@ -35,51 +35,51 @@ map <Space> :InsertOneCharCmd<CR>
 
 command LongLines /\%>110v.\+
 
-autocmd BufEnter,BufNewFile,BufRead *.rb source $GUBG/vim/maps.ruby.vim
-autocmd BufEnter,BufNewFile,BufRead *.lua source $GUBG/vim/maps.lua.vim
-autocmd BufEnter,BufNewFile,BufRead *.d source $GUBG/vim/maps.d.vim
-autocmd BufEnter,BufNewFile,BufRead *.cpp source $GUBG/vim/maps.cpp.vim
-autocmd BufEnter,BufNewFile,BufRead *.h source $GUBG/vim/maps.cpp.vim
-autocmd BufEnter,BufNewFile,BufRead *.hpp source $GUBG/vim/maps.cpp.vim
-autocmd BufEnter,BufNewFile,BufRead *.c source $GUBG/vim/maps.cpp.vim
-autocmd BufEnter,BufNewFile,BufRead *.inc source $GUBG/vim/maps.cpp.vim
-autocmd BufEnter,BufNewFile,BufRead *.chai source $GUBG/vim/maps.cpp.vim
-autocmd BufEnter,BufNewFile,BufRead *.rs source $GUBG/vim/maps.rust.vim
-autocmd BufEnter,BufNewFile,BufRead *.js source $GUBG/vim/maps.js.vim
-autocmd BufEnter,BufNewFile,BufRead *.jscad source $GUBG/vim/maps.js.vim
-""autocmd BufEnter,BufNewFile,BufRead *.rs source $GUBG/vim/maps.cpp.vim
-""autocmd BufEnter,BufNewFile,BufRead *.rs source $GUBG/vim/rust.vim
-autocmd BufEnter,BufNewFile,BufRead *.txt source $GUBG/vim/maps.markdown.vim
-autocmd BufEnter,BufNewFile,BufRead *.html source $GUBG/vim/maps.xml.vim
-autocmd BufEnter,BufNewFile,BufRead *.xml source $GUBG/vim/maps.xml.vim
-autocmd BufEnter,BufNewFile,BufRead *.vcxproj source $GUBG/vim/maps.xml.vim
-autocmd BufEnter,BufNewFile,BufRead *.props source $GUBG/vim/maps.xml.vim
-autocmd BufEnter,BufNewFile,BufRead *.json source $GUBG/vim/json.vim
-autocmd BufEnter,BufNewFile,BufRead *.asciidoc source $GUBG/vim/asciidoc2.vim
-autocmd BufEnter,BufNewFile,BufRead *.adoc source $GUBG/vim/asciidoc2.vim
-autocmd BufEnter,BufNewFile,BufRead *.puml source $GUBG/vim/plantuml.vim
-autocmd BufEnter,BufNewFile,BufRead *.tjp source $GUBG/vim/tjp.vim
-autocmd BufEnter,BufNewFile,BufRead *.tji source $GUBG/vim/tjp.vim
+autocmd BufEnter,BufNewFile,BufRead *.rb source $gubg/vim/maps.ruby.vim
+autocmd BufEnter,BufNewFile,BufRead *.lua source $gubg/vim/maps.lua.vim
+autocmd BufEnter,BufNewFile,BufRead *.d source $gubg/vim/maps.d.vim
+autocmd BufEnter,BufNewFile,BufRead *.cpp source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufRead *.h source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufRead *.hpp source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufRead *.c source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufRead *.inc source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufRead *.chai source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufRead *.rs source $gubg/vim/maps.rust.vim
+autocmd BufEnter,BufNewFile,BufRead *.js source $gubg/vim/maps.js.vim
+autocmd BufEnter,BufNewFile,BufRead *.jscad source $gubg/vim/maps.js.vim
+""autocmd BufEnter,BufNewFile,BufRead *.rs source $gubg/vim/maps.cpp.vim
+""autocmd BufEnter,BufNewFile,BufRead *.rs source $gubg/vim/rust.vim
+autocmd BufEnter,BufNewFile,BufRead *.txt source $gubg/vim/maps.markdown.vim
+autocmd BufEnter,BufNewFile,BufRead *.html source $gubg/vim/maps.xml.vim
+autocmd BufEnter,BufNewFile,BufRead *.xml source $gubg/vim/maps.xml.vim
+autocmd BufEnter,BufNewFile,BufRead *.vcxproj source $gubg/vim/maps.xml.vim
+autocmd BufEnter,BufNewFile,BufRead *.props source $gubg/vim/maps.xml.vim
+autocmd BufEnter,BufNewFile,BufRead *.json source $gubg/vim/json.vim
+autocmd BufEnter,BufNewFile,BufRead *.asciidoc source $gubg/vim/asciidoc2.vim
+autocmd BufEnter,BufNewFile,BufRead *.adoc source $gubg/vim/asciidoc2.vim
+autocmd BufEnter,BufNewFile,BufRead *.puml source $gubg/vim/plantuml.vim
+autocmd BufEnter,BufNewFile,BufRead *.tjp source $gubg/vim/tjp.vim
+autocmd BufEnter,BufNewFile,BufRead *.tji source $gubg/vim/tjp.vim
 "au! BufRead,BufNewFile *.json set filetype=json foldmethod=syntax 
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 
-source $GUBG/vim/hexmode.vim
+source $gubg/vim/hexmode.vim
 
 command -bar Q q
 
-source $GUBG/vim/tabnumber.vim
-source $GUBG/vim/autoclose.vim
-source $GUBG/vim/cscope_maps.vim
-source $GUBG/vim/git.vim
-""source $GUBG/vim/rust.vim
+source $gubg/vim/tabnumber.vim
+source $gubg/vim/autoclose.vim
+source $gubg/vim/cscope_maps.vim
+source $gubg/vim/git.vim
+""source $gubg/vim/rust.vim
 
 :au FocusLost * silent! wa
 
 set ignorecase
 set smartcase
 
-source $GUBG/vim/autoload/pathogen.vim
-execute pathogen#infect($GUBG.'/vim/bundle/{}')
+source $gubg/vim/autoload/pathogen.vim
+execute pathogen#infect($gubg.'/vim/bundle/{}')
 syntax on
 filetype plugin indent on
 
