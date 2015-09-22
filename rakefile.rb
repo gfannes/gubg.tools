@@ -33,11 +33,32 @@ end
 def link_unless_exists(old, new)
     ln_s(old, new) unless (File.exist?(new) or File.symlink?(new))
 end
+def git_clone(uri, name)
+    if not File.exist?(name)
+        sh "git clone #{uri}/#{name}"
+        Dir.chdir(name) {yield} if block_given?
+    end
+end
 
 task :declare do
     publish('src/bash', '*', dst: 'bin')
     publish('src', 'vim/**/*.vim')
     Rake::Task['declare:git_tools'].invoke
+    Dir.chdir(gubg_dir('vim', 'bundle')) do
+        git_clone('https://github.com/Valloric', 'YouCompleteMe') do
+            sh 'git submodule update --recursive --init'
+            sh './install.sh'
+        end
+        git_clone('https://github.com/tpope', 'vim-commentary')
+        git_clone('https://github.com/tpope', 'vim-fugitive')
+        git_clone('https://github.com/pangloss', 'vim-javascript')
+        git_clone('git://git.wincent.com', 'command-t') do
+            Dir.chdir('ruby/command-t') do
+                sh 'ruby extconf.rb'
+                sh 'make'
+            end
+        end
+    end
 end
 
 task :define => :declare do
