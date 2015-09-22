@@ -17,6 +17,9 @@ def publish(src, pattern, na = {dst: nil})
         end
     end
 end
+def link_unless_exists(old, new)
+    ln_s(old, new) unless (File.exist?(new) or File.symlink?(new))
+end
 
 task :declare do
     publish('src/bash', '*', dst: 'bin')
@@ -24,11 +27,10 @@ task :declare do
     Rake::Task['declare:git_tools'].invoke
 end
 
-task :define do
-    dot_vim = File.join(ENV['HOME'], '.vim')
-    ln_s(gubg('vim'), dot_vim) unless (File.exist?(dot_vim) or File.symlink?(dot_vim))
-    dot_vimrc = File.join(ENV['HOME'], '.vimrc')
-    ln_s(gubg('vim', 'config.linux.vim'), dot_vimrc) unless (File.exist?(dot_vimrc) or File.symlink?(dot_vimrc))
+task :define => :declare do
+    link_unless_exists(gubg('vim'), File.join(ENV['HOME'], '.vim'))
+    link_unless_exists(gubg('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
+    link_unless_exists(gubg('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
 end
 
 namespace :declare do
