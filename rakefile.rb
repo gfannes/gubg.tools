@@ -19,14 +19,14 @@ def gubg_dir(*parts)
     mkdir_p(dir) unless File.exist?(dir)
     dir
 end
-def publish(src, pattern, na = {dst: nil})
+def publish(src, pattern, na = {dst: nil, mode: nil})
     dst = gubg(na[:dst])
     Dir.chdir(src) do
         FileList.new(pattern).each do |fn|
             dst_fn = File.join(dst, fn)
             dst_dir = File.dirname(dst_fn)
             mkdir_p(dst_dir) unless File.exist?(dst_dir)
-            install(fn, dst_dir) unless (File.exist?(dst_fn) and identical?(fn, dst_fn))
+            install(fn, dst_dir, mode: na[:mode]) unless (File.exist?(dst_fn) and identical?(fn, dst_fn))
         end
     end
 end
@@ -41,7 +41,7 @@ def git_clone(uri, name)
 end
 
 task :declare do
-    publish('src/bash', '*', dst: 'bin')
+    publish('src/bash', '*', dst: 'bin', mode: 0755)
     publish('src', 'vim/**/*.vim')
     Rake::Task['declare:git_tools'].invoke
     Dir.chdir(gubg_dir('vim', 'bundle')) do
