@@ -52,6 +52,7 @@ task :declare do
         git_clone('https://github.com/tpope', 'vim-commentary')
         git_clone('https://github.com/tpope', 'vim-fugitive')
         git_clone('https://github.com/pangloss', 'vim-javascript')
+        git_clone('https://github.com/vim-scripts', 'SearchComplete')
         git_clone('git://git.wincent.com', 'command-t') do
             Dir.chdir('ruby/command-t') do
                 sh 'ruby extconf.rb'
