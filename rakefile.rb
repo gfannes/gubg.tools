@@ -1,5 +1,8 @@
 task :default => :help
 task :help do
+    puts("The following tasks can be specified:")
+    puts("* declare: installs bash, vim and git scripts to $gubg")
+    puts("* define: creates symbolic link to the installed vim scripts and .inputrc")
 end
 
 def gubg(*parts)
