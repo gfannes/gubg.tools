@@ -6,6 +6,16 @@ def gubg(*parts)
     raise('ERROR: You have to specify the gubg destination dir via the environment vairable "gubg"') unless ENV.has_key?('gubg')
     File.join(ENV['gubg'], *parts.compact)
 end
+def gubg_file(*parts)
+    fn = gubg(*parts)
+    raise("File \"#{fn}\" does not exist") unless File.exist?(fn)
+    fn
+end
+def gubg_dir(*parts)
+    dir = gubg(*parts)
+    mkdir_p(dir) unless File.exist?(dir)
+    dir
+end
 def publish(src, pattern, na = {dst: nil})
     dst = gubg(na[:dst])
     Dir.chdir(src) do
@@ -28,27 +38,17 @@ task :declare do
 end
 
 task :define => :declare do
-    link_unless_exists(gubg('vim'), File.join(ENV['HOME'], '.vim'))
-    link_unless_exists(gubg('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
-    link_unless_exists(gubg('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
+    link_unless_exists(gubg_dir('vim'), File.join(ENV['HOME'], '.vim'))
+    link_unless_exists(gubg_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
+    link_unless_exists(gubg_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
 end
 
 namespace :declare do
-    #git_tools
     task :git_tools do
         bash = "\#!"+`which bash`
-        Dir.chdir(gubg('bin')) do
-            [
-                {name: 'qs', command: 'git status'},
-                {name: 'qd', command: 'git diff'},
-                {name: 'qc', command: 'git commit -a'},
-                {name: 'qp', command: 'git pull --rebase'},
-            ].each do |h|
-                if not File.exist?(h[:name])
-                    puts("Creating #{h[:name]}")
-                    File.open(h[:name], "w"){|fo|fo.puts(bash);fo.puts(h[:command])}
-                    File.chmod(0755, h[:name])
-                end
+        Dir.chdir(gubg_dir('bin')) do
+            {qs: 'git status', qd: 'git diff', qc: 'git commit -a', qp: 'git pull --rebase'}.each do |fn, cmd|
+                File.open(fn.to_s, "w", 0755){|fo|puts("creating #{fn}");fo.puts(bash);fo.puts(cmd)} unless File.exist?(fn.to_s)
             end
         end
     end
