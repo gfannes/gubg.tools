@@ -1,0 +1,6 @@
+#!/usr/bin/ruby
+
+context = ENV['gubg_context']
+raise('You have to set the gubg_context env var to use  this script') unless context
+
+system("task add +#{context} #{ARGV*' '}")
