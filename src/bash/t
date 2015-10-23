@@ -1,14 +1,15 @@
 #!/usr/bin/ruby
 
-context = ENV['gubg_context']
-raise('You have to set the gubg_context env var to use  this script') unless context
+context = `task _get rc.context`
+context = nil unless context.empty?
 
 if ARGV.empty?
     system("task")
 else
     args = ARGV.dup
     case args[0]
-    when 'add' then args[0] = ['add', "+#{context}"]
+    when 'add'
+        args[0] = ['add', "+#{context}"] if context
     end
     system("task #{args.flatten*' '}")
     system('task list')
