@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 context = `task _get rc.context`
-context = nil unless context.empty?
+context = nil if context.empty?
 
 if ARGV.empty?
     system("task")
