@@ -41,7 +41,7 @@ namespace :declare do
     task :git_tools do
         bash = "\#!"+`which bash`
         Dir.chdir(shared_dir('bin')) do
-            {qs: 'git status', qd: 'git diff', qc: 'git commit -a', qp: 'git pull --rebase', qq: 'git push', ql: 'git log -n 5'}.each do |fn, cmd|
+            {qs: 'git status', qd: 'git diff', qc: 'git commit -a', qp: 'git pull --rebase', qq: 'git push', ql: 'git log -n 5 -p'}.each do |fn, cmd|
                 File.open(fn.to_s, "w", 0755){|fo|puts("creating #{fn}");fo.puts(bash);fo.puts(cmd)} unless File.exist?(fn.to_s)
             end
         end

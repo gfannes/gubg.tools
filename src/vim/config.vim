@@ -85,3 +85,6 @@ filetype plugin indent on
 
 set complete-=i
 set wrap
+
+" set number
+set printoptions=number:y
