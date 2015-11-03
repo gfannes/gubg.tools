@@ -29,6 +29,14 @@ task :declare do
             end
         end
     end
+    Dir.chdir(shared_dir('extern')) do
+        git_clone('https://git.tasktools.org/scm/tm', 'task') do
+            Dir.mkdir('build')
+            Dir.chdir('build') do
+                sh 'cmake ..'
+            end
+        end
+    end
 end
 
 task :define => :declare do
