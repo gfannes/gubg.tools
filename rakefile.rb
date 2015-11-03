@@ -34,6 +34,8 @@ task :declare do
             Dir.mkdir('build')
             Dir.chdir('build') do
                 sh 'cmake ..'
+                sh 'make -j 4'
+                %w[calc lex task].each{|exe|cp "src/#{exe}", shared_dir('bin')}
             end
         end
     end
