@@ -9,13 +9,22 @@ task :help do
 end
 
 task :declare do
-    publish('src/bash', '*', dst: 'bin', mode: 0755)
+	case os
+	when :linux
+		publish('src/bash', '*', dst: 'bin', mode: 0755)
+	when :windows
+		publish('src/bat', '*', dst: 'bin')
+		publish('src/vim', '_vimrc', dst: 'vim')
+	end
     publish('src', 'vim/**/*.vim')
     Rake::Task['declare:git_tools'].invoke
     Dir.chdir(shared_dir('vim', 'bundle')) do
-        git_clone('https://github.com/Valloric', 'YouCompleteMe') do
-            sh 'git submodule update --recursive --init'
-            sh './install.sh'
+        case os
+        when :linux
+            git_clone('https://github.com/Valloric', 'YouCompleteMe') do
+                sh 'git submodule update --recursive --init'
+                sh './install.sh'
+            end
         end
         git_clone('https://github.com/tpope', 'vim-commentary')
         git_clone('https://github.com/rking', 'ag.vim')
@@ -30,29 +39,49 @@ task :declare do
         end
     end
     Dir.chdir(shared_dir('extern')) do
-        git_clone('https://git.tasktools.org/scm/tm', 'task') do
-            Dir.mkdir('build')
-            Dir.chdir('build') do
-                sh 'cmake ..'
-                sh 'make -j 4'
-                %w[calc lex task].each{|exe|cp "src/#{exe}", shared_dir('bin')}
+        case os
+        when :linux
+            git_clone('https://git.tasktools.org/scm/tm', 'task') do
+                Dir.mkdir('build')
+                Dir.chdir('build') do
+                    sh 'cmake ..'
+                    sh 'make -j 4'
+                    %w[calc lex task].each{|exe|cp "src/#{exe}", shared_dir('bin')}
+                end
             end
         end
     end
 end
 
 task :define => :declare do
-    link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
-    link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
-    link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
+    case os
+    when :linux
+        link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
+        link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
+        link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
+    end
 end
 
 namespace :declare do
     task :git_tools do
         bash = "\#!"+`which bash`
+        args = case os
+               when :linux then '$1 $2 $3 $4 $5'
+               when :windows then '%1 %2 %3 %4 %5'
+               end
         Dir.chdir(shared_dir('bin')) do
             {qs: 'git status', qd: 'git diff', qc: 'git commit -a', qp: 'git pull --rebase', qq: 'git push', ql: 'git log -n 5'}.each do |fn, cmd|
-                File.open(fn.to_s, "w", 0755){|fo|puts("creating #{fn}");fo.puts(bash);fo.puts(cmd+' $1 $2 $3 $4 $5')} unless File.exist?(fn.to_s)
+                fn = case os
+                     when :linux then fn.to_s
+                     when :windows then "#{fn}.bat"
+                     end
+                File.open(fn, "w", 0755) do |fo|
+                    puts("creating #{fn}")
+                    case os
+                    when :linux then fo.puts(bash)
+                    end
+                    fo.puts(cmd+' '+args)
+                end unless File.exist?(fn)
             end
         end
     end
