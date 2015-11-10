@@ -1,2 +1,0 @@
-# gubg.tools
-Development tools
