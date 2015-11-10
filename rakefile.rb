@@ -50,7 +50,8 @@ task :declare do
                     %w[calc lex task].each{|exe|cp "src/#{exe}", shared_dir('bin')}
                 end
             end if which('cmake')
-	else raise("Unknown os #{os}") end
+        when :windows
+        else raise("Unknown os #{os}") end
     end
 end
 
