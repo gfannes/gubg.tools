@@ -18,12 +18,16 @@ task :declare do
 	else raise("Unknown os #{os}") end
     publish('src', 'vim/**/*.vim')
     Rake::Task['declare:git_tools'].invoke
+    build_ok_fn = 'gubg.build.ok'
     Dir.chdir(shared_dir('vim', 'bundle')) do
         case os
         when :linux
             git_clone('https://github.com/Valloric', 'YouCompleteMe') do
-                sh 'git submodule update --recursive --init'
-                sh './install.sh'
+                if !File.exist?(build_ok_fn)
+                    sh 'git submodule update --recursive --init'
+                    sh './install.sh'
+                    sh "touch #{build_ok_fn}"
+                end
             end
 	when :windows, :osx
 	else raise("Unknown os #{os}") end
@@ -34,8 +38,11 @@ task :declare do
         git_clone('https://github.com/vim-scripts', 'SearchComplete')
         git_clone('git://git.wincent.com', 'command-t') do
             Dir.chdir('ruby/command-t') do
-                sh 'ruby extconf.rb'
-                sh 'make'
+                if !File.exist?(build_ok_fn)
+                    sh 'ruby extconf.rb'
+                    sh 'make'
+                    sh "touch #{build_ok_fn}"
+                end
             end
         end
     end
@@ -43,11 +50,14 @@ task :declare do
         case os
         when :linux, :osx
             git_clone('https://git.tasktools.org/scm/tm', 'task') do
-                Dir.mkdir('build')
-                Dir.chdir('build') do
-                    sh 'cmake ..'
-                    sh 'make -j 4'
-                    %w[calc lex task].each{|exe|cp "src/#{exe}", shared_dir('bin')}
+                if !File.exist?('build')
+                    Dir.mkdir('trybuild')
+                    Dir.chdir('trybuild') do
+                        sh 'cmake ..'
+                        sh 'make -j 4'
+                        %w[calc lex task].each{|exe|cp "src/#{exe}", shared_dir('bin')}
+                    end
+                    mv('trybuild', 'build')
                 end
             end if which('cmake')
         when :windows
