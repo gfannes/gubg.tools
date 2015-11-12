@@ -71,7 +71,10 @@ task :define => :declare do
         link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
         link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
         link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
-        link_unless_exists(`which colorgcc`.chomp, shared('bin', 'g++'))
+        which('colorgcc') do |fn|
+            link_unless_exists(fn, shared('bin', 'g++'))
+            link_unless_exists(fn, shared('bin', 'gcc'))
+        end
     when :osx
         link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
         link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
