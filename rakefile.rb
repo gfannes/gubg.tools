@@ -11,12 +11,12 @@ end
 task :declare do
 	case os
 	when :linux, :osx
-		publish('src/bash', '*', dst: 'bin', mode: 0755)
+		publish('src/bash', dst: 'bin', mode: 0755)
 	when :windows
-		publish('src/bat', '*', dst: 'bin')
-		publish('src/vim', '_vimrc', dst: 'vim')
+		publish('src/bat', dst: 'bin')
+		publish('src/vim', pattern: '_vimrc', dst: 'vim')
 	else raise("Unknown os #{os}") end
-    publish('src', 'vim/**/*.vim')
+    publish('src', pattern: 'vim/**/*.vim')
     Rake::Task['declare:git_tools'].invoke
     build_ok_fn = 'gubg.build.ok'
     Dir.chdir(shared_dir('vim', 'bundle')) do
@@ -62,6 +62,9 @@ task :declare do
             end if which('cmake')
         when :windows
         else raise("Unknown os #{os}") end
+        git_clone('https://github.com/gfannes', 'FartIT') do
+            sh 'rake define'
+        end
     end
 end
 
