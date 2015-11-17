@@ -88,9 +88,11 @@ end
 
 namespace :declare do
     task :git_tools do
-        bash = "\#!"+`which bash`
+        bash = nil
         args = case os
-               when :linux, :osx then '$1 $2 $3 $4 $5'
+               when :linux, :osx
+                   '$1 $2 $3 $4 $5'
+                   bash = "\#!"+`which bash`
                when :windows then '%1 %2 %3 %4 %5'
                else raise("Unknown os #{os}") end
         Dir.chdir(shared_dir('bin')) do
