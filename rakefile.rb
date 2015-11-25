@@ -9,13 +9,13 @@ task :help do
 end
 
 task :declare do
-	case os
-	when :linux, :osx
-		publish('src/bash', dst: 'bin', mode: 0755)
-	when :windows
-		publish('src/bat', dst: 'bin')
-		publish('src/vim', pattern: '_vimrc', dst: 'vim')
-	else raise("Unknown os #{os}") end
+    case os
+    when :linux, :osx
+        publish('src/bash', dst: 'bin', mode: 0755)
+    when :windows
+        publish('src/bat', dst: 'bin')
+        publish('src/vim', pattern: '_vimrc', dst: 'vim')
+    else raise("Unknown os #{os}") end
     publish('src', pattern: 'vim/**/*.vim')
     Rake::Task['declare:git_tools'].invoke
     build_ok_fn = 'gubg.build.ok'
@@ -29,8 +29,8 @@ task :declare do
                     sh "touch #{build_ok_fn}"
                 end
             end
-	when :windows, :osx
-	else raise("Unknown os #{os}") end
+        when :windows, :osx
+        else raise("Unknown os #{os}") end
         git_clone('https://github.com/tpope', 'vim-commentary')
         git_clone('https://github.com/rking', 'ag.vim')
         git_clone('https://github.com/tpope', 'vim-fugitive')
@@ -49,8 +49,12 @@ task :declare do
     Dir.chdir(shared_dir('extern')) do
         case os
         when :linux, :osx
+            #Depends on the following ubuntu packages:
+            #sudo apt-get install libgnutls-dev
+            #sudo apt-get install uuid-dev
             git_clone('https://git.tasktools.org/scm/tm', 'task') do
                 if !File.exist?('build')
+                    rm_rf('trybuild')
                     Dir.mkdir('trybuild')
                     Dir.chdir('trybuild') do
                         sh 'cmake ..'
