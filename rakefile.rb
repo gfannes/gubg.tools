@@ -47,27 +47,6 @@ task :declare do
         end
     end
     Dir.chdir(shared_dir('extern')) do
-<<<<<<< HEAD
-        case os
-        when :linux, :osx
-            #Depends on the following ubuntu packages:
-            #sudo apt-get install libgnutls-dev uuid-dev
-            git_clone('https://git.tasktools.org/scm/tm', 'task') do
-                if !File.exist?('build')
-                    rm_rf('trybuild')
-                    Dir.mkdir('trybuild')
-                    Dir.chdir('trybuild') do
-                        sh 'cmake ..'
-                        sh 'make -j 4'
-                        %w[calc lex task].each{|exe|cp "src/#{exe}", shared_dir('bin')}
-                    end
-                    mv('trybuild', 'build')
-                end
-            end if which('cmake')
-        when :windows
-        else raise("Unknown os #{os}") end
-=======
->>>>>>> moved task warrior to gubg.tools.pm
         git_clone('https://github.com/gfannes', 'FartIT') do
             sh 'rake define'
         end
