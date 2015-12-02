@@ -47,6 +47,7 @@ task :declare do
         end
     end
     Dir.chdir(shared_dir('extern')) do
+<<<<<<< HEAD
         case os
         when :linux, :osx
             #Depends on the following ubuntu packages:
@@ -65,6 +66,8 @@ task :declare do
             end if which('cmake')
         when :windows
         else raise("Unknown os #{os}") end
+=======
+>>>>>>> moved task warrior to gubg.tools.pm
         git_clone('https://github.com/gfannes', 'FartIT') do
             sh 'rake define'
         end
