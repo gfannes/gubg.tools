@@ -97,3 +97,6 @@ namespace :declare do
         end
     end
 end
+
+task :test do
+end
