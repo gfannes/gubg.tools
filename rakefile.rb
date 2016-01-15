@@ -12,6 +12,7 @@ task :declare do
     case os
     when :linux, :osx
         publish('src/bash', dst: 'bin', mode: 0755)
+        publish('src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
     when :windows
         publish('src/bat', dst: 'bin')
         publish('src/vim', pattern: '_vimrc', dst: 'vim')
