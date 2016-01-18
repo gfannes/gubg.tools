@@ -23,6 +23,7 @@ task :declare do
     Dir.chdir(shared_dir('vim', 'bundle')) do
         case os
         when :linux
+            #sudo apt-get install cmake python-dev
             git_clone('https://github.com/Valloric', 'YouCompleteMe') do
                 if !File.exist?(build_ok_fn)
                     sh 'git submodule update --recursive --init'
@@ -37,6 +38,7 @@ task :declare do
         git_clone('https://github.com/tpope', 'vim-fugitive')
         git_clone('https://github.com/pangloss', 'vim-javascript')
         git_clone('https://github.com/vim-scripts', 'SearchComplete')
+        #sudo apt-get install ruby-dev
         git_clone('git://git.wincent.com', 'command-t') do
             Dir.chdir('ruby/command-t') do
                 if !File.exist?(build_ok_fn)
