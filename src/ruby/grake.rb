@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+#TODO: make sure files from the published include directory are not opened
+
 require('fileutils')
 require('open3')
 
