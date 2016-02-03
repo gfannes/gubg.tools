@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+ENV["gubg"] = "#{ENV["HOME"]}/gubg" unless ENV.has_key?("gubg")
+ok = case ARGV.size
+     when 1 then system("gvim -f #{ARGV[0]}")
+     when 2 then system("gvim -f +#{ARGV[1]} #{ARGV[0]}")
+     end
+exit(ok ? 0 : -1)
