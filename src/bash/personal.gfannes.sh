@@ -1,6 +1,6 @@
 #Use this file in gnome terminal by setting the "Custom command" to something "bash --init-file /home/geert/gubg/bin/personal.gfannes.sh"
 
-echo ">> Setting up my environment ..."
+echo ">> Loading environment from $BASH_SOURCE ..."
 
 #xmodmap $HOME/.xmodmap
 
