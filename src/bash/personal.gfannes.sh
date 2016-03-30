@@ -49,7 +49,7 @@ echo "<< ... done"
 
 cd $HOME
 
-touches_fn=gubg.sh
+touches_fn=$HOME/gubg.sh
 if [ -f $touches_fn ]
 then
     echo Executing local touches from $touches_fn
