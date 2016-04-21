@@ -38,6 +38,10 @@ function release {
 export build_compiler=gcc48_x32-release
 auro_notify
 }
+function profile {
+export build_compiler=gcc48_x32-release_gprof
+auro_notify
+}
 function debug {
 export build_compiler=gcc48_x32-debug
 auro_notify
