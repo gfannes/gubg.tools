@@ -20,6 +20,28 @@ task :declare do
     publish('src', pattern: 'vim/**/*.vim')
     Rake::Task['declare:git_tools'].invoke
     build_ok_fn = 'gubg.build.ok'
+
+    Dir.chdir(shared_dir('extern')) do
+        git_clone('https://github.com/gfannes', 'FartIT') do
+            sh 'rake define'
+        end
+        case os
+        when :linux
+            git_clone('https://github.com/neovim', 'neovim') do
+                if !File.exist?(build_ok_fn)
+                    puts("Building neovim")
+                    sh 'rm -rf build'
+                    sh "make -j 8 CMAKE_EXTRA_FLAGS=\"-DCMAKE_INSTALL_PREFIX:PATH=#{shared('neovim')}\""
+                    sh 'make install'
+                    Dir.chdir(shared('neovim', 'bin')) do
+                        publish('nvim', dst: 'bin', mode: 0755)
+                    end
+                    sh "touch #{build_ok_fn}"
+                end
+            end
+        end
+    end
+
     Dir.chdir(shared_dir('vim', 'bundle')) do
         case os
         when :linux
@@ -48,11 +70,6 @@ task :declare do
                     sh "touch #{build_ok_fn}"
                 end
             end
-        end
-    end
-    Dir.chdir(shared_dir('extern')) do
-        git_clone('https://github.com/gfannes', 'FartIT') do
-            sh 'rake define'
         end
     end
 end
