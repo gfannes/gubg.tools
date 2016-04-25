@@ -23,7 +23,7 @@ export PATH=$gubg/bin:$PATH
 #>> auro
 export build_publish=$HOME/pub
 function auro_notify {
-export build_compiler=gcc48_$build_compiler_arch-$build_compiler_config
+export build_compiler=${build_compiler_brand_and_version}_${build_compiler_arch}-${build_compiler_config}
 #Remove the previous $AURO_BIN from $PATH, if any
 if [ "$AURO_BIN" != "" ]
 then
@@ -36,7 +36,8 @@ export PATH=$PATH:$AURO_BIN
 echo Switched to $build_compiler, added $AURO_BIN to PATH
 }
 #Some defaults
-export build_compiler_arch=x32
+export build_compiler_brand_and_version=gcc48
+export build_compiler_arch=x64
 export build_compiler_config=release
 function release {
 export build_compiler_config=release
