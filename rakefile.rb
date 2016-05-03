@@ -102,12 +102,12 @@ namespace :declare do
         bash = nil
         args = case os
                when :linux, :osx
-                   '$1 $2 $3 $4 $5'
                    bash = "\#!"+`which bash`
+                   '$1 $2 $3 $4 $5'
                when :windows then '%1 %2 %3 %4 %5'
                else raise("Unknown os #{os}") end
         Dir.chdir(shared_dir('bin')) do
-            {qs: 'git status', qd: 'git diff', qc: 'git commit -a', qp: 'git pull --rebase', qq: 'git push', ql: 'git log -n 5'}.each do |fn, cmd|
+            {qs: 'git status', qd: 'git difftool -t meld -Y', qc: 'git commit -a', qp: 'git pull --rebase', qq: 'git push', ql: 'git log -n 5'}.each do |fn, cmd|
                 fn = case os
                      when :linux, :osx then fn.to_s
                      when :windows then "#{fn}.bat"
