@@ -13,6 +13,7 @@ task :declare do
     when :linux, :osx
         publish('src/bash', dst: 'bin', mode: 0755)
         publish('src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
+        publish('src/vifm', dst: 'config/vifm')
     when :windows
         publish('src/bat', dst: 'bin')
         publish('src/vim', pattern: '_vimrc', dst: 'vim')
@@ -31,9 +32,9 @@ task :declare do
                 if !File.exist?(build_ok_fn)
                     puts("Building neovim")
                     sh 'rm -rf build'
-                    sh "make -j 8 CMAKE_EXTRA_FLAGS=\"-DCMAKE_INSTALL_PREFIX:PATH=#{shared('neovim')}\""
+                    sh "make -j 8 CMAKE_EXTRA_FLAGS=\"-DCMAKE_INSTALL_PREFIX:PATH=#{shared('config', 'neovim')}\""
                     sh 'make install'
-                    Dir.chdir(shared('neovim', 'bin')) do
+                    Dir.chdir(shared('config', 'neovim', 'bin')) do
                         publish('nvim', dst: 'bin', mode: 0755)
                     end
                     sh "touch #{build_ok_fn}"

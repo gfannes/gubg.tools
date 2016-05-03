@@ -1,0 +1,2 @@
+#!/usr/bin/env ruby
+ENV['VIFM'] = File.join(ENV['gubg'], 'config/vifm')
