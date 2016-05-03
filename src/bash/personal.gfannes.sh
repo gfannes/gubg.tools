@@ -18,7 +18,7 @@ export GIT_EXTERNAL_DIFF=$gubg/bin/git_diff.sh
 #>> gubg
 export gubg=$HOME/gubg
 export PATH=$gubg/bin:$PATH
-export EDITOR=$gubg/bin/editor.sh
+export EDITOR=$gubg/bin/editor
 #<< gubg
 
 #>> auro
