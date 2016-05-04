@@ -1,4 +1,5 @@
 require(File.join(ENV['gubg'], 'shared'))
+require('gubg/build/Executable')
 include GUBG
 
 task :default => :help
@@ -96,6 +97,10 @@ task :define => :declare do
         link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
     when :windows
     else raise("Unknown os #{os}") end
+
+    vix = Build::Executable.new('vix')
+    vix.add_sources(FileList.new('src/vix/**/*.cpp'))
+    vix.build
 end
 
 namespace :declare do
