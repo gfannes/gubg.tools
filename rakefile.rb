@@ -29,6 +29,7 @@ task :declare do
         end
         case os
         when :linux
+	    #sudo apt-get install automake libtool-bin
             git_clone('https://github.com/neovim', 'neovim') do
                 if !File.exist?(build_ok_fn)
                     puts("Building neovim")
