@@ -61,6 +61,10 @@ export build_compiler_arch=x64
 auro_notify
 }
 release
+
+function klone {
+    git clone https://git.auro-technologies.com/scm/$1
+}
 #<< auro
 
 echo "<< ... done"
