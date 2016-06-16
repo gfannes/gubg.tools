@@ -22,56 +22,56 @@ export EDITOR=$gubg/bin/editor
 #<< gubg
 
 #>> auro
-export build_publish=$HOME/pub
+export auro_publish=$HOME/pub
 
 function auro_notify {
-export build_compiler=${build_compiler_brand}_${build_compiler_arch}-${build_compiler_config}
+export auro_compiler=${auro_compiler_brand}_${auro_compiler_arch}-${auro_compiler_config}
 #Remove the previous $AURO_BIN from $PATH, if any
 if [ "$AURO_BIN" != "" ]
 then
 export PATH=`echo $PATH | sed "s|:$AURO_BIN||g"`
 fi
 
-export AURO_BIN=$build_publish/bin/$build_compiler
+export AURO_BIN=$auro_publish/bin/$auro_compiler
 export PATH=$PATH:$AURO_BIN
 
-echo build_compiler: $build_compiler
-echo build_publish:  $build_publish
+echo auro_compiler: $auro_compiler
+echo auro_publish:  $auro_publish
 echo Added $AURO_BIN to PATH
 }
 
 #Some defaults
-export build_compiler_brand=gcc
-export build_compiler_arch=x64
-export build_compiler_config=release
+export auro_compiler_brand=gcc
+export auro_compiler_arch=x64
+export auro_compiler_config=release
 
 function release {
-export build_compiler_config=release
+export auro_compiler_config=release
 auro_notify
 }
 
 function profile {
-export build_compiler_config=release_gprof
+export auro_compiler_config=release_gprof
 auro_notify
 }
 
 function debug {
-export build_compiler_config=debug
+export auro_compiler_config=debug
 auro_notify
 }
 
 function x32 {
-export build_compiler_arch=x32
+export auro_compiler_arch=x32
 auro_notify
 }
 
 function x64 {
-export build_compiler_arch=x64
+export auro_compiler_arch=x64
 auro_notify
 }
 
 function publish {
-export build_publish=$1
+export auro_publish=$1
 auro_notify
 }
 
