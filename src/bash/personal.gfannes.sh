@@ -45,6 +45,26 @@ export auro_compiler_brand=gcc
 export auro_compiler_arch=x64
 export auro_compiler_config=release
 
+function use_gcc {
+export auro_compiler_brand=gcc
+auro_notify
+}
+
+function use_clang {
+export auro_compiler_brand=clang
+auro_notify
+}
+
+function x32 {
+export auro_compiler_arch=x32
+auro_notify
+}
+
+function x64 {
+export auro_compiler_arch=x64
+auro_notify
+}
+
 function release {
 export auro_compiler_config=release
 auro_notify
@@ -60,21 +80,12 @@ export auro_compiler_config=debug
 auro_notify
 }
 
-function x32 {
-export auro_compiler_arch=x32
-auro_notify
-}
-
-function x64 {
-export auro_compiler_arch=x64
-auro_notify
-}
-
 function publish {
 export auro_publish=$1
 auro_notify
 }
 
+use_gcc
 release
 
 function klone {
