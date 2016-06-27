@@ -15,6 +15,9 @@ export LS_COLORS="no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:bd=40;33;01:cd
 
 export GIT_EXTERNAL_DIFF=$gubg/bin/git_diff.sh
 
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+
 #>> gubg
 export gubg=$HOME/gubg
 export PATH=$gubg/bin:$PATH
