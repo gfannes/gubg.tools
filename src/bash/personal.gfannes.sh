@@ -40,6 +40,7 @@ export PATH=$PATH:$AURO_BIN
 
 echo auro_compiler: $auro_compiler
 echo auro_publish:  $auro_publish
+echo auro_test:  $auro_test
 echo Added $AURO_BIN to PATH
 }
 
@@ -47,6 +48,7 @@ echo Added $AURO_BIN to PATH
 export auro_compiler_brand=gcc
 export auro_compiler_arch=x64
 export auro_compiler_config=release
+export auro_test=ut
 
 function use_gcc {
 export auro_compiler_brand=gcc
@@ -85,6 +87,11 @@ auro_notify
 
 function publish {
 export auro_publish=$1
+auro_notify
+}
+
+function catch {
+export auro_test=$1
 auro_notify
 }
 
