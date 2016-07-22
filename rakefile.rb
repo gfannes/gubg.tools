@@ -9,6 +9,10 @@ task :help do
     puts("* define: creates symbolic link to the installed vim scripts and .inputrc")
 end
 
+task :clean do
+    rm_rf '.cache'
+end
+
 task :declare do
     case os
     when :linux, :osx
