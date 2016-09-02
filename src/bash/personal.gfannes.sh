@@ -18,6 +18,10 @@ export GIT_EXTERNAL_DIFF=$gubg/bin/git_diff.sh
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
+function qcc {
+    git commit "-am" "$@"
+}
+
 #>> gubg
 export gubg=$HOME/gubg
 export PATH=$gubg/bin:$PATH
