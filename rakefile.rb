@@ -68,17 +68,7 @@ task :declare do
         git_clone('https://github.com/pangloss', 'vim-javascript')
         git_clone('https://github.com/vim-scripts', 'SearchComplete')
         git_clone('https://github.com/leafgarland', 'typescript-vim')
-        #sudo apt-get install ruby-dev
-        git_clone('git://git.wincent.com', 'command-t') do
-            Dir.chdir('ruby/command-t') do
-                if !File.exist?(build_ok_fn)
-                    sh 'ruby extconf.rb'
-                    sh 'make'
-                    sh "touch #{build_ok_fn}"
-                end
-            end
-        end
-    end
+   end
 end
 
 task :define => :declare do
