@@ -77,6 +77,11 @@ export auro_compiler_config=release
 auro_notify
 }
 
+function rtc {
+export auro_compiler_config=release_rtc
+auro_notify
+}
+
 function profile {
 export auro_compiler_config=release_gprof
 auro_notify
