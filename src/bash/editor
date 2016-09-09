@@ -3,6 +3,6 @@ ARGV.each do |arg|
     case arg
     when '--'
     else
-        system('gg', arg)
+        system('vi', arg)
     end
 end
