@@ -68,6 +68,7 @@ task :declare do
         git_clone('https://github.com/pangloss', 'vim-javascript')
         git_clone('https://github.com/vim-scripts', 'SearchComplete')
         git_clone('https://github.com/leafgarland', 'typescript-vim')
+        git_clone('https://github.com/ctrlpvim', 'ctrlp.vim')
    end
 end
 

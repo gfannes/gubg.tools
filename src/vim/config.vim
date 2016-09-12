@@ -86,6 +86,8 @@ execute pathogen#infect($gubg.'/vim/bundle/{}')
 syntax on
 filetype plugin indent on
 
+set runtimepath^=$gubg.'/vim/bundle/ctrlp.vim'
+
 set complete-=i
 set wrap
 
