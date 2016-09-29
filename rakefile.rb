@@ -77,6 +77,7 @@ task :define => :declare do
     when :linux
         link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
         link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
+        link_unless_exists(shared_file('vim', 'ideavimrc.vim'), File.join(ENV['HOME'], '.ideavimrc'))
 
         nvim_dir = File.join(ENV['HOME'], '.config', 'nvim')
         FileUtils.mkdir_p(nvim_dir) unless File.exist?(nvim_dir)
