@@ -29,7 +29,7 @@ export GIT_EXTERNAL_DIFF=$gubg/bin/git_diff.sh
 export auro_publish=$HOME/pub
 
 function auro_notify {
-export auro_compiler=${auro_compiler_brand}_${auro_compiler_arch}-${auro_compiler_config}
+export auro_compiler=${auro_compiler_brand}_${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_cpp}${auro_compiler_thread}
 #Remove the previous $AURO_BIN from $PATH, if any
 if [ "$AURO_BIN" != "" ]
 then
@@ -49,6 +49,8 @@ echo Added $AURO_BIN to PATH
 export auro_compiler_brand=gcc
 export auro_compiler_arch=x64
 export auro_compiler_config=release
+export auro_compiler_cpp=
+export auro_compiler_thread=
 export auro_test=ut
 
 function use_gcc {
@@ -88,6 +90,16 @@ auro_notify
 
 function debug {
 export auro_compiler_config=debug
+auro_notify
+}
+
+function cpp03 {
+export auro_compiler_cpp=_cpp03
+auro_notify
+}
+
+function nothread {
+export auro_compiler_thread=_nothread
 auro_notify
 }
 
