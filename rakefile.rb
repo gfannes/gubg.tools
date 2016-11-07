@@ -79,9 +79,11 @@ task :define => :declare do
         link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
         link_unless_exists(shared_file('vim', 'ideavimrc.vim'), File.join(ENV['HOME'], '.ideavimrc'))
 
-        nvim_dir = File.join(ENV['HOME'], '.config', 'nvim')
-        FileUtils.mkdir_p(nvim_dir) unless File.exist?(nvim_dir)
-        link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(nvim_dir, 'init.vim'))
+        if false
+            nvim_dir = File.join(ENV['HOME'], '.config', 'nvim')
+            FileUtils.mkdir_p(nvim_dir) unless File.exist?(nvim_dir)
+            link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(nvim_dir, 'init.vim'))
+        end
 
         link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
         which('colorgcc') do |fn|
