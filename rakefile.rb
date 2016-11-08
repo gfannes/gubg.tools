@@ -47,6 +47,13 @@ task :declare do
                 end
             end
         end
+        git_clone('https://github.com/exvim', 'main') do
+            if !File.exist?(build_ok_fn)
+                puts("Building exvim")
+                sh "sh unix/install.sh"
+                sh "touch #{build_ok_fn}"
+            end
+        end
     end
 
     Dir.chdir(shared_dir('vim', 'bundle')) do
@@ -69,7 +76,7 @@ task :declare do
         git_clone('https://github.com/vim-scripts', 'SearchComplete')
         git_clone('https://github.com/leafgarland', 'typescript-vim')
         git_clone('https://github.com/ctrlpvim', 'ctrlp.vim')
-   end
+    end
 end
 
 task :define => :declare do

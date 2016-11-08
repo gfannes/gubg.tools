@@ -66,14 +66,14 @@ autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 autocmd BufEnter,BufNewFile,BufRead *.tree source $gubg/vim/maps.tree.vim
 autocmd BufEnter,BufNewFile,BufReadPost *.tree set filetype=javascript
 
-source $gubg/vim/hexmode.vim
+""source $gubg/vim/hexmode.vim
 
 command -bar Q q
 
 source $gubg/vim/tabnumber.vim
 source $gubg/vim/autoclose.vim
 source $gubg/vim/cscope_maps.vim
-source $gubg/vim/git.vim
+""source $gubg/vim/git.vim
 ""source $gubg/vim/rust.vim
 
 :au FocusLost * silent! wa
@@ -83,8 +83,12 @@ set smartcase
 
 source $gubg/vim/autoload/pathogen.vim
 execute pathogen#infect($gubg.'/vim/bundle/{}')
+
 syntax on
 filetype plugin indent on
+
+""let g:exvim_custom_path='$gubg/extern/main/'
+""source $gubg/extern/main/.vimrc
 
 set runtimepath^=$gubg.'/vim/bundle/ctrlp.vim'
 
