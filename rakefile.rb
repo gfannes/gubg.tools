@@ -22,18 +22,20 @@ task :declare do
     when :windows
         publish('src/bat', dst: 'bin')
         publish('src/vim', pattern: '_vimrc', dst: 'vim')
+        #Needed for vim backup files
+        mkdir("C:/temp") unless File.exists?("C:/temp")
     else raise("Unknown os #{os}") end
     publish('src', pattern: 'vim/**/*.vim')
     Rake::Task['declare:git_tools'].invoke
     build_ok_fn = 'gubg.build.ok'
 
     Dir.chdir(shared_dir('extern')) do
-        git_clone('https://github.com/gfannes', 'FartIT') do
-            sh 'rake define'
-        end
         case os
         when :linux
-	    #sudo apt-get install automake libtool-bin
+            git_clone('https://github.com/gfannes', 'FartIT') do
+                sh 'rake define'
+            end
+            #sudo apt-get install automake libtool-bin
             git_clone('https://github.com/neovim', 'neovim') do
                 if !File.exist?(build_ok_fn)
                     puts("Building neovim")
@@ -122,7 +124,9 @@ namespace :declare do
             {qs: 'git status', qd: 'git difftool -t meld -Y', qc: 'git commit -a', qp: 'git pull --rebase', qq: 'git push', ql: 'git log -n 5'}.each do |fn, cmd|
                 fn = case os
                      when :linux, :osx then fn.to_s
-                     when :windows then "#{fn}.bat"
+                     when :windows
+                         cmd = "git diff" if fn == :qd
+                         "#{fn}.bat"
                      else raise("Unknown os #{os}") end
                 File.open(fn, "w", 0755) do |fo|
                     puts("creating #{fn}")
