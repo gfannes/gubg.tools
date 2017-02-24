@@ -12,6 +12,11 @@ set scroll=1
 "Remove the 3000 character syntax highlighting limit
 set synmaxcol=0
 
+"auro style
+set cindent  
+set cinoptions+=t0  
+set cinoptions+=g0
+
 function! ReadString(message)
   let curline = getline('.')
   call inputsave()
