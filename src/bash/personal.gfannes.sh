@@ -29,7 +29,7 @@ export GIT_EXTERNAL_DIFF=$gubg/bin/git_diff.sh
 export auro_publish=$HOME/pub
 
 function auro_notify {
-export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_cpp}${auro_compiler_thread}
+export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}
 #Remove the previous $AURO_BIN from $PATH, if any
 if [ "$AURO_BIN" != "" ]
 then
@@ -77,19 +77,21 @@ function release {
 export auro_compiler_config=release
 auro_notify
 }
-
-function rtc {
-export auro_compiler_config=release_rtc
-auro_notify
-}
-
-function profile {
-export auro_compiler_config=release_gprof
-auro_notify
-}
-
 function debug {
 export auro_compiler_config=debug
+auro_notify
+}
+
+function normal {
+export auro_compiler_subconfig=
+auro_notify
+}
+function rtc {
+export auro_compiler_subconfig=-rtc
+auro_notify
+}
+function profile {
+export auro_compiler_subconfig=-gprof
 auro_notify
 }
 
@@ -115,6 +117,7 @@ auro_notify
 
 use_gcc
 release
+normal
 
 function klone {
     git clone https://git.auro-technologies.com/scm/$1
