@@ -121,7 +121,17 @@ namespace :declare do
                when :windows then '%1 %2 %3 %4 %5'
                else raise("Unknown os #{os}") end
         Dir.chdir(shared_dir('bin')) do
-            {qs: 'git status', qd: 'git difftool -t meld -Y', qc: 'git commit -a', qp: 'git pull --rebase', qq: 'git push', ql: 'git log -n 5'}.each do |fn, cmd|
+            {
+                qs: 'git status',
+                qd: 'git difftool -t meld -Y',
+                qc: 'git commit -a',
+                qp: 'git pull --rebase',
+                qq: 'git push',
+                ql: 'git log -n 5',
+                qm: ['git checkout master', 'git branch -d'],
+                qb: 'git checkout -b',
+                qx: 'git branch -d',
+            }.each do |fn, cmd|
                 fn = case os
                      when :linux, :osx then fn.to_s
                      when :windows
@@ -133,7 +143,7 @@ namespace :declare do
                     case os
                     when :linux, :osx then fo.puts(bash)
                     end
-                    fo.puts(cmd+' '+args)
+                    fo.puts([cmd].join("\n")+' '+args)
                 end unless File.exist?(fn)
             end
         end
