@@ -84,6 +84,11 @@ export auro_compiler_arch=x64
 auro_notify
 }
 
+function i7 {
+export auro_compiler_arch=i7
+auro_notify
+}
+
 function release {
 export auro_compiler_config=release
 auro_notify
