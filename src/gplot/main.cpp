@@ -7,13 +7,16 @@
 using namespace std;
 
 namespace app { 
+    using Strings = vector<string>;
+
     struct Options
     {
         std::string help;
         std::string input_fn;
         std::string output_fn;
+        std::string path;
         std::string x;
-        std::string y;
+        Strings ys;
     };
 
     bool parse(Options &options, gubg::OptionParser::Args &args)
@@ -23,57 +26,76 @@ namespace app {
         parser.add_switch('h', "help", "Print this help", [&](){options.help = parser.help();});
         parser.add_mandatory('i', "input", "Input filename", [&](std::string str){options.input_fn = str;});
         parser.add_mandatory('o', "output", "Output filename", [&](std::string str){options.output_fn = str;});
-        parser.add_mandatory('x', "x", "X path", [&](std::string str){options.x = str;});
-        parser.add_mandatory('y', "y", "Y path", [&](std::string str){options.y = str;});
+        parser.add_mandatory('p', "path", "Object path", [&](std::string str){options.path = str;});
+        parser.add_mandatory('x', "x", "X attribute", [&](std::string str){options.x = str;});
+        parser.add_mandatory('y', "y", "Y attribute", [&](std::string str){options.ys.push_back(str);});
 
         MSS(parser.parse(args));
         MSS_END();
     }
 
-    using Path = vector<string>;
-
     class Parser: public gubg::parse::tree::Parser_crtp<Parser>
     {
     public:
-        Parser(std::ofstream &fo, Path ypath): fo_(fo), ypath_(ypath)
+        Parser(std::ofstream &fo, Strings path, Strings y_attrs): fo_(fo), path_(path), y_attrs_(y_attrs), y_values_(y_attrs.size(), "")
         {
             fo_ << "$dataset << EOD" << endl;
         }
         ~Parser()
         {
             fo_ << "EOD" << endl;
-            fo_ << "plot $dataset using 1:2 with lines" << endl;
+            for (size_t ix = 0; ix < y_attrs_.size(); ++ix)
+                fo_ << (ix == 0 ? "plot" : ",") << " $dataset using 1:" << ix+2 << " with lines title \"" << y_attrs_[ix] << "\"";
+            fo_ << endl;
             fo_ << "pause mouse" << endl;
         }
 
         bool tree_node_open(std::string str)
         {
             MSS_BEGIN(bool, "");
-            if (!match_ || depth_ > ypath_.size()-2 || str != ypath_[depth_])
-                match_ = false;
-            L(C(str)C(depth_)C(match_));
+            if (!path_matches_ || depth_ > path_.size()-1 || str != path_[depth_])
+                path_matches_ = false;
+            L(C(str)C(depth_)C(path_matches_));
             ++depth_;
             MSS_END();
         }
         bool tree_attr(std::string key, std::string value)
         {
             MSS_BEGIN(bool, "");
-            L(C(key)C(value)C(depth_)C(match_));
-            if (match_ && depth_ == ypath_.size()-1 && key == ypath_.back())
+            L(C(key)C(value)C(depth_)C(path_matches_));
+            if (path_matches_ && depth_ == path_.size())
             {
-                L("MATCH");
-                fo_ << ix_ << ' ' << value << endl;
-                ++ix_;
+                auto dst = y_values_.begin();
+                for (auto k: y_attrs_)
+                {
+                    if (k == key)
+                        *dst = value;
+                    ++dst;
+                }
             }
             MSS_END();
         }
-        bool tree_attr_done() { return true; }
+        bool tree_attr_done()
+        {
+            MSS_BEGIN(bool);
+            if (path_matches_ && depth_ == path_.size())
+            {
+                fo_ << ix_; ++ix_;
+                for (auto v: y_values_)
+                    fo_ << ' ' << v;
+                fo_ << endl;
+
+                for (auto &v: y_values_)
+                    v.clear();
+            }
+            MSS_END();
+        }
         bool tree_node_close()
         {
             MSS_BEGIN(bool);
             --depth_;
             if (depth_ == 0)
-                match_ = (ypath_.size() >= 2);
+                path_matches_ = !path_.empty();
             MSS_END();
         }
         bool tree_text(std::string str) { return true; }
@@ -82,9 +104,10 @@ namespace app {
         std::ofstream &fo_;
         unsigned int ix_ = 0;
         unsigned int depth_ = 0;
-        Path ypath_;
-        bool match_ = (ypath_.size() >= 2);
-        Path::iterator y_ = ypath_.begin();
+        Strings path_;
+        bool path_matches_ = !path_.empty();
+        const Strings y_attrs_;
+        Strings y_values_;
     };
 
     bool main(gubg::OptionParser::Args &args)
@@ -105,10 +128,12 @@ namespace app {
         std::ofstream fo(options.output_fn);
         MSS(fo.good(), cout << "Error: Invalid output file \"" << options.output_fn << "\"" << endl);
 
-        MSS(!options.y.empty(), cout << "Error: No Y path given" << endl);
-        Path ypath = gubg::string_algo::split<vector>(options.y, '.');
+        MSS(!options.path.empty(), cout << "Error: No object path given" << endl);
+        Strings path = gubg::string_algo::split<vector>(options.path, '.');
 
-        Parser parser(fo, ypath);
+        MSS(!options.ys.empty(), cout << "Error: No Y attribute(s) given" << endl);
+
+        Parser parser(fo, path, options.ys);
 
         while (fi.good())
         {
