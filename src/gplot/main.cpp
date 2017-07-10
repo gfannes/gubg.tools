@@ -37,7 +37,7 @@ namespace app {
     class Parser: public gubg::parse::tree::Parser_crtp<Parser>
     {
     public:
-        Parser(std::ofstream &fo, Strings path, Strings y_attrs): fo_(fo), path_(path), y_attrs_(y_attrs), y_values_(y_attrs.size(), "")
+        Parser(std::ofstream &fo, Strings path, std::string x_attr, Strings y_attrs): fo_(fo), path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), "")
         {
             fo_ << "$dataset << EOD" << endl;
         }
@@ -45,7 +45,15 @@ namespace app {
         {
             fo_ << "EOD" << endl;
             for (size_t ix = 0; ix < y_attrs_.size(); ++ix)
-                fo_ << (ix == 0 ? "plot" : ",") << " $dataset using 1:" << ix+2 << " with lines title \"" << y_attrs_[ix] << "\"";
+            {
+                fo_ << (ix == 0 ? "plot" : ",") << " $dataset";
+                fo_ << " using 1:" << ix+2;
+                fo_ << " with lines";
+                if (x_attr_.empty())
+                    fo_ << " title \"" << y_attrs_[ix] << "\"";
+                else
+                    fo_ << " title \"" << x_attr_ << " x " << y_attrs_[ix] << "\"";
+            }
             fo_ << endl;
             fo_ << "pause mouse" << endl;
         }
@@ -65,12 +73,17 @@ namespace app {
             L(C(key)C(value)C(depth_)C(path_matches_));
             if (path_matches_ && depth_ == path_.size())
             {
-                auto dst = y_values_.begin();
-                for (auto k: y_attrs_)
+                if (key == x_attr_)
+                    x_value_ = value;
+
                 {
-                    if (k == key)
-                        *dst = value;
-                    ++dst;
+                    auto dst = y_values_.begin();
+                    for (auto k: y_attrs_)
+                    {
+                        if (key == k)
+                            *dst = value;
+                        ++dst;
+                    }
                 }
             }
             MSS_END();
@@ -80,13 +93,23 @@ namespace app {
             MSS_BEGIN(bool);
             if (path_matches_ && depth_ == path_.size())
             {
-                fo_ << ix_; ++ix_;
-                for (auto v: y_values_)
-                    fo_ << ' ' << v;
-                fo_ << endl;
+                if (x_attr_.empty())
+                {
+                    fo_ << ix_;
+                    ++ix_;
+                }
+                else
+                {
+                    fo_ << x_value_;
+                    x_value_.clear();
+                }
 
                 for (auto &v: y_values_)
+                {
+                    fo_ << ' ' << v;
                     v.clear();
+                }
+                fo_ << endl;
             }
             MSS_END();
         }
@@ -106,6 +129,8 @@ namespace app {
         unsigned int depth_ = 0;
         Strings path_;
         bool path_matches_ = !path_.empty();
+        const std::string x_attr_;
+        std::string x_value_;
         const Strings y_attrs_;
         Strings y_values_;
     };
@@ -133,7 +158,7 @@ namespace app {
 
         MSS(!options.ys.empty(), cout << "Error: No Y attribute(s) given" << endl);
 
-        Parser parser(fo, path, options.ys);
+        Parser parser(fo, path, options.x, options.ys);
 
         while (fi.good())
         {
