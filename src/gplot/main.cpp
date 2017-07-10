@@ -24,11 +24,11 @@ namespace app {
         MSS_BEGIN(bool);
         gubg::OptionParser parser("gplot: extracts info from tree output for plotting with gnuplot");
         parser.add_switch('h', "help", "Print this help", [&](){options.help = parser.help();});
-        parser.add_mandatory('i', "input", "Input filename", [&](std::string str){options.input_fn = str;});
-        parser.add_mandatory('o', "output", "Output filename", [&](std::string str){options.output_fn = str;});
+        parser.add_mandatory('i', "input", "Input filename (default std::cin)", [&](std::string str){options.input_fn = str;});
+        parser.add_mandatory('o', "output", "Output filename (default std::cout)", [&](std::string str){options.output_fn = str;});
         parser.add_mandatory('p', "path", "Object path", [&](std::string str){options.path = str;});
-        parser.add_mandatory('x', "x", "X attribute", [&](std::string str){options.x = str;});
-        parser.add_mandatory('y', "y", "Y attribute", [&](std::string str){options.ys.push_back(str);});
+        parser.add_mandatory('x', "x", "X attribute (default ix)", [&](std::string str){options.x = str;});
+        parser.add_mandatory('y', "y", "Y attribute(s)", [&](std::string str){options.ys.push_back(str);});
 
         MSS(parser.parse(args));
         MSS_END();
@@ -37,40 +37,38 @@ namespace app {
     class Parser: public gubg::parse::tree::Parser_crtp<Parser>
     {
     public:
-        Parser(std::ofstream &fo, Strings path, std::string x_attr, Strings y_attrs): fo_(fo), path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), "")
+        Parser(std::ostream &os, Strings path, std::string x_attr, Strings y_attrs): os_(os), path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), "")
         {
-            fo_ << "$dataset << EOD" << endl;
+            os_ << "$dataset << EOD" << endl;
         }
         ~Parser()
         {
-            fo_ << "EOD" << endl;
+            os_ << "EOD" << endl;
             for (size_t ix = 0; ix < y_attrs_.size(); ++ix)
             {
-                fo_ << (ix == 0 ? "plot" : ",") << " $dataset";
-                fo_ << " using 1:" << ix+2;
-                fo_ << " with lines";
+                os_ << (ix == 0 ? "plot" : ",") << " $dataset";
+                os_ << " using 1:" << ix+2;
+                os_ << " with lines";
                 if (x_attr_.empty())
-                    fo_ << " title \"" << y_attrs_[ix] << "\"";
+                    os_ << " title \"" << y_attrs_[ix] << "\"";
                 else
-                    fo_ << " title \"" << x_attr_ << " x " << y_attrs_[ix] << "\"";
+                    os_ << " title \"" << x_attr_ << " x " << y_attrs_[ix] << "\"";
             }
-            fo_ << endl;
-            fo_ << "pause mouse" << endl;
+            os_ << endl;
+            os_ << "pause mouse" << endl;
         }
 
         bool tree_node_open(std::string str)
         {
-            MSS_BEGIN(bool, "");
+            MSS_BEGIN(bool);
             if (!path_matches_ || depth_ > path_.size()-1 || str != path_[depth_])
                 path_matches_ = false;
-            L(C(str)C(depth_)C(path_matches_));
             ++depth_;
             MSS_END();
         }
         bool tree_attr(std::string key, std::string value)
         {
-            MSS_BEGIN(bool, "");
-            L(C(key)C(value)C(depth_)C(path_matches_));
+            MSS_BEGIN(bool);
             if (path_matches_ && depth_ == path_.size())
             {
                 if (key == x_attr_)
@@ -95,21 +93,21 @@ namespace app {
             {
                 if (x_attr_.empty())
                 {
-                    fo_ << ix_;
+                    os_ << ix_;
                     ++ix_;
                 }
                 else
                 {
-                    fo_ << x_value_;
+                    os_ << x_value_;
                     x_value_.clear();
                 }
 
                 for (auto &v: y_values_)
                 {
-                    fo_ << ' ' << v;
+                    os_ << ' ' << v;
                     v.clear();
                 }
-                fo_ << endl;
+                os_ << endl;
             }
             MSS_END();
         }
@@ -124,7 +122,7 @@ namespace app {
         bool tree_text(std::string str) { return true; }
 
     private:
-        std::ofstream &fo_;
+        std::ostream &os_;
         unsigned int ix_ = 0;
         unsigned int depth_ = 0;
         Strings path_;
@@ -148,21 +146,34 @@ namespace app {
             MSS_RETURN_OK();
         }
 
-        std::ifstream fi(options.input_fn);
-        MSS(fi.good(), cout << "Error: Invalid input file \"" << options.input_fn << "\"" << endl);
-        std::ofstream fo(options.output_fn);
-        MSS(fo.good(), cout << "Error: Invalid output file \"" << options.output_fn << "\"" << endl);
+        std::istream *is = &std::cin;
+        std::ifstream fi;
+        if (!options.input_fn.empty())
+        {
+            fi.open(options.input_fn);
+            MSS(fi.good(), cout << "Error: Invalid input file \"" << options.input_fn << "\"" << endl);
+            is = &fi;
+        }
+
+        std::ostream *os = &std::cout;
+        std::ofstream fo;
+        if (!options.output_fn.empty())
+        {
+            fo.open(options.output_fn);
+            MSS(fo.good(), cout << "Error: Invalid output file \"" << options.output_fn << "\"" << endl);
+            os = &fo;
+        }
 
         MSS(!options.path.empty(), cout << "Error: No object path given" << endl);
         Strings path = gubg::string_algo::split<vector>(options.path, '.');
 
         MSS(!options.ys.empty(), cout << "Error: No Y attribute(s) given" << endl);
 
-        Parser parser(fo, path, options.x, options.ys);
+        Parser parser(*os, path, options.x, options.ys);
 
-        while (fi.good())
+        while (is->good())
         {
-            char ch; fi >> ch;
+            char ch; *is >> ch;
             MSS(parser.process(ch));
         }
         MSS(parser.stop());
@@ -176,6 +187,5 @@ int main(int argc, const char **argv)
     MSS_BEGIN(int);
     auto args = gubg::OptionParser::create_args(argc, argv);
     MSS(app::main(args), std::cout << "Error" << std::endl);
-    std::cout << "Eveything went OK" << std::endl;
     MSS_END();
 }
