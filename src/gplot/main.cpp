@@ -38,7 +38,7 @@ namespace app {
     class Parser: public gubg::parse::tree::Parser_crtp<Parser>
     {
     public:
-        Parser(std::ostream &os, Strings path, std::string x_attr, Strings y_attrs): os_(os), path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), "")
+        Parser(std::ostream &os, Strings path, std::string x_attr, Strings y_attrs): os_(os), wanted_path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), "")
         {
             os_ << "$dataset << EOD" << endl;
         }
@@ -62,15 +62,13 @@ namespace app {
         bool tree_node_open(std::string str)
         {
             MSS_BEGIN(bool);
-            if (!path_matches_ || depth_ > path_.size()-1 || str != path_[depth_])
-                path_matches_ = false;
-            ++depth_;
+            path_.push_back(str);
             MSS_END();
         }
         bool tree_attr(std::string key, std::string value)
         {
             MSS_BEGIN(bool);
-            if (path_matches_ && depth_ == path_.size())
+            if (path_ == wanted_path_)
             {
                 if (key == x_attr_)
                     x_value_ = value;
@@ -90,7 +88,7 @@ namespace app {
         bool tree_attr_done()
         {
             MSS_BEGIN(bool);
-            if (path_matches_ && depth_ == path_.size())
+            if (path_ == wanted_path_)
             {
                 if (x_attr_.empty())
                 {
@@ -115,9 +113,7 @@ namespace app {
         bool tree_node_close()
         {
             MSS_BEGIN(bool);
-            --depth_;
-            if (depth_ == 0)
-                path_matches_ = !path_.empty();
+            path_.pop_back();
             MSS_END();
         }
         bool tree_text(std::string str) { return true; }
@@ -125,9 +121,8 @@ namespace app {
     private:
         std::ostream &os_;
         unsigned int ix_ = 0;
-        unsigned int depth_ = 0;
+        const Strings wanted_path_;
         Strings path_;
-        bool path_matches_ = !path_.empty();
         const std::string x_attr_;
         std::string x_value_;
         const Strings y_attrs_;
