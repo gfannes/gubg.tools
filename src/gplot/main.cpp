@@ -4,6 +4,7 @@
 #include "gubg/mss.hpp"
 #include <iostream>
 #include <fstream>
+#include <vector>
 using namespace std;
 
 namespace app { 
