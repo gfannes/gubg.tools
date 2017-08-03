@@ -15,4 +15,7 @@ set directory=c:/temp
 set tags=w:/tags
 let g:ruby_path = "$GUBG/ruby/gubg"
 
+"" Makes sure the cursor is thin in visual mode, as is the default for Linux
+set selection=exclusive
+
 ""set fileformat=unix
