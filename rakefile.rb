@@ -1,5 +1,4 @@
 require(File.join(ENV['gubg'], 'shared'))
-require('gubg/build/Executable')
 include GUBG
 
 task :default => :help
@@ -106,6 +105,7 @@ task :define => :declare do
     when :windows
     else raise("Unknown os #{os}") end
 
+    require('gubg/build/Executable')
     vix = Build::Executable.new('vix')
     vix.add_sources(FileList.new('src/vix/**/*.cpp'))
     vix.build
