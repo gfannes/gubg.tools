@@ -1,118 +1,105 @@
 require(File.join(ENV['gubg'], 'shared'))
 include GUBG
 
-task :default => :help
-task :help do
-    puts("The following tasks can be specified:")
-    puts("* declare: installs bash, vim and git scripts to GUBG.shared")
-    puts("* define: creates symbolic link to the installed vim scripts and .inputrc")
+task :default do
+    sh "rake -T"
 end
 
 task :clean do
     rm_rf '.cache'
 end
 
-task :declare do
-    case os
-    when :linux, :osx
-        publish('src/bash', dst: 'bin', mode: 0755)
-        publish('src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
-        publish('src/vifm', dst: 'install/vifm')
-    when :windows
-        publish('src/bat', dst: 'bin')
-        publish('src/vim', pattern: '_vimrc', dst: 'vim')
-        #Needed for vim backup files
-        mkdir("C:/temp") unless File.exists?("C:/temp")
-    else raise("Unknown os #{os}") end
-    publish('src', pattern: 'vim/**/*.vim')
-    Rake::Task['declare:git_tools'].invoke
-    build_ok_fn = 'gubg.build.ok'
+desc "Prepare this module: install all scripts"
+task :prepare do
+    extra = %w[vim]
+    (%w[bash bat vim vim git]+extra).each do |e|
+        Rake::Task["#{e}:prepare"].invoke
+    end
+end
 
-    Dir.chdir(shared_dir('extern')) do
+desc "Run this module: build all apps"
+task :run do
+    %w[fart vix neovim exvim].each do |e|
+        Rake::Task["#{e}:run"].invoke
+    end
+end
+
+namespace :bash do
+        task :prepare do
+            case os
+            when :linux, :osx
+                publish('src/bash', dst: 'bin', mode: 0755)
+                link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
+                publish('src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
+            end
+        end
+end
+namespace :bat do
+        task :prepare do
+            case os
+            when :windows
+                publish('src/bat', dst: 'bin')
+            end
+        end
+end
+
+namespace :gcc do
+        task :prepare do
+            case os
+            when :linux
+                which('colorgcc') do |fn|
+                    link_unless_exists(fn, shared('bin', 'g++'))
+                    link_unless_exists(fn, shared('bin', 'gcc'))
+                end
+            end
+        end
+end
+namespace :vim do
+    task :prepare do
         case os
         when :linux
-            git_clone('https://github.com/gfannes', 'FartIT') do
-                sh 'rake define'
-            end
-            #sudo apt-get install automake libtool-bin
-            git_clone('https://github.com/neovim', 'neovim') do
-                if !File.exist?(build_ok_fn)
-                    puts("Building neovim")
-                    sh 'rm -rf build'
-                    sh "make -j 8 CMAKE_EXTRA_FLAGS=\"-DCMAKE_INSTALL_PREFIX:PATH=#{shared('install', 'neovim')}\""
-                    sh 'make install'
-                    Dir.chdir(shared('install', 'neovim', 'bin')) do
-                        publish('nvim', dst: 'bin', mode: 0755)
+            link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
+            link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
+            link_unless_exists(shared_file('vim', 'ideavimrc.vim'), File.join(ENV['HOME'], '.ideavimrc'))
+            publish('src/vifm', dst: 'install/vifm')
+        when :osx
+            link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
+            link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
+            link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
+            publish('src/vifm', dst: 'install/vifm')
+        when :windows
+            publish('src/vim', pattern: '_vimrc', dst: 'vim')
+            #Needed for vim backup files
+            GUBG::mkdir("C:/temp")
+        end
+        publish('src', pattern: 'vim/**/*.vim')
+    end
+    task :run do
+        Dir.chdir(shared_dir('vim', 'bundle')) do
+            case os
+            when :linux
+                #sudo apt-get install cmake python-dev
+                git_clone('https://github.com/Valloric', 'YouCompleteMe') do
+                    if !File.exist?(build_ok_fn)
+                        sh 'git submodule update --recursive --init'
+                        sh './install.sh'
+                        sh "touch #{build_ok_fn}"
                     end
-                    sh "touch #{build_ok_fn}"
                 end
-            end
-        end
-        git_clone('https://github.com/exvim', 'main') do
-            if !File.exist?(build_ok_fn)
-                puts("Building exvim")
-                sh "sh unix/install.sh"
-                sh "touch #{build_ok_fn}"
-            end
+            when :windows, :osx
+            else raise("Unknown os #{os}") end
+            git_clone('https://github.com/tpope', 'vim-commentary')
+            git_clone('https://github.com/rking', 'ag.vim')
+            git_clone('https://github.com/tpope', 'vim-fugitive')
+            git_clone('https://github.com/pangloss', 'vim-javascript')
+            git_clone('https://github.com/vim-scripts', 'SearchComplete')
+            git_clone('https://github.com/leafgarland', 'typescript-vim')
+            git_clone('https://github.com/ctrlpvim', 'ctrlp.vim')
         end
     end
-
-    Dir.chdir(shared_dir('vim', 'bundle')) do
-        case os
-        when :linux
-            #sudo apt-get install cmake python-dev
-            git_clone('https://github.com/Valloric', 'YouCompleteMe') do
-                if !File.exist?(build_ok_fn)
-                    sh 'git submodule update --recursive --init'
-                    sh './install.sh'
-                    sh "touch #{build_ok_fn}"
-                end
-            end
-        when :windows, :osx
-        else raise("Unknown os #{os}") end
-        git_clone('https://github.com/tpope', 'vim-commentary')
-        git_clone('https://github.com/rking', 'ag.vim')
-        git_clone('https://github.com/tpope', 'vim-fugitive')
-        git_clone('https://github.com/pangloss', 'vim-javascript')
-        git_clone('https://github.com/vim-scripts', 'SearchComplete')
-        git_clone('https://github.com/leafgarland', 'typescript-vim')
-        git_clone('https://github.com/ctrlpvim', 'ctrlp.vim')
-    end
 end
-
-task :define => :declare do
-    case os
-    when :linux
-        link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
-        link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
-        link_unless_exists(shared_file('vim', 'ideavimrc.vim'), File.join(ENV['HOME'], '.ideavimrc'))
-
-        if false
-            nvim_dir = File.join(ENV['HOME'], '.config', 'nvim')
-            FileUtils.mkdir_p(nvim_dir) unless File.exist?(nvim_dir)
-            link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(nvim_dir, 'init.vim'))
-        end
-
-        link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
-        which('colorgcc') do |fn|
-            link_unless_exists(fn, shared('bin', 'g++'))
-            link_unless_exists(fn, shared('bin', 'gcc'))
-        end
-    when :osx
-        link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
-        link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
-        link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
-    when :windows
-    else raise("Unknown os #{os}") end
-
-    require('gubg/build/Executable')
-    vix = Build::Executable.new('vix')
-    vix.add_sources(FileList.new('src/vix/**/*.cpp'))
-    vix.build
-end
-
-namespace :declare do
-    task :git_tools do
+namespace :git do
+    task :prepare do
         bash = nil
         args = case os
                when :linux, :osx
@@ -150,5 +137,77 @@ namespace :declare do
     end
 end
 
-task :test do
+build_ok_fn = 'gubg.build.ok'
+namespace :neovim do
+    task :prepare
+
+    case os
+    when :linux
+        task :build do
+            Dir.chdir(shared_dir('extern')) do
+                #sudo apt-get install automake libtool-bin
+                git_clone('https://github.com/neovim', 'neovim') do
+                    if !File.exist?(build_ok_fn)
+                        puts("Building neovim")
+                        sh 'rm -rf build'
+                        sh "make -j 8 CMAKE_EXTRA_FLAGS=\"-DCMAKE_INSTALL_PREFIX:PATH=#{shared('stage', 'neovim')}\""
+                        sh 'make install'
+                        sh "touch #{build_ok_fn}"
+                    end
+                end
+            end
+        end
+        task :run => :build do
+            Dir.chdir(shared('stage', 'neovim', 'bin')) do
+                publish('nvim', dst: 'bin', mode: 0755)
+            end
+
+            link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(GUBG::mkdir(ENV['HOME'], '.config', 'nvim'), 'init.vim'))
+        end
+    else
+        task :run
+    end
+end
+namespace :fart do
+    task :prepare
+
+    task :run
+    case os
+    when :linux
+        task :run do
+            Dir.chdir(shared_dir('extern')) do
+                git_clone('https://github.com/gfannes', 'FartIT') do
+                    sh 'rake define'
+                end
+            end
+        end
+    end
+end
+namespace :exvim do
+    task :prepare
+    task :build do
+        case os
+        when :linux
+            Dir.chdir(shared_dir('extern')) do
+                git_clone('https://github.com/exvim', 'main') do
+                    if !File.exist?(build_ok_fn)
+                        puts("Building exvim")
+                        sh "sh unix/install.sh"
+                        sh "touch #{build_ok_fn}"
+                    end
+                end
+            end
+        end
+    end
+    task :run => :build
+end
+namespace :vix do
+    task :prepare
+    task :build do
+        require('gubg/build/Executable')
+        vix = Build::Executable.new('vix')
+        vix.add_sources(FileList.new('src/vix/**/*.cpp'))
+        vix.build
+    end
+    task :run => :build
 end
