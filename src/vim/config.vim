@@ -64,7 +64,8 @@ autocmd BufEnter,BufNewFile,BufRead *.tji source $gubg/vim/tjp.vim
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 
 autocmd BufEnter,BufNewFile,BufRead *.tree source $gubg/vim/maps.tree.vim
-autocmd BufEnter,BufNewFile,BufReadPost *.tree set filetype=javascript
+autocmd BufEnter,BufNewFile,BufRead *.tree source $gubg/vim/vim-tree/syntax/tree.vim
+"autocmd BufEnter,BufNewFile,BufReadPost *.tree set filetype=javascript
 
 ""source $gubg/vim/hexmode.vim
 
