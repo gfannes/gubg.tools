@@ -88,6 +88,7 @@ namespace :vim do
                 end
             when :windows, :osx
             else raise("Unknown os #{os}") end
+            git_clone('https://github.com/Frydac', 'vim-tree')
             git_clone('https://github.com/tpope', 'vim-commentary')
             git_clone('https://github.com/rking', 'ag.vim')
             git_clone('https://github.com/tpope', 'vim-fugitive')
