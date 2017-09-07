@@ -19,7 +19,9 @@ end
 
 desc "Run this module: build all apps"
 task :run do
-    %w[fart vix neovim exvim].each do |e|
+    apps = %w[fart vix neovim exvim]
+    apps = %w[fart vix exvim]
+    apps.each do |e|
         Rake::Task["#{e}:run"].invoke
     end
 end
@@ -151,7 +153,7 @@ namespace :neovim do
                     if !File.exist?(build_ok_fn)
                         puts("Building neovim")
                         sh 'rm -rf build'
-                        sh "make -j 8 CMAKE_EXTRA_FLAGS=\"-DCMAKE_INSTALL_PREFIX:PATH=#{shared('stage', 'neovim')}\""
+                        sh "make -j 8 CMAKE_EXTRA_FLAGS=\"-DCMAKE_INSTALL_PREFIX:PATH=#{shared_dir('stage', 'neovim')}\""
                         sh 'make install'
                         sh "touch #{build_ok_fn}"
                     end
@@ -159,7 +161,7 @@ namespace :neovim do
             end
         end
         task :run => :build do
-            Dir.chdir(shared('stage', 'neovim', 'bin')) do
+            Dir.chdir(shared_dir('stage', 'neovim', 'bin')) do
                 publish('nvim', dst: 'bin', mode: 0755)
             end
 
