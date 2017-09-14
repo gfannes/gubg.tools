@@ -27,7 +27,7 @@ namespace app {
         parser.add_switch('h', "help", "Print this help", [&](){options.help = parser.help();});
         parser.add_mandatory('i', "input", "Input filename (default std::cin)", [&](std::string str){options.input_fn = str;});
         parser.add_mandatory('o', "output", "Output filename (default std::cout)", [&](std::string str){options.output_fn = str;});
-        parser.add_mandatory('p', "path", "Object path", [&](std::string str){options.path = str;});
+        parser.add_mandatory('p', "path", "Object path, delimited by '.'", [&](std::string str){options.path = str;});
         parser.add_mandatory('x', "x", "X attribute (default ix)", [&](std::string str){options.x = str;});
         parser.add_mandatory('y', "y", "Y attribute(s)", [&](std::string str){options.ys.push_back(str);});
 
