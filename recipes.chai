@@ -1,10 +1,8 @@
-log(">> gubg.tools recipes")
+add_book("gplot", fun(b){
+    b.add_recipe("exe", fun(r){
+        r.add_source("src", "gplot/**.cpp")
+        r.add_header("src", "gplot/**.hpp")
 
-recipe("gplot", "exe", fun(r){
-    r.add_source("src", "gplot/**.cpp")
-    r.add_header("src", "gplot/**.hpp")
-
-    r.depends_on("gubg#func")
+        r.depends_on("gubg#func")
+    })
 })
-
-log("<< gubg.tools recipes")
