@@ -3,6 +3,6 @@ add_book("gplot", fun(b){
         r.add_source("src", "gplot/**.cpp")
         r.add_header("src", "gplot/**.hpp")
 
-        r.depends_on("gubg#func")
+        r.depends_on("gubg.func")
     })
 })
