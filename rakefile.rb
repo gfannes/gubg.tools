@@ -21,11 +21,13 @@ desc "Run this module: build all apps"
 task :run do
     apps = %w[fart vix neovim exvim]
     apps = %w[fart vix exvim]
-    apps = %w[vix exvim]
+    apps = %w[vim vix exvim]
     apps.each do |e|
         Rake::Task["#{e}:run"].invoke
     end
 end
+
+build_ok_fn = 'gubg.build.ok'
 
 namespace :bash do
         task :prepare do
@@ -91,7 +93,7 @@ namespace :vim do
                 end
             when :windows, :osx
             else raise("Unknown os #{os}") end
-            git_clone('https://github.com/Frydac', 'vim-tree')
+            # git_clone('https://github.com/Frydac', 'vim-tree')
             git_clone('https://github.com/tpope', 'vim-commentary')
             git_clone('https://github.com/rking', 'ag.vim')
             git_clone('https://github.com/tpope', 'vim-fugitive')
@@ -114,8 +116,9 @@ namespace :git do
         Dir.chdir(shared_dir('bin')) do
             {
                 qs: 'git status',
-                #qd: 'git difftool -t meld -Y',
-                qd: 'git diff',
+                #qd: 'git diff',
+                #qd: 'git difftool -t meld',
+                qd: 'git difftool -t meld -y',
                 qc: 'git commit -a',
                 qp: 'git pull --rebase',
                 qq: 'git push',
@@ -142,7 +145,6 @@ namespace :git do
     end
 end
 
-build_ok_fn = 'gubg.build.ok'
 namespace :neovim do
     task :prepare
 
