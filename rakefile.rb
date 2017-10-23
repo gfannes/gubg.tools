@@ -59,6 +59,7 @@ namespace :gcc do
 end
 namespace :vim do
     task :prepare do
+        publish('src', pattern: 'vim/**/*.vim')
         case os
         when :linux
             link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
@@ -75,7 +76,6 @@ namespace :vim do
             #Needed for vim backup files
             GUBG::mkdir("C:/temp")
         end
-        publish('src', pattern: 'vim/**/*.vim')
     end
     task :run do
         Dir.chdir(shared_dir('vim', 'bundle')) do
@@ -114,7 +114,8 @@ namespace :git do
         Dir.chdir(shared_dir('bin')) do
             {
                 qs: 'git status',
-                qd: 'git difftool -t meld -Y',
+                #qd: 'git difftool -t meld -Y',
+                qd: 'git diff',
                 qc: 'git commit -a',
                 qp: 'git pull --rebase',
                 qq: 'git push',
