@@ -1,4 +1,4 @@
-add_book("gplot", fun(b){
+open_book("gplot", fun(b){
     b.add_recipe("exe", fun(r){
         r.add_source("src", "gplot/**.cpp")
         r.add_header("src", "gplot/**.hpp")
