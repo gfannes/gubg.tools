@@ -1,8 +1,8 @@
-open_book("gplot", fun(b){
-    b.add_recipe("exe", fun(r){
-        r.add_source("src", "gplot/**.cpp")
-        r.add_header("src", "gplot/**.hpp")
+root.book("gplot", fun(b){
+    b.recipe("exe", "executable", fun(r){
+        r.add("src", "gplot/**.cpp")
+        r.add("src", "gplot/**.hpp")
 
-        r.depends_on("gubg.func")
+        r.depends_on("gubg/func")
     })
 })
