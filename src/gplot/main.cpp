@@ -1,5 +1,5 @@
 #include "gubg/OptionParser.hpp"
-#include "gubg/parse/tree/Parser.hpp"
+#include "gubg/parse/naft/Parser.hpp"
 #include "gubg/string_algo/algo.hpp"
 #include "gubg/mss.hpp"
 #include <iostream>
@@ -23,7 +23,7 @@ namespace app {
     bool parse(Options &options, gubg::OptionParser::Args &args)
     {
         MSS_BEGIN(bool);
-        gubg::OptionParser parser("gplot: extracts info from tree output for plotting with gnuplot");
+        gubg::OptionParser parser("gplot: extracts info from naft output for plotting with gnuplot");
         parser.add_switch('h', "help", "Print this help", [&](){options.help = parser.help();});
         parser.add_mandatory('i', "input", "Input filename (default std::cin)", [&](std::string str){options.input_fn = str;});
         parser.add_mandatory('o', "output", "Output filename (default std::cout)", [&](std::string str){options.output_fn = str;});
@@ -35,7 +35,7 @@ namespace app {
         MSS_END();
     }
 
-    class Parser: public gubg::parse::tree::Parser_crtp<Parser>
+    class Parser: public gubg::parse::naft::Parser_crtp<Parser>
     {
     public:
         Parser(std::ostream &os, Strings path, std::string x_attr, Strings y_attrs): os_(os), wanted_path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), "")

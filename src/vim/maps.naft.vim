@@ -1,4 +1,4 @@
-" Tree mappings
+" NAFT mappings
 
 " node
 map -n <Bslash>ao[]<Esc><Bslash>ai
