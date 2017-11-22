@@ -21,7 +21,7 @@ desc "Run this module: build all apps"
 task :run do
     apps = %w[fart vix neovim exvim]
     apps = %w[fart vix exvim]
-    apps = %w[vim vix exvim]
+    apps = %w[fart vim vix exvim]
     apps.each do |e|
         Rake::Task["#{e}:run"].invoke
     end
