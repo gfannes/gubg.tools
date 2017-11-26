@@ -59,13 +59,13 @@ namespace app {
             os_ << "pause mouse" << endl;
         }
 
-        bool tree_node_open(std::string str)
+        bool naft_node_open(std::string str)
         {
             MSS_BEGIN(bool);
             path_.push_back(str);
             MSS_END();
         }
-        bool tree_attr(std::string key, std::string value)
+        bool naft_attr(std::string key, std::string value)
         {
             MSS_BEGIN(bool);
             if (path_ == wanted_path_)
@@ -85,7 +85,7 @@ namespace app {
             }
             MSS_END();
         }
-        bool tree_attr_done()
+        bool naft_attr_done()
         {
             MSS_BEGIN(bool);
             if (path_ == wanted_path_)
@@ -110,13 +110,13 @@ namespace app {
             }
             MSS_END();
         }
-        bool tree_node_close()
+        bool naft_node_close()
         {
             MSS_BEGIN(bool);
             path_.pop_back();
             MSS_END();
         }
-        bool tree_text(std::string str) { return true; }
+        bool naft_text(std::string str) { return true; }
 
     private:
         std::ostream &os_;
