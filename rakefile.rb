@@ -103,6 +103,7 @@ namespace :vim do
             git_clone('https://github.com/vim-scripts', 'SearchComplete')
             git_clone('https://github.com/leafgarland', 'typescript-vim')
             git_clone('https://github.com/ctrlpvim', 'ctrlp.vim')
+            git_clone('https://github.com/lyuts', 'vim-rtags')
         end
     end
 end

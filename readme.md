@@ -3,7 +3,29 @@ gubg.tools
 
 Development tools
 
-# License
+## rtags
+
+* Install rtags: `yaourt rtags`
+* Install rtags-vim plugin: done in `rakefile.rb`
+* Create `compile_commands.json` file via following code:
+
+```
+function compile_commands {
+    rm -rf build_compile_commands
+    mkdir build_compile_commands
+    cd build_compile_commands
+    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+    cp compile_commands.json ..
+    cd ..
+    rm -rf build_compile_commands
+}
+```
+
+* Run `rdm &`
+* Run `rc -J .` from the toplevel folder where the `compile_commands.json` is located.
+* See commands on [https://github.com/Andersbakken/rtags](rtags site).
+
+## License
 
 This software is licensed under the EUPL v1.1 license with the explicit interpretation of the term _modification_ as explained in [license.txt](license.txt).
 
