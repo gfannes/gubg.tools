@@ -1,6 +1,8 @@
 #include "gubg/OptionParser.hpp"
 #include "gubg/parse/naft/Parser.hpp"
 #include "gubg/string_algo/algo.hpp"
+#include "gubg/wav/Writer.hpp"
+#include "gubg/Range.hpp"
 #include "gubg/mss.hpp"
 #include <iostream>
 #include <fstream>
@@ -9,6 +11,9 @@ using namespace std;
 
 namespace app { 
     using Strings = vector<string>;
+    using Floats = vector<double>;
+    using WavWriter = gubg::wav::Writer;
+    using WavWriter_ptr = std::shared_ptr<WavWriter>;
 
     struct Options
     {
@@ -26,7 +31,7 @@ namespace app {
         gubg::OptionParser parser("gplot: extracts info from naft output for plotting with gnuplot");
         parser.add_switch('h', "help", "Print this help", [&](){options.help = parser.help();});
         parser.add_mandatory('i', "input", "Input filename (default std::cin)", [&](std::string str){options.input_fn = str;});
-        parser.add_mandatory('o', "output", "Output filename (default std::cout)", [&](std::string str){options.output_fn = str;});
+        parser.add_mandatory('o', "output", "Output filename (.wav, any, default std::cout)", [&](std::string str){options.output_fn = str;});
         parser.add_mandatory('p', "path", "Object path, delimited by '.'", [&](std::string str){options.path = str;});
         parser.add_mandatory('x', "x", "X attribute (default ix)", [&](std::string str){options.x = str;});
         parser.add_mandatory('y', "y", "Y attribute(s)", [&](std::string str){options.ys.push_back(str);});
@@ -38,25 +43,33 @@ namespace app {
     class Parser: public gubg::parse::naft::Parser_crtp<Parser>
     {
     public:
-        Parser(std::ostream &os, Strings path, std::string x_attr, Strings y_attrs): os_(os), wanted_path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), "")
+        Parser(std::ostream *os, WavWriter_ptr ww, Strings path, std::string x_attr, Strings y_attrs): os_(os), ww_(ww), wanted_path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), 0)
         {
-            os_ << "$dataset << EOD" << endl;
+            if (os_)
+            {
+                auto &os = *os_;
+                os << "$dataset << EOD" << endl;
+            }
         }
         ~Parser()
         {
-            os_ << "EOD" << endl;
-            for (size_t ix = 0; ix < y_attrs_.size(); ++ix)
+            if (os_)
             {
-                os_ << (ix == 0 ? "plot" : ",") << " $dataset";
-                os_ << " using 1:" << ix+2;
-                os_ << " with lines";
-                if (x_attr_.empty())
-                    os_ << " title \"" << y_attrs_[ix] << "\"";
-                else
-                    os_ << " title \"" << x_attr_ << " x " << y_attrs_[ix] << "\"";
+                auto &os = *os_;
+                os << "EOD" << endl;
+                for (size_t ix = 0; ix < y_attrs_.size(); ++ix)
+                {
+                    os << (ix == 0 ? "plot" : ",") << " $dataset";
+                    os << " using 1:" << ix+2;
+                    os << " with lines";
+                    if (x_attr_.empty())
+                        os << " title \"" << y_attrs_[ix] << "\"";
+                    else
+                        os << " title \"" << x_attr_ << " x " << y_attrs_[ix] << "\"";
+                }
+                os << endl;
+                os << "pause mouse" << endl;
             }
-            os_ << endl;
-            os_ << "pause mouse" << endl;
         }
 
         bool naft_node_open(std::string str)
@@ -78,7 +91,7 @@ namespace app {
                     for (auto k: y_attrs_)
                     {
                         if (key == k)
-                            *dst = value;
+                            *dst = std::stod(value);
                         ++dst;
                     }
                 }
@@ -92,21 +105,26 @@ namespace app {
             {
                 if (x_attr_.empty())
                 {
-                    os_ << ix_;
+                    if (os_)
+                        *os_ << ix_;
                     ++ix_;
                 }
                 else
                 {
-                    os_ << x_value_;
+                    if (os_)
+                        *os_ << x_value_;
                     x_value_.clear();
                 }
 
-                for (auto &v: y_values_)
+                if (os_)
                 {
-                    os_ << ' ' << v;
-                    v.clear();
+                    for (auto &v: y_values_)
+                        *os_ << ' ' << v;
+                    *os_ << endl;
                 }
-                os_ << endl;
+                if (ww_)
+                    MSS(ww_->add_sample(y_values_));
+                std::fill(RANGE(y_values_), 0);
             }
             MSS_END();
         }
@@ -119,14 +137,15 @@ namespace app {
         bool naft_text(std::string str) { return true; }
 
     private:
-        std::ostream &os_;
+        std::ostream *os_ = nullptr;
+        WavWriter_ptr ww_;
         unsigned int ix_ = 0;
         const Strings wanted_path_;
         Strings path_;
         const std::string x_attr_;
         std::string x_value_;
         const Strings y_attrs_;
-        Strings y_values_;
+        Floats y_values_;
     };
 
     bool main(gubg::OptionParser::Args &args)
@@ -151,13 +170,29 @@ namespace app {
             is = &fi;
         }
 
-        std::ostream *os = &std::cout;
+        std::ostream *os = nullptr;
         std::ofstream fo;
-        if (!options.output_fn.empty())
+        WavWriter_ptr wav_writer;
+
+        auto has_extension = [](const std::string &fn, const std::string &ext)
+        {
+            return (fn.size() < ext.size()) ? false : (fn.substr(fn.size()-ext.size(), ext.size()) == ext);
+        };
+
+        if (false) {}
+        else if (has_extension(options.output_fn, ".wav"))
+        {
+            wav_writer.reset(new gubg::wav::Writer(options.output_fn, options.ys.size(), 48000));
+        }
+        else if (!options.output_fn.empty())
         {
             fo.open(options.output_fn);
             MSS(fo.good(), cout << "Error: Invalid output file \"" << options.output_fn << "\"" << endl);
             os = &fo;
+        }
+        else
+        {
+            os = &std::cout;
         }
 
         MSS(!options.path.empty(), cout << "Error: No object path given" << endl);
@@ -165,7 +200,7 @@ namespace app {
 
         MSS(!options.ys.empty(), cout << "Error: No Y attribute(s) given" << endl);
 
-        Parser parser(*os, path, options.x, options.ys);
+        Parser parser(os, wav_writer, path, options.x, options.ys);
 
         while (is->good())
         {
