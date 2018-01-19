@@ -1,7 +1,15 @@
 #!/usr/bin/env ruby
 ENV["gubg"] = "#{ENV["HOME"]}/gubg" unless ENV.has_key?("gubg")
-case ARGV.size
-when 1 then system("gvim --remote-tab-silent \"#{ARGV[0]}\" 2> /dev/null")
-when 2 then system("gvim --remote-tab-silent \"+#{ARGV[1]}\" #{ARGV[0]} 2> /dev/null")
+case :nvim
+when :gvim
+    case ARGV.size
+    when 1 then system("gvim --remote-tab-silent \"#{ARGV[0]}\" 2> /dev/null")
+    when 2 then system("gvim --remote-tab-silent \"+#{ARGV[1]}\" #{ARGV[0]} 2> /dev/null")
+    end
+when :nvim
+    case ARGV.size
+    when 1 then system("nvim \"#{ARGV[0]}\"")
+    when 2 then system("nvim \"+#{ARGV[1]}\" #{ARGV[0]}")
+    end
 end
 system("wmctrl -a GVIM")

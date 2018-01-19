@@ -1,3 +1,15 @@
+" Plugins
+call plug#begin('~/.nvim/plugged')
+" Plug 'gfannes/personal-vim'
+Plug 'tpope/vim-commentary'
+Plug '907th/vim-auto-save'
+Plug 'lyuts/vim-rtags'
+Plug 'jiangmiao/auto-pairs'
+call plug#end()
+
+" When using a dark terminal background
+set background=dark
+
 " Visual mode should use I-shaped cursor
 set selection=exclusive
 
@@ -40,9 +52,13 @@ map _o :a<CR><CR>.<CR>
 map -o :a<CR><CR>.<CR>
 map <Space> :InsertOneCharCmd<CR>
 " * Per filetype
+" ** C/C++
 autocmd BufEnter,BufNewFile,BufRead *.cpp source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.h source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.hpp source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.c source $gubg/vim/maps.cpp.vim
+" * NAFT
+autocmd BufEnter,BufNewFile,BufRead *.naft source $gubg/vim/maps.naft.vim
+autocmd BufEnter,BufNewFile,BufReadPost *.naft set filetype=javascript
 
-echomsg "gubg/vim/nvim.config.vim loaded"
+" echomsg "gubg/vim/nvim.config.vim loaded"
