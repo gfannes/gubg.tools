@@ -154,24 +154,8 @@ namespace :neovim do
     case os
     when :linux
         task :build do
-            Dir.chdir(shared_dir('extern')) do
-                #sudo apt-get install automake libtool-bin
-                git_clone('https://github.com/neovim', 'neovim') do
-                    if !File.exist?(build_ok_fn)
-                        puts("Building neovim")
-                        sh 'rm -rf build'
-                        sh "make -j 8 CMAKE_EXTRA_FLAGS=\"-DCMAKE_INSTALL_PREFIX:PATH=#{shared_dir('stage', 'neovim')}\""
-                        sh 'make install'
-                        sh "touch #{build_ok_fn}"
-                    end
-                end
-            end
         end
         task :run => :build do
-            Dir.chdir(shared_dir('stage', 'neovim', 'bin')) do
-                publish('nvim', dst: 'bin', mode: 0755)
-            end
-
             link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(GUBG::mkdir(ENV['HOME'], '.config', 'nvim'), 'init.vim'))
         end
     else

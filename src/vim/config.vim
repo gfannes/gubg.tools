@@ -19,6 +19,7 @@ function! ReadString(message)
   call inputrestore()
   call setline('.', curline . name)
 endfunction
+
 map _o :a<CR><CR>.<CR>
 map -o :a<CR><CR>.<CR>
 
@@ -72,7 +73,6 @@ autocmd BufEnter,BufNewFile,BufReadPost *.naft set filetype=javascript
 command -bar Q q
 
 source $gubg/vim/tabnumber.vim
-source $gubg/vim/autoclose.vim
 source $gubg/vim/cscope_maps.vim
 ""source $gubg/vim/git.vim
 ""source $gubg/vim/rust.vim

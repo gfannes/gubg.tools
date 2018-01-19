@@ -1,14 +1,14 @@
 " NAFT mappings
 
 " node
-map -n <Bslash>ao[]<Esc><Bslash>ai
+map -n o[]<Esc>i
 " attribute
-map -a <Bslash>a$w?]\\|)<CR>a()<Esc><Bslash>a:noh<CR>i
+map -a $w?]\\|)<CR>a()<Esc>:noh<CR>i
 " story
-map -s <Bslash>a$w?]\\|)<CR>a(s:)<Esc><Bslash>a:noh<CR>i
+map -s $w?]\\|)<CR>a(s:)<Esc>:noh<CR>i
 " end
-map -e <Bslash>a$w?]\\|)<CR>a(e:)<Esc><Bslash>a:noh<CR>i
+map -e $w?]\\|)<CR>a(e:)<Esc>:noh<CR>i
 " duration
-map -d <Bslash>a$w?]\\|)<CR>a(d:)<Esc><Bslash>a:noh<CR>i
+map -d $w?]\\|)<CR>a(d:)<Esc>:noh<CR>i
 " block
-map -b <Bslash>aA{<Esc>o}<Esc><Bslash>ak$
+map -b A{<CR><Esc>k$
