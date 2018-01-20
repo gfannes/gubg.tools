@@ -1,10 +1,13 @@
 " Plugins
 call plug#begin('~/.nvim/plugged')
-" Plug 'gfannes/personal-vim'
+Plug 'tpope/vim-sensible'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-commentary'
 Plug '907th/vim-auto-save'
 Plug 'lyuts/vim-rtags'
 Plug 'jiangmiao/auto-pairs'
+Plug 'junegunn/seoul256.vim'
+" Plug 'gfannes/personal-vim'
 call plug#end()
 
 " When using a dark terminal background
