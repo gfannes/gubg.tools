@@ -10,6 +10,10 @@ Plug 'junegunn/seoul256.vim'
 " Plug 'gfannes/personal-vim'
 call plug#end()
 
+" Auto-save and reloading buffers
+let g:auto_save=1
+set autoread | autocmd CursorHold * checktime | call feedkeys("lh")
+
 " When using a dark terminal background
 set background=dark
 
