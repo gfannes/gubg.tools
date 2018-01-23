@@ -12,7 +12,7 @@ call plug#end()
 
 " Auto-save and reloading buffers
 let g:auto_save=1
-set autoread | autocmd CursorHold * checktime | call feedkeys("lh")
+set autoread | autocmd CursorHold * checktime
 
 " When using a dark terminal background
 set background=dark
