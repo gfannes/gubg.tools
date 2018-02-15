@@ -7,6 +7,7 @@ Plug '907th/vim-auto-save'
 Plug 'lyuts/vim-rtags'
 Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/seoul256.vim'
+Plug 'jeetsukumaran/vim-filebeagle'
 " Plug 'gfannes/personal-vim'
 call plug#end()
 
