@@ -7,7 +7,7 @@ Plug '907th/vim-auto-save'
 Plug 'lyuts/vim-rtags'
 Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/seoul256.vim'
-Plug 'jeetsukumaran/vim-filebeagle'
+Plug 'scrooloose/nerdtree'
 " Plug 'gfannes/personal-vim'
 call plug#end()
 
@@ -71,5 +71,7 @@ autocmd BufEnter,BufNewFile,BufRead *.c source $gubg/vim/maps.cpp.vim
 " * NAFT
 autocmd BufEnter,BufNewFile,BufRead *.naft source $gubg/vim/maps.naft.vim
 autocmd BufEnter,BufNewFile,BufReadPost *.naft set filetype=javascript
+" * NERDTree
+map <leader>f :NERDTree<CR>
 
 " echomsg "gubg/vim/nvim.config.vim loaded"
