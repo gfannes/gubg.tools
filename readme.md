@@ -3,7 +3,13 @@ gubg.tools
 
 Development tools
 
-## rtags
+## Vim
+
+### Links
+
+* [Learn vimscript the hard way](http://learnvimscriptthehardway.stevelosh.com/)
+
+### rtags
 
 * Install rtags: `yaourt rtags`
 * Install rtags-vim plugin: done in `rakefile.rb`

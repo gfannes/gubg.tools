@@ -11,6 +11,9 @@ Plug 'jeetsukumaran/vim-filebeagle'
 " Plug 'gfannes/personal-vim'
 call plug#end()
 
+"Leader key
+let mapleader=","
+
 " Auto-save and reloading buffers
 let g:auto_save=1
 set autoread | autocmd CursorHold * checktime
