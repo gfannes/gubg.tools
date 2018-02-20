@@ -1,0 +1,6 @@
+#!/usr/bin/ruby
+
+if !ARGV.empty?
+    system("todo.sh #{ARGV*' '}")
+end
+system("todo.sh ls")
