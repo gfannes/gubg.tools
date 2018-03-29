@@ -1,0 +1,2 @@
+"Leader key
+let mapleader=","
