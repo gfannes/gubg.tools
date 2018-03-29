@@ -2,6 +2,7 @@ let g:variant = "gvim"
 let g:os = "windows"
 
 source $gubg/vim/config.bram_molenaar.vim
+source $gubg/vim/platform.windows.vim
 source $gubg/vim/plugins.windows.vim
 source $gubg/vim/appearance.gvim.vim
 source $gubg/vim/behaviour.vim

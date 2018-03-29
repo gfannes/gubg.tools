@@ -1,4 +1,3 @@
-call plug#begin('~/.nvim/plugged')
 Plug 'tpope/vim-sensible'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-commentary'
@@ -6,4 +5,3 @@ Plug '907th/vim-auto-save'
 Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/seoul256.vim'
 Plug 'scrooloose/nerdtree'
-call plug#end()

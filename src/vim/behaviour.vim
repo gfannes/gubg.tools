@@ -8,3 +8,6 @@ set selection=exclusive
 " Searching
 set ignorecase
 set smartcase
+
+" Set linenumbers while printing
+set printoptions=number:y
