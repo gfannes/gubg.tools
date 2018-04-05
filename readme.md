@@ -3,6 +3,14 @@ gubg.tools
 
 Development tools
 
+## Neovim
+
+### Windows
+
+* Install the [prebuilts](https://github.com/neovim/neovim/wiki/Installing-Neovim)
+* Create `%userprofile\AppData\Local\nvim\init.vim` as `source $gubg/vim/nvim.windows.vim`
+* Run `:PlugInstall` the first time
+
 ## Vim
 
 ### Links
