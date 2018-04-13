@@ -27,6 +27,9 @@ autocmd BufEnter,BufNewFile,BufRead *.cpp source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.h source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.hpp source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.c source $gubg/vim/maps.cpp.vim
+" * Asymptote
+autocmd BufEnter,BufNewFile,BufRead *.asy source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufReadPost *.asy set filetype=cpp
 " * NAFT
 autocmd BufEnter,BufNewFile,BufRead *.naft source $gubg/vim/maps.naft.vim
 autocmd BufEnter,BufNewFile,BufReadPost *.naft set filetype=javascript
