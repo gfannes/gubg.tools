@@ -121,8 +121,8 @@ namespace :git do
             {
                 qs: 'git status',
                 #qd: 'git diff',
-                #qd: 'git difftool -t meld',
-                qd: 'git difftool -t meld -y',
+                #qd: 'git difftool -t meld --ignore-submodules',
+                qd: 'git difftool -t meld -y --ignore-submodules',
                 qc: 'git commit -a',
                 qp: 'git pull --rebase',
                 qq: 'git push',
@@ -134,7 +134,7 @@ namespace :git do
                 fn = case os
                      when :linux, :osx then fn.to_s
                      when :windows
-                         cmd = "git diff" if fn == :qd
+                         cmd = "git diff --ignore-submodules" if fn == :qd
                          "#{fn}.bat"
                      else raise("Unknown os #{os}") end
                 File.open(fn, "w", 0755) do |fo|
