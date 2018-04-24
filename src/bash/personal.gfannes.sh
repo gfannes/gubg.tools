@@ -64,6 +64,11 @@ export auro_compiler_bs=cbs
 auro_notify
 }
 
+function cook {
+export auro_compiler_bs=cook
+auro_notify
+}
+
 function use_gcc {
 export auro_compiler_brand=gcc
 auro_notify
