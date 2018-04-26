@@ -54,17 +54,17 @@ export auro_compiler_cpp=
 export auro_compiler_thread=
 export auro_test=ut
 
-function rbs {
+function use_rbs {
 export auro_compiler_bs=rbs
 auro_notify
 }
 
-function cbs {
+function use_cbs {
 export auro_compiler_bs=cbs
 auro_notify
 }
 
-function cook {
+function use_cook {
 export auro_compiler_bs=cook
 auro_notify
 }
