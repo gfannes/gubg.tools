@@ -2,9 +2,19 @@
 
 echo ">> Loading environment from $BASH_SOURCE ..."
 
+local_src="$BASH_SOURCE"
+echo $local_src
+local_dir=dirname $local_src
+echo $local_dir
+source "$gubg/bin/os.sh"
+
 #xmodmap $HOME/.xmodmap
 
-alias ls="ls --color "
+if [[ $os == macos ]]; then
+  alias ls="ls "
+else
+  alias ls="ls --color "
+fi
 alias l="find ./ -name "
 alias mymount="sudo mount -o rw,noauto,async,user,umask=1000 "
 alias myumount="sudo umount "
@@ -146,8 +156,6 @@ function klone {
 #<< auro
 
 echo "<< ... done"
-
-cd $HOME
 
 touches_fn=$HOME/gubg.sh
 if [ -f $touches_fn ]

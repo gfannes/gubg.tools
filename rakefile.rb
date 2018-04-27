@@ -71,7 +71,6 @@ namespace :vim do
             publish('src/vifm', dst: 'install/vifm')
         when :osx
             link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
-            link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
             link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
             publish('src/vifm', dst: 'install/vifm')
         when :windows
