@@ -31,34 +31,44 @@ end
 build_ok_fn = 'gubg.build.ok'
 
 namespace :bash do
-        task :prepare do
-            case os
-            when :linux, :osx
-                publish('src/bash', dst: 'bin', mode: 0755)
-                link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
-                publish('src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
-            end
+    task :prepare do
+        case os
+        when :linux, :osx
+            publish('src/bash', dst: 'bin', mode: 0755)
+            link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
+            publish('src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
         end
+    end
 end
 namespace :bat do
-        task :prepare do
-            case os
-            when :windows
-                publish('src/bat', dst: 'bin')
+    task :prepare do
+        case os
+        when :windows
+            publish('src/bat', dst: 'bin')
+            generated_dir = "generated/src/bat"
+            Dir.chdir(GUBG::mkdir(generated_dir)) do
+                File.open("gg.bat", "w") do |fo|
+                    home_dir = "#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}"
+                    fo.puts("set gubg=#{ENV['gubg']}")
+                    fo.puts("set neovim_exe=\"#{home_dir}\\software\\Neovim\\bin\\nvim-qt.exe\"")
+                    fo.puts("%neovim_exe% %1")
+                end
             end
+            publish(generated_dir, dst: 'bin')
         end
+    end
 end
 
 namespace :gcc do
-        task :prepare do
-            case os
-            when :linux
-                which('colorgcc') do |fn|
-                    link_unless_exists(fn, shared('bin', 'g++'))
-                    link_unless_exists(fn, shared('bin', 'gcc'))
-                end
+    task :prepare do
+        case os
+        when :linux
+            which('colorgcc') do |fn|
+                link_unless_exists(fn, shared('bin', 'g++'))
+                link_unless_exists(fn, shared('bin', 'gcc'))
             end
         end
+    end
 end
 namespace :vim do
     task :prepare do
@@ -77,6 +87,15 @@ namespace :vim do
             publish('src/vim', pattern: '_vimrc', dst: 'vim')
             #Needed for vim backup files
             GUBG::mkdir("C:/temp")
+
+            home_dir = "#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}"
+            Dir.chdir(GUBG::mkdir("#{home_dir}\\AppData\\Local\\nvim")) do
+                File.open("init.vim", "w") do |fo|
+                    puts "Writing init.vim"
+                    gubg_dir = ENV['gubg']
+                    fo.puts("source #{gubg_dir}/vim/nvim.windows.vim")
+                end
+            end
         end
     end
     task :run do
