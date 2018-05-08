@@ -8,6 +8,7 @@ source "$self_dir/git.sh"
 source "$self_dir/env_setup.sh"
 source "$self_dir/gubg_setup.sh"
 source "$self_dir/auro_setup.sh"
+source "$self_dir/brew.sh"
 
 echo "<< ... done"
 
