@@ -11,3 +11,6 @@ set smartcase
 
 " Set linenumbers while printing
 set printoptions=number:y
+
+" Wrap long lines
+set wrap
