@@ -75,16 +75,8 @@ namespace :vim do
         publish('src', pattern: 'vim/**/*.vim')
         case os
         when :linux
-            link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
-            link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(ENV['HOME'], '.vimrc'))
-            link_unless_exists(shared_file('vim', 'ideavimrc.vim'), File.join(ENV['HOME'], '.ideavimrc'))
-            publish('src/vifm', dst: 'install/vifm')
         when :macos
-            link_unless_exists(shared_dir('vim'), File.join(ENV['HOME'], '.vim'))
-            link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
-            publish('src/vifm', dst: 'install/vifm')
         when :windows
-            publish('src/vim', pattern: '_vimrc', dst: 'vim')
             #Needed for vim backup files
             GUBG::mkdir("C:/temp")
 
