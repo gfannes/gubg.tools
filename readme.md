@@ -12,6 +12,15 @@ Development tools
 * Install [vim-plug](https://github.com/junegunn/vim-plug)
 * Run `:PlugInstall` the first time
 
+### Raspberry PI
+
+* `sudo apt-get install git`
+* `git clone https://github.com/neovim/neovim.git`
+* `sudo apt-get install libtool libtool-bin autoconf automake cmake g++ pkg-config unzip`
+* `cd neovim`
+* `make CMAKE_BUILD_TYPE=RelWithDebInfo`
+* `sudo make install`
+
 ## Vim
 
 ### Links
