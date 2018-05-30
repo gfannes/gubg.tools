@@ -9,17 +9,27 @@ Development tools
 
 * Install the [prebuilts](https://github.com/neovim/neovim/wiki/Installing-Neovim)
 * Create `%userprofile\AppData\Local\nvim\init.vim` as `source $gubg/vim/nvim.windows.vim`
-* Install [vim-plug](https://github.com/junegunn/vim-plug)
-* Run `:PlugInstall` the first time
+
+### Linux
+
+* Create `.config\nvim\init.vim` as `source $gubg/vim/nvim.linux.vim`
 
 ### Raspberry PI
 
+Build [neovim](https://github.com/neovim/neovim.git) from source
 * `sudo apt-get install git`
 * `git clone https://github.com/neovim/neovim.git`
 * `sudo apt-get install libtool libtool-bin autoconf automake cmake g++ pkg-config unzip`
 * `cd neovim`
 * `make CMAKE_BUILD_TYPE=RelWithDebInfo`
 * `sudo make install`
+
+### VIM Plug
+
+Install [vim-plug](https://github.com/junegunn/vim-plug)
+
+* Linux: `curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim`
+* Run `:PlugInstall` the first time
 
 ## Vim
 
