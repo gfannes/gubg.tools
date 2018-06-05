@@ -1,7 +1,7 @@
 export auro_publish=$HOME/pub
 
 function auro_notify {
-export auro_compiler=${auro_compiler_bs}-${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}
+export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}
 #Remove the previous $AURO_BIN from $PATH, if any
 if [ "$AURO_BIN" != "" ]
 then
@@ -18,7 +18,6 @@ echo Added $AURO_BIN to PATH
 }
 
 #Some defaults
-export auro_compiler_bs=rbs
 export auro_compiler_brand=gcc
 export auro_compiler_arch=x64
 export auro_compiler_config=release
@@ -26,21 +25,6 @@ export auro_compiler_cpp=
 export auro_compiler_thread=
 export auro_compiler_pic=
 export auro_test=ut
-
-function use_rbs {
-export auro_compiler_bs=rbs
-auro_notify
-}
-
-function use_cbs {
-export auro_compiler_bs=cbs
-auro_notify
-}
-
-function use_cook {
-export auro_compiler_bs=cook
-auro_notify
-}
 
 function use_gcc {
 export auro_compiler_brand=gcc
