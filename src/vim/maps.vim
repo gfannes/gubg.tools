@@ -33,5 +33,8 @@ autocmd BufEnter,BufNewFile,BufReadPost *.asy set filetype=cpp
 " * NAFT
 autocmd BufEnter,BufNewFile,BufRead *.naft source $gubg/vim/maps.naft.vim
 autocmd BufEnter,BufNewFile,BufReadPost *.naft set filetype=javascript
+" * Python
+autocmd BufEnter,BufNewFile,BufRead *.py source $gubg/vim/maps.python.vim
+autocmd BufEnter,BufNewFile,BufReadPost *.py set filetype=python
 " * NERDTree
 map <leader>f :NERDTree<CR>
