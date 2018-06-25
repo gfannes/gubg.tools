@@ -6,6 +6,14 @@ function! ReadString(message)
   call inputrestore()
   call setline('.', curline . name)
 endfunction
+function! ReadStringNoEcho(message)
+  let curline = getline('.')
+  call inputsave()
+  let name = input(a:message . ': ')
+  call inputrestore()
+  call setline('.', curline)
+  return name
+endfunction
 function! InsertOneChar()
     let c = nr2char(getchar())
     let i = 0
@@ -21,6 +29,7 @@ command! -count InsertOneCharCmd call InsertOneChar()
 map _o :a<CR><CR>.<CR>
 map -o :a<CR><CR>.<CR>
 map <Space> :InsertOneCharCmd<CR>
+map & :let @s = ReadStringNoEcho("Search string")<CR>/\<<C-R>s\><CR>
 " * Per filetype
 " ** C/C++
 autocmd BufEnter,BufNewFile,BufRead *.cpp source $gubg/vim/maps.cpp.vim
