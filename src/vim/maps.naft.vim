@@ -10,5 +10,7 @@ map -s $w?]\\|)<CR>a<M-p>(s:)<M-p><Esc>:noh<CR>i
 map -e $w?]\\|)<CR>a<M-p>(e:)<M-p><Esc>:noh<CR>i
 " duration
 map -d $w?]\\|)<CR>a<M-p>(d:)<M-p><Esc>:noh<CR>i
+" worker
+map -w $w?]\\|)<CR>a<M-p>(w:)<M-p><Esc>:noh<CR>i
 " block
 map -b A<M-p>{<CR>}<M-p><Esc>k$
