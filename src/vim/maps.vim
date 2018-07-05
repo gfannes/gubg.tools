@@ -46,4 +46,4 @@ autocmd BufEnter,BufNewFile,BufReadPost *.naft set filetype=javascript
 autocmd BufEnter,BufNewFile,BufRead *.py source $gubg/vim/maps.python.vim
 autocmd BufEnter,BufNewFile,BufReadPost *.py set filetype=python
 " * NERDTree
-map <leader>f :NERDTree<CR>
+map <leader>g :NERDTree<CR>
