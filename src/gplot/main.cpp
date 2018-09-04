@@ -196,7 +196,8 @@ namespace app {
         }
 
         MSS(!options.path.empty(), cout << "Error: No object path given" << endl);
-        Strings path = gubg::string_algo::split<vector>(options.path, '.');
+        Strings path;
+        gubg::string_algo::split(path, options.path, '.');
 
         MSS(!options.ys.empty(), cout << "Error: No Y attribute(s) given" << endl);
 
