@@ -3,5 +3,6 @@ if os == "linux"
 set background=dark
 endif
 if os == "windows"
-set background=light
+color evening
+set background=dark
 endif
