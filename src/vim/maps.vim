@@ -37,6 +37,9 @@ autocmd BufEnter,BufNewFile,BufRead *.cpp source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.h source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.hpp source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.c source $gubg/vim/maps.cpp.vim
+" * ASD
+autocmd BufEnter,BufNewFile,BufRead *.asd source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufReadPost *.asd set filetype=cpp
 " * Asymptote
 autocmd BufEnter,BufNewFile,BufRead *.asy source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufReadPost *.asy set filetype=cpp
