@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+input_fn = "#{ENV["HOME"]}/nontech/auro.pit"
+cmd = ["pit", "-f", input_fn] + ARGV + ["|", "less"]
+system(cmd*" ")
