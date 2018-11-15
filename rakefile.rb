@@ -51,7 +51,7 @@ namespace :bat do
                     home_dir = "#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}"
                     fo.puts("set gubg=#{ENV['gubg']}")
                     fo.puts("set neovim_exe=\"#{home_dir}\\software\\Neovim\\bin\\nvim-qt.exe\"")
-                    fo.puts("%neovim_exe% --fullscreen %1")
+                    fo.puts("%neovim_exe% --maximized %1")
                 end
             end
             publish(generated_dir, dst: 'bin')
