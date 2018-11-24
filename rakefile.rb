@@ -2,6 +2,10 @@ require_relative("../gubg.build/bootstrap.rb")
 require("gubg/shared")
 include GUBG
 
+home_dir = case os
+           when :windows then "#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}"
+           else ENV["HOME"] end
+
 task :default do
     sh "rake -T"
 end
@@ -12,8 +16,19 @@ end
 
 desc "Prepare this module: install all scripts"
 task :prepare do
+    Dir.chdir(home_dir) do
+        if !File.read(".bashrc")["gubg"]
+            puts("Installing GUBG environment into .bashrc. Restart you shell.")
+            File.open(".bashrc", "a") do |fo|
+                fo.puts("\n\n#GUBG environment setup")
+                fo.puts("export gubg=$HOME/gubg")
+                fo.puts("export PATH=$PATH:$gubg/bin")
+                fo.puts("export RUBYLIB=$gubg/ruby")
+            end
+        end
+    end
     extra = %w[vim]
-    (%w[bash bat vim vim git]+extra).each do |e|
+    (%w[bash bat vim neovim git]+extra).each do |e|
         Rake::Task["#{e}:prepare"].invoke
     end
 end
@@ -35,7 +50,7 @@ namespace :bash do
         case os
         when :linux, :macos
             publish('src/bash', dst: 'bin', mode: 0755)
-            link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(ENV['HOME'], '.inputrc'))
+            link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(home_dir, '.inputrc'))
             publish('src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
         end
     end
@@ -48,7 +63,6 @@ namespace :bat do
             generated_dir = "generated/src/bat"
             Dir.chdir(GUBG::mkdir(generated_dir)) do
                 File.open("gg.bat", "w") do |fo|
-                    home_dir = "#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}"
                     fo.puts("set gubg=#{ENV['gubg']}")
                     fo.puts("set neovim_exe=\"#{home_dir}\\software\\Neovim\\bin\\nvim-qt.exe\"")
                     fo.puts("%neovim_exe% --maximized %1")
@@ -80,7 +94,6 @@ namespace :vim do
             #Needed for vim backup files
             GUBG::mkdir("C:/temp")
 
-            home_dir = "#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}"
             Dir.chdir(GUBG::mkdir("#{home_dir}\\AppData\\Local\\nvim")) do
                 File.open("init.vim", "w") do |fo|
                     puts "Writing init.vim"
@@ -160,18 +173,21 @@ namespace :git do
 end
 
 namespace :neovim do
-    task :prepare
-
-    case os
-    when :linux
-        task :build do
+    task :prepare do
+        case os
+        when :linux
+            fn = "#{home_dir}/.config/nvim/init.vim"
+            unless File.exist?(fn)
+		    GUBG.mkdir(File.dirname(fn))
+                puts("Writing initial neovim init file to #{fn}")
+                File.open(fn, "w") do |fo|
+                    fo.puts("source $gubg/vim/nvim.linux.vim")
+                end
+            end
         end
-        task :run => :build do
-            link_unless_exists(shared_file('vim', 'config.linux.vim'), File.join(GUBG::mkdir(ENV['HOME'], '.config', 'nvim'), 'init.vim'))
-        end
-    else
-        task :run
     end
+
+    task :run
 end
 namespace :fart do
     task :prepare
