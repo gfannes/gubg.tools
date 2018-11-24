@@ -198,7 +198,7 @@ namespace :fart do
         task :run do
             Dir.chdir(shared_dir('extern')) do
                 git_clone('https://github.com/gfannes', 'FartIT') do
-                    sh 'rake define'
+                    sh 'rake prepare run'
                 end
             end
         end
