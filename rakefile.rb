@@ -16,14 +16,17 @@ end
 
 desc "Prepare this module: install all scripts"
 task :prepare do
-    Dir.chdir(home_dir) do
-        if !File.read(".bashrc")["gubg"]
-            puts("Installing GUBG environment into .bashrc. Restart you shell.")
-            File.open(".bashrc", "a") do |fo|
-                fo.puts("\n\n#GUBG environment setup")
-                fo.puts("export gubg=$HOME/gubg")
-                fo.puts("export PATH=$PATH:$gubg/bin")
-                fo.puts("export RUBYLIB=$gubg/ruby")
+    case os
+    when :linux
+        Dir.chdir(home_dir) do
+            if !File.read(".bashrc")["gubg"]
+                puts("Installing GUBG environment into .bashrc. Restart you shell.")
+                File.open(".bashrc", "a") do |fo|
+                    fo.puts("\n\n#GUBG environment setup")
+                    fo.puts("export gubg=$HOME/gubg")
+                    fo.puts("export PATH=$PATH:$gubg/bin")
+                    fo.puts("export RUBYLIB=$gubg/ruby")
+                end
             end
         end
     end
@@ -178,7 +181,7 @@ namespace :neovim do
         when :linux
             fn = "#{home_dir}/.config/nvim/init.vim"
             unless File.exist?(fn)
-		    GUBG.mkdir(File.dirname(fn))
+                GUBG.mkdir(File.dirname(fn))
                 puts("Writing initial neovim init file to #{fn}")
                 File.open(fn, "w") do |fo|
                     fo.puts("source $gubg/vim/nvim.linux.vim")
