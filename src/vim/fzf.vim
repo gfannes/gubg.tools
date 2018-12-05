@@ -20,6 +20,8 @@ let g:fzf_colors =
 
 if has('win32')
     let g:fzf_history_dir = '$HOME/.fzf_vim_history'
+    "This is faster and ignores .gitingore, hidden files, etc.
+    let $FZF_DEFAULT_COMMAND="rg -u --files . 2> nul"
 else
     let g:fzf_directories = '~/.fzf_vim_history'
 endif
