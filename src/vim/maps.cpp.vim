@@ -1,10 +1,10 @@
 " Cpp mappings
 map -y a<M-p>" <<  << "<M-p><Esc>4hi
 
+" include <>
+map -r O<M-p>#include <<Esc>:call ReadString("Header")<CR>A><M-p><Esc>j
 " include ""
 map -r O<M-p>#include "<Esc>:call ReadString("Header")<CR>A"<M-p><Esc>j
-" include <>
-map -R O<M-p>#include <<Esc>:call ReadString("Header")<CR>A><M-p><Esc>j
 " guard
 map -g i#ifndef HEADER_<Esc>:call ReadString("Path to header")<CR>A_ALREADY_INCLUDED<Esc>$by$o#define <Esc>p-o-o-o-oo#endif<Esc>kkk
 " block
