@@ -203,10 +203,21 @@ namespace app {
 
         Parser parser(os, wav_writer, path, options.x, options.ys);
 
+        bool is_ansi_color = false;
         while (is->good())
         {
             char ch; *is >> ch;
-            MSS(parser.process(ch));
+            if (is_ansi_color)
+            {
+                is_ansi_color = (ch == 'm');
+            }
+            else
+            {
+                if (ch == '\x1b')
+                    is_ansi_color = true;
+                else
+                    MSS(parser.process(ch));
+            }
         }
         MSS(parser.stop());
 
