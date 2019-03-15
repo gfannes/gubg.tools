@@ -70,7 +70,7 @@ export auro_compiler_subconfig=-rtc
 auro_notify
 }
 function profile {
-export auro_compiler_subconfig=-gprof
+export auro_compiler_subconfig=-profile
 auro_notify
 }
 
