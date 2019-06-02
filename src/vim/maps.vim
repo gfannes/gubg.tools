@@ -51,5 +51,8 @@ autocmd BufEnter,BufNewFile,BufReadPost *.pit set filetype=javascript
 " * Python
 autocmd BufEnter,BufNewFile,BufRead *.py source $gubg/vim/maps.python.vim
 autocmd BufEnter,BufNewFile,BufReadPost *.py set filetype=python
+" * XML
+autocmd BufEnter,BufNewFile,BufRead *.xml source $gubg/vim/maps.xml.vim
+autocmd BufEnter,BufNewFile,BufRead *.html source $gubg/vim/maps.xml.vim
 " * NERDTree
 map <leader>g :NERDTree<CR>
