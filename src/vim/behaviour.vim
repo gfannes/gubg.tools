@@ -9,6 +9,9 @@ set selection=exclusive
 set ignorecase
 set smartcase
 
+" Add line numbers
+set number
+
 " Set linenumbers while printing
 set printoptions=number:y
 
