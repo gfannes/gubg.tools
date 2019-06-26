@@ -29,6 +29,7 @@ command! -count InsertOneCharCmd call InsertOneChar()
 map _o :a<CR><CR>.<CR>
 map -o :a<CR><CR>.<CR>
 map <Space> :InsertOneCharCmd<CR>
+map <leader><Space> <C-o>
 map <leader>s :let @s = ReadStringNoEcho("Search string")<CR>/\<<C-R>s\><CR>
 nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
 " * Per filetype
