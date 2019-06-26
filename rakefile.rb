@@ -107,30 +107,32 @@ namespace :vim do
         end
     end
     task :run do
-        Dir.chdir(shared_dir('vim', 'bundle')) do
-            case os
-            when :linux
-                #sudo apt-get install cmake python-dev
-                git_clone('https://github.com/Valloric', 'YouCompleteMe') do
-                    if !File.exist?(build_ok_fn)
-                        sh 'git submodule update --recursive --init'
-                        sh './install.sh'
-                        sh "touch #{build_ok_fn}"
+        if false
+            Dir.chdir(shared_dir('vim', 'bundle')) do
+                case os
+                when :linux
+                    #sudo apt-get install cmake python-dev
+                    git_clone('https://github.com/Valloric', 'YouCompleteMe') do
+                        if !File.exist?(build_ok_fn)
+                            sh 'git submodule update --recursive --init'
+                            sh './install.sh'
+                            sh "touch #{build_ok_fn}"
+                        end
                     end
-                end
-            when :windows, :macos
-            else raise("Unknown os #{os}") end
-            # git_clone('https://github.com/Frydac', 'vim-tree')
-            git_clone('https://github.com/Frydac', 'vim-auro')
-            git_clone('https://github.com/mileszs', 'ack.vim')
-            git_clone('https://github.com/tpope', 'vim-commentary')
-            git_clone('https://github.com/rking', 'ag.vim')
-            git_clone('https://github.com/tpope', 'vim-fugitive')
-            git_clone('https://github.com/pangloss', 'vim-javascript')
-            git_clone('https://github.com/vim-scripts', 'SearchComplete')
-            git_clone('https://github.com/leafgarland', 'typescript-vim')
-            git_clone('https://github.com/ctrlpvim', 'ctrlp.vim')
-            git_clone('https://github.com/lyuts', 'vim-rtags')
+                when :windows, :macos
+                else raise("Unknown os #{os}") end
+                # git_clone('https://github.com/Frydac', 'vim-tree')
+                git_clone('https://github.com/Frydac', 'vim-auro')
+                git_clone('https://github.com/mileszs', 'ack.vim')
+                git_clone('https://github.com/tpope', 'vim-commentary')
+                git_clone('https://github.com/rking', 'ag.vim')
+                git_clone('https://github.com/tpope', 'vim-fugitive')
+                git_clone('https://github.com/pangloss', 'vim-javascript')
+                git_clone('https://github.com/vim-scripts', 'SearchComplete')
+                git_clone('https://github.com/leafgarland', 'typescript-vim')
+                git_clone('https://github.com/ctrlpvim', 'ctrlp.vim')
+                git_clone('https://github.com/lyuts', 'vim-rtags')
+            end
         end
     end
 end

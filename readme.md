@@ -31,6 +31,13 @@ Install [vim-plug](https://github.com/junegunn/vim-plug)
 * Linux: `curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim`
 * Run `:PlugInstall` the first time
 
+### YouCompleteMe
+
+* Run `:PlugInstall` to install
+* Make sure you have a `CMakeLists.txt` file, eg created via [cook](http://cook-build.org).
+* Open [nvim](https://neovim.org) and run `:YcmGenerateConfig`
+  * This translates the `CMakeLists.txt` into a `.ycm_extra_conf.py`
+
 ## Vim
 
 ### Links

@@ -10,3 +10,7 @@ Plug 'webdevel/tabulous'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " The fzf-vim plugin
 Plug 'junegunn/fzf.vim'
+
+"YouCompleteMe
+Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
+Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --clang-completer --system-libclang' }
