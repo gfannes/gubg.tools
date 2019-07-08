@@ -230,10 +230,13 @@ end
 namespace :vix do
     task :prepare
     task :build do
-        require('gubg/build/Executable')
-        vix = Build::Executable.new('vix')
-        vix.add_sources(FileList.new('src/vix/**/*.cpp'))
-        vix.build
+        case os
+        when :linux, :macos
+            require('gubg/build/Executable')
+            vix = Build::Executable.new('vix')
+            vix.add_sources(FileList.new('src/vix/**/*.cpp'))
+            vix.build
+        end
     end
     task :run => :build
 end
