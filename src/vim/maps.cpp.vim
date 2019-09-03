@@ -21,8 +21,8 @@ map -S o<M-p>switch (<Esc>:call ReadString("Switcher")<CR>A)<Esc>o{<Esc>ocase : 
 map -f o<M-p>for (<Esc>:call ReadString("Type")<CR>A::iterator it = <Esc>:call ReadString("Container")<CR>A.begin(); it != .end(); ++it)<Esc>o{<Esc>o}<M-p><Esc>khhhhhhh
 " template
 map -t o<M-p>template <typename <Esc>:call ReadString("Type")<CR>A><M-p><Esc>$
-" TEST_CASE
-map -e o<M-p>TEST_CASE("", "[]")<M-p><Esc>-bkbbla
+" TEST_CASE_FAST
+map -e o<M-p>TEST_CASE_FAST(" tests", "[]")<M-p><Esc>-bkbbbbla
 " SECTION
 map -E o<M-p>SECTION("")<M-p><Esc>-bkbla
 " REQUIRE
