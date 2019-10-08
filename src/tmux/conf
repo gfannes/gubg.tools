@@ -1,0 +1,5 @@
+set -g mouse on 
+set -s escape-time 0
+bind P paste-buffer
+set-window-option -g mode-keys vi
+bind-key r source-file ~/.tmux.conf \; display-message "~/.tmux.conf reloaded"

@@ -31,7 +31,7 @@ task :prepare do
         end
     end
     extra = %w[vim]
-    (%w[bash bat vim neovim git]+extra).each do |e|
+    (%w[bash bat vim neovim git tmux]+extra).each do |e|
         Rake::Task["#{e}:prepare"].invoke
     end
 end
@@ -208,6 +208,16 @@ namespace :fart do
             end
         end
     end
+end
+namespace :tmux do
+    task :prepare do
+        fn = "#{home_dir}/.tmux.conf"
+        unless File.exist?(fn)
+            puts("Installing \"#{fn}\"")
+            FileUtils.cp("src/tmux/conf", fn)
+        end
+    end
+    task :run
 end
 namespace :exvim do
     task :prepare
