@@ -213,8 +213,7 @@ namespace :tmux do
     task :prepare do
         fn = "#{home_dir}/.tmux.conf"
         unless File.exist?(fn)
-            puts("Installing \"#{fn}\"")
-            FileUtils.cp("src/tmux/conf", fn)
+            GUBG.publish("src/tmux/conf", dst: home_dir){".tmux.conf"}
         end
     end
     task :run
