@@ -212,9 +212,7 @@ end
 namespace :tmux do
     task :prepare do
         fn = "#{home_dir}/.tmux.conf"
-        unless File.exist?(fn)
-            GUBG.publish("src/tmux/conf", dst: home_dir){"#{home_dir}/.tmux.conf"}
-        end
+        GUBG.publish("src/tmux/conf", dst: home_dir){"#{home_dir}/.tmux.conf"}
     end
     task :run
 end
