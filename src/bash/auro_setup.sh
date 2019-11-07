@@ -1,7 +1,7 @@
 export auro_publish=$HOME/pub
 
 function auro_notify {
-export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}
+export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}${auro_compiler_wwise}
 #Remove the previous $AURO_BIN from $PATH, if any
 if [ "$AURO_BIN" != "" ]
 then
@@ -25,6 +25,7 @@ export auro_compiler_cpp=
 export auro_compiler_thread=
 export auro_compiler_pic=
 export auro_compiler_vlc=
+export auro_compiler_wwise=
 export auro_test=ut
 
 function use_gcc {
@@ -99,6 +100,15 @@ function use_vlc {
 }
 function use_novlc {
     export auro_compiler_vlc=
+    auro_notify
+}
+
+function use_wwise {
+    export auro_compiler_wwise=
+    auro_notify
+}
+function use_nowwise {
+    export auro_compiler_wwise=-nowwise
     auro_notify
 }
 
