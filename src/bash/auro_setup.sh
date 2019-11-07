@@ -125,6 +125,8 @@ auro_notify
 use_gcc
 release
 normal
+use_pic
+use_nowwise
 
 function klone {
     git clone https://git.auro-technologies.com/scm/$1
