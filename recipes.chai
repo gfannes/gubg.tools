@@ -6,3 +6,11 @@ root.book("gplot", fun(b){
         r.depends_on("gubg/func")
     })
 })
+root.book("autoq", fun(b){
+    b.recipe("exe", "executable", fun(r){
+        r.add("src", "autoq/**.cpp")
+        r.add("src", "autoq/**.hpp")
+
+        r.depends_on("gubg/func")
+    })
+})
