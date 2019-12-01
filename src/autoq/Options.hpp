@@ -19,6 +19,8 @@ namespace autoq {
         std::optional<std::string> target_response_filename;
         double samplerate = 48000;
 
+        unsigned int population_size = 100;
+
         bool parse(int argc, const char **argv)
         {
             MSS_BEGIN(bool);
@@ -38,6 +40,7 @@ namespace autoq {
                 else if (arg == "system"){system_response_filename = pop();}
                 else if (arg == "target"){target_response_filename = pop();}
                 else if (arg == "samplerate"){samplerate = std::stod(pop());}
+                else if (arg == "population"){population_size = std::stol(pop());}
                 else
                     MSS(false, std::cout << "Error: unknown argument \"" << arg << "\".\n");
             }
@@ -59,9 +62,11 @@ namespace autoq {
         {
             std::ostringstream oss;
             oss << cli_filename << std::endl;
-            oss << "    -h      Print this help\n";
-            oss << "    system  System response file\n";
-            oss << "    target  Target response file\n";
+            oss << "    -h                      Print this help\n";
+            oss << "    system     <filename>   System response file\n";
+            oss << "    target     <filename>   Target response file\n";
+            oss << "    samplerate <number>     Sample rate (default " << samplerate << ")\n";
+            oss << "    population <number>     Population size (default " << population_size << ")\n";
             return oss.str();
         }
     };
