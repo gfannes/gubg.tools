@@ -20,6 +20,7 @@ namespace autoq {
         double samplerate = 48000;
 
         unsigned int population_size = 100;
+        unsigned int iteration_cnt = 10;
 
         bool parse(int argc, const char **argv)
         {
@@ -41,6 +42,7 @@ namespace autoq {
                 else if (arg == "target"){target_response_filename = pop();}
                 else if (arg == "samplerate"){samplerate = std::stod(pop());}
                 else if (arg == "population"){population_size = std::stol(pop());}
+                else if (arg == "iteration"){iteration_cnt = std::stol(pop());}
                 else
                     MSS(false, std::cout << "Error: unknown argument \"" << arg << "\".\n");
             }
@@ -67,6 +69,7 @@ namespace autoq {
             oss << "    target     <filename>   Target response file\n";
             oss << "    samplerate <number>     Sample rate (default " << samplerate << ")\n";
             oss << "    population <number>     Population size (default " << population_size << ")\n";
+            oss << "    iteration <number>      Iteration count (default " << iteration_cnt << ")\n";
             return oss.str();
         }
     };

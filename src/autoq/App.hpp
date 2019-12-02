@@ -3,7 +3,7 @@
 
 #include <autoq/Options.hpp>
 #include <autoq/Response.hpp>
-#include <autoq/gp/Node.hpp>
+#include <autoq/gp/World.hpp>
 #include <gubg/mss.hpp>
 #include <iostream>
 #include <optional>
@@ -53,7 +53,13 @@ namespace autoq {
             MSS(!!target_);
             MSS(system_->frequencies() == target_->frequencies(), std::cout << "Error: target frequencies are different from system frequencies.\n");
 
-            std::vector<gp::NodePtr> population(options_.population_size);
+            gp::World world;
+            world.resize(options_.population_size);
+
+            for (auto i = 0u; i < options_.iteration_cnt; ++i)
+            {
+                MSS(world.process());
+            }
 
             MSS_END();
         }
