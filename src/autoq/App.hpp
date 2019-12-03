@@ -53,7 +53,7 @@ namespace autoq {
             MSS(!!target_);
             MSS(system_->frequencies() == target_->frequencies(), std::cout << "Error: target frequencies are different from system frequencies.\n");
 
-            gp::World world;
+            gp::World world{options_};
             world.resize(options_.population_size);
 
             for (auto i = 0u; i < options_.iteration_cnt; ++i)

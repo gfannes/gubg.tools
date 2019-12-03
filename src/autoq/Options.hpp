@@ -22,6 +22,14 @@ namespace autoq {
         unsigned int population_size = 100;
         unsigned int iteration_cnt = 10;
 
+        struct Grow
+        {
+            double terminal_prob = 0.0;
+            double function_prob = 1.0;
+            unsigned int max_depth = 4;
+        };
+        Grow grow;
+
         bool parse(int argc, const char **argv)
         {
             MSS_BEGIN(bool);
