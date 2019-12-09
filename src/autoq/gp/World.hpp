@@ -94,6 +94,11 @@ namespace autoq { namespace gp {
             MSS_BEGIN(bool, "");
             L(C(generation_));
 
+            for (const auto &ptr: population)
+            {
+                L(C(ptr->size()));
+            }
+
             if (false)
             {
                 const auto &input = goc_chirp_();
@@ -131,7 +136,7 @@ namespace autoq { namespace gp {
                 gubg::RMS<double> rms;
                 rms.process(&tmp_output_[six], &tmp_output_[six+blocksize]);
                 const auto wanted_rms = std::pow(1.1, -bix);
-                L(C(wanted_rms)C(rms.linear()));
+                /* L(C(wanted_rms)C(rms.linear())); */
                 rms_rms.process(wanted_rms-rms.linear());
             }
 
