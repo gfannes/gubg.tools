@@ -24,11 +24,17 @@ namespace autoq {
 
         struct Grow
         {
-            double terminal_prob = 0.0;
+            double terminal_prob = 0.5;
             double function_prob = 1.0;
             unsigned int max_depth = 4;
         };
         Grow grow;
+
+        struct Mate
+        {
+            double mutate_prob = 0.9;
+        };
+        Mate mate;
 
         bool parse(int argc, const char **argv)
         {

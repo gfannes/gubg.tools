@@ -8,6 +8,7 @@
 #include <gubg/signal/LinearChirp.hpp>
 #include <gubg/wav/Writer.hpp>
 #include <gubg/RMS.hpp>
+#include <gubg/prob/Bernoulli.hpp>
 
 namespace autoq { namespace gp { 
 
@@ -19,6 +20,7 @@ namespace autoq { namespace gp {
             grow_.set_probs(options.grow.terminal_prob, options.grow.function_prob);
             grow_.set_max_depth(options.grow.max_depth);
             samplerate_ = options.samplerate;
+            mutate_.set_prob(options.mate.mutate_prob);
         }
 
         //World CRTP API
@@ -147,12 +149,24 @@ namespace autoq { namespace gp {
         }
         double kill_fraction()
         {
-            return 0.1;
+            return 0.5;
         }
         template <typename Creature>
         bool mate(Creature &dst, const Creature &a, const Creature &b)
         {
-            MSS_BEGIN(bool);
+            MSS_BEGIN(bool, "");
+            if (mutate_())
+            {
+                L("mutation");
+                gubg::prob::Bernoulli choose_a{0.1};
+                const Creature &src = choose_a() ? a : b;
+                const bool is_a = (&src == &a);
+                L(C(is_a));
+            }
+            else
+            {
+                L("crossover");
+            }
             MSS_END();
         }
 
@@ -190,7 +204,8 @@ namespace autoq { namespace gp {
         unsigned int generation_ = 0;
         gubg::gp::tree::Grow<Node> grow_;
         double samplerate_ = 0;
-        std::mt19937 rng_;
+        std::mt19937 &rng_ = gubg::prob::rng();
+        gubg::prob::Bernoulli mutate_;
     };
 
     class World: public gubg::gp::World<NodePtr, Operations>
