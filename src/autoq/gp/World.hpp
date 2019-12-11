@@ -158,10 +158,8 @@ namespace autoq { namespace gp {
             if (mutate_())
             {
                 L("mutation");
-                gubg::prob::Bernoulli choose_a{0.1};
+                gubg::prob::Bernoulli choose_a{0.5};
                 const Creature &src = choose_a() ? a : b;
-                const bool is_a = (&src == &a);
-                L(C(is_a));
             }
             else
             {
