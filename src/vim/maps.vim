@@ -35,9 +35,9 @@ nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
 " * Per filetype
 " ** C/C++
 autocmd BufEnter,BufNewFile,BufRead *.cpp source $gubg/vim/maps.cpp.vim
-autocmd BufEnter,BufNewFile,BufRead *.h source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.hpp source $gubg/vim/maps.cpp.vim
-autocmd BufEnter,BufNewFile,BufRead *.c source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufRead *.c source $gubg/vim/maps.c.vim
+autocmd BufEnter,BufNewFile,BufRead *.h source $gubg/vim/maps.c.vim
 " * ASD
 autocmd BufEnter,BufNewFile,BufRead *.asd source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufReadPost *.asd set filetype=cpp

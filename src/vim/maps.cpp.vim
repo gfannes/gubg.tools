@@ -18,7 +18,7 @@ map -s A<M-p>namespace <Esc>:call ReadString("Namespace name")<CR>A { <Esc>-oa}<
 " switch
 map -S o<M-p>switch (<Esc>:call ReadString("Switcher")<CR>A)<Esc>o{<Esc>ocase : break;<Esc>o}<M-p><Esc>khhhhhhh
 " for
-map -f o<M-p>for (<Esc>:call ReadString("Type")<CR>A::iterator it = <Esc>:call ReadString("Container")<CR>A.begin(); it != .end(); ++it)<Esc>o{<Esc>o}<M-p><Esc>khhhhhhh
+map -f o<M-p>for (auto ix = 0u; ix < size; ++ix)<Esc>o{<Esc>o}<M-p><Esc>khhhhhhh
 " template
 map -t o<M-p>template <typename <Esc>:call ReadString("Type")<CR>A><M-p><Esc>$
 " TEST_CASE_FAST
