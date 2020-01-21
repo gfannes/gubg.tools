@@ -12,5 +12,5 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 "YouCompleteMe
-Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
-Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --clang-completer --system-libclang' }
+" Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
+" Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --clang-completer --system-libclang' }
