@@ -234,8 +234,13 @@ end
 namespace :tmux do
     task :prepare do
         GUBG.publish("src/tmux/conf", dst: home_dir){"#{home_dir}/.tmux.conf"}
+        Dir.chdir(GUBG.mkdir("#{home_dir}/.tmux/plugins")) do
+            git_clone('https://github.com/tmux-plugins', 'tpm') do
+            end
+        end
     end
-    task :run
+    task :run do
+    end
 end
 namespace :exvim do
     task :prepare
