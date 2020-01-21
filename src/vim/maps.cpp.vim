@@ -18,9 +18,11 @@ map -s A<M-p>namespace <Esc>:call ReadString("Namespace name")<CR>A { <Esc>-oa}<
 " switch
 map -S o<M-p>switch (<Esc>:call ReadString("Switcher")<CR>A)<Esc>o{<Esc>ocase : break;<Esc>o}<M-p><Esc>khhhhhhh
 " for
-map -f o<M-p>for (auto ix = 0u; ix < size; ++ix)<Esc>o{<Esc>o}<M-p><Esc>khhhhhhh
+map -f o<M-p>for (auto ix = 0u; ix < size; ++ix)<Esc>o{<Esc>o}<M-p><Esc>kk$bbbb
 " template
 map -t o<M-p>template <typename <Esc>:call ReadString("Type")<CR>A><M-p><Esc>$
+" lambda
+map -a o<M-p>auto <Esc>:call ReadString("Lambda")<CR>A = [&]()<CR>{<CR>};<M-p><Esc>kk$i
 " TEST_CASE_FAST
 map -e o<M-p>TEST_CASE_FAST(" tests", "[]")<M-p><Esc>-bkbbbbla
 " SECTION
