@@ -1,0 +1,2 @@
+#!/bin/bash
+exec "$gubg/gubg.tools/extern/ccls/Release/ccls" "$@" --log-file=/tmp/ccls.log -v=1

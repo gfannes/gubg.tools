@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+require("fileutils")
+
+ENV["gubg"] = "#{ENV["HOME"]}/gubg" unless ENV.has_key?("gubg")
+
+# use clang
+ENV['CC'] = 'clang'
+ENV['CXX'] = 'clang++'
+
+puts("Generating cmake files")
+cmd = 'rake gen:cmake'
+cmd += ARGV.map{|e|"[#{e}]"}*""
+puts `#{cmd}`
+puts("done\n")
+
+dir = '.ccls_cmake'
+puts("Generating compile_commands.json in \"#{dir}\"")
+FileUtils.rm_rf dir
+puts `cmake -H. -B#{dir} -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=YES`
+puts("done\n")
+
+puts("Creating symbolic link to compile_commands.json")
+if File.exist?('compile_commands.json')
+    puts("\tFile already exists")
+else
+    FileUtils.ln_s("#{dir}/compile_commands.json", '.')
+    puts("\tOK")
+end
+puts("done\n")

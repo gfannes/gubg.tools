@@ -31,7 +31,7 @@ task :prepare do
         end
     end
     extra = %w[vim]
-    (%w[bash bat vim neovim git tmux]+extra).each do |e|
+    (%w[bash bat vim neovim git tmux ccls]+extra).each do |e|
         Rake::Task["#{e}:prepare"].invoke
     end
 end
@@ -40,7 +40,7 @@ desc "Run this module: build all apps"
 task :run do
     apps = %w[fart vix neovim exvim]
     apps = %w[fart vix exvim]
-    apps = %w[fart vim vix exvim]
+    apps = %w[fart vim vix exvim ccls]
     apps.each do |e|
         Rake::Task["#{e}:run"].invoke
     end
@@ -136,6 +136,27 @@ namespace :vim do
         end
     end
 end
+namespace :ccls do
+    task :prepare do
+        GUBG.publish("src/coc/settings.json", dst: home_dir){"#{home_dir}/.config/nvim/coc-settings.conf"}
+    end
+    task :run do
+        Dir.chdir(shared_dir('gubg.tools', 'extern')) do
+            case os
+            when :linux
+                #Depends on `llvm` and `llvm-libs` for arch
+                git_clone('https://github.com/MaskRay', 'ccls') do
+                    if !File.exist?(build_ok_fn)
+                        sh 'cmake -GNinja -H. -BRelease'
+                        sh 'cmake --build Release -- -j 8'
+                        sh "touch #{build_ok_fn}"
+                    end
+                end
+            when :windows, :macos
+            else raise("Unknown os #{os}") end
+        end
+    end
+end
 namespace :git do
     task :prepare do
         bash = nil
@@ -211,7 +232,6 @@ namespace :fart do
 end
 namespace :tmux do
     task :prepare do
-        fn = "#{home_dir}/.tmux.conf"
         GUBG.publish("src/tmux/conf", dst: home_dir){"#{home_dir}/.tmux.conf"}
     end
     task :run

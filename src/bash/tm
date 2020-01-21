@@ -1,5 +1,5 @@
 #!/usr/bin/sh
 tmux new-session -d
 tmux split-window -h
-tmux resize-pane -R 80
+tmux resize-pane -R 90
 tmux -2 attach-session -d

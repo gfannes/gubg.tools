@@ -10,6 +10,7 @@ source $gubg/vim/appearance.nvim.vim
 source $gubg/vim/indentation.vim
 source $gubg/vim/maps.vim
 source $gubg/vim/fzf.vim
-source $gubg/vim/youcompleteme.vim
+source $gubg/vim/coc.vim
+" source $gubg/vim/youcompleteme.vim
 
-" echomsg "gubg/vim/nvim.linux.vim loaded"
+echomsg "gubg/vim/nvim.linux.vim loaded"

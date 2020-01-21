@@ -31,6 +31,19 @@ Install [vim-plug](https://github.com/junegunn/vim-plug)
 * Linux: `curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim`
 * Run `:PlugInstall` the first time
 
+### Language Server Protocol (LSP)
+
+* [CCLS](https://github.com/MaskRay/ccls): LSP server for C++
+  * Install `llvm`: `sudo pacman -S llvm llvm-libs`
+  * Build and install via `rake run`
+* [CoC](https://github.com/neoclide/coc.nvim): LSP client implementation
+  * Install `npm` and `yarn`: `sudo pacman -S npm yarn`
+  * Update .vim scripts: `rake prepare`
+  * Reload .vim scripts: `:source ~/.config/nvim/init.vim`
+  * Install plugin: `:PlugInstall`
+  * Open coc configuration file: `:CocConfig` (`~/.config/nvim/coc-settings.json`)
+    * Handled by `rake prepare`
+
 ### YouCompleteMe
 
 * Run `:PlugInstall` to install
@@ -39,10 +52,6 @@ Install [vim-plug](https://github.com/junegunn/vim-plug)
   * This translates the `CMakeLists.txt` into a `.ycm_extra_conf.py`
 
 ## Vim
-
-### Links
-
-* [Learn vimscript the hard way](http://learnvimscriptthehardway.stevelosh.com/)
 
 ### rtags
 
@@ -65,6 +74,10 @@ function compile_commands {
 * Run `rdm &`
 * Run `rc -J .` from the toplevel folder where the `compile_commands.json` is located.
 * See commands on [https://github.com/Andersbakken/rtags](rtags site).
+
+### Links
+
+* [Learn vimscript the hard way](http://learnvimscriptthehardway.stevelosh.com/)
 
 ## License
 
