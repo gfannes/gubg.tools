@@ -139,6 +139,7 @@ end
 namespace :ccls do
     task :prepare do
         GUBG.publish("src/coc/settings.json", dst: home_dir){"#{home_dir}/.config/nvim/coc-settings.conf"}
+        GUBG.publish("src/coc/solargraph.yml", dst: home_dir){"#{home_dir}/aa/.solargraph.yml"}
     end
     task :run do
         Dir.chdir(shared_dir('gubg.tools', 'extern')) do

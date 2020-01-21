@@ -43,6 +43,12 @@ Install [vim-plug](https://github.com/junegunn/vim-plug)
   * Install plugin: `:PlugInstall`
   * Open coc configuration file: `:CocConfig` (`~/.config/nvim/coc-settings.json`)
     * Handled by `rake prepare`
+* Ruby support
+  * Install `solargraph` ruby LSP server: `gem install --user solargraph`
+  * `:CocInstall coc-solargraph`
+  * Install solargraph config file
+    * Via `rake prepare`
+    * or `solargraph config` and adjust the `require:` folder pattern
 
 ### YouCompleteMe
 
