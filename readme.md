@@ -49,6 +49,7 @@ Install [vim-plug](https://github.com/junegunn/vim-plug)
   * Install solargraph config file
     * Via `rake prepare`
     * or `solargraph config` and adjust the `require:` folder pattern
+* Run `gencc <recipe>?` to create the `compile_commands.json` file required by `ccls` 
 
 ### YouCompleteMe
 
