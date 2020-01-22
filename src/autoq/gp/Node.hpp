@@ -1,6 +1,7 @@
 #ifndef HEADER_autoq_gp_Node_hpp_ALREADY_INCLUDED
 #define HEADER_autoq_gp_Node_hpp_ALREADY_INCLUDED
 
+#include <autoq/Types.hpp>
 #include <gubg/gp/tree/Node.hpp>
 #include <gubg/biquad/Tuner.hpp>
 #include <gubg/biquad/Filter.hpp>
@@ -8,58 +9,65 @@
 
 namespace autoq { namespace gp { 
 
+    class Base;
+
+    using Node = gubg::gp::tree::Node<Base>;
+    using NodePtr = typename Node::Ptr;
+
     using T = double;
 
     class Base
     {
     public:
-    private:
+        virtual bool compute(Node &node, Signal &) = 0;
     };
 
-    using Node = gubg::gp::tree::Node<T, Base>;
-    using NodePtr = typename Node::Ptr;
-
+    //Function that performs serial processing of its childs
     class Serial: public Base
     {
     public:
         std::size_t size() const {return 2;}
 
-        template <typename Nodes>
-        bool compute(T &v, Nodes &nodes)
+        bool compute(Node &node, Signal &io) override
         {
             MSS_BEGIN(bool);
-            for (const auto &ptr: nodes)
+            for (auto &ptr: node.childs())
             {
-                MSS(ptr->compute(v));
+                MSS(ptr->base().compute(*ptr, io));
             }
             MSS_END();
         }
     private:
     };
 
+    //Function that performs parallel processing of its childs
     class Parallel: public Base
     {
     public:
         std::size_t size() const {return 2;}
 
-        template <typename Nodes>
-        bool compute(T &v, Nodes &nodes)
+        bool compute(Node &node, Signal &io) override
         {
             MSS_BEGIN(bool);
-            const auto orig_v = v;
-            T sum = 0;
-            for (const auto &ptr: nodes)
+            const auto size = io.size();
+            orig_ = io;
+            std::fill(RANGE(io), 0);
+            for (auto &ptr: node.childs())
             {
-                v = orig_v;
-                MSS(ptr->compute(v));
-                sum += v;
+                tmp_ = orig_;
+
+                MSS(ptr->base().compute(*ptr, tmp_));
+                for (auto ix = 0u; ix < size; ++ix)
+                    io[ix] += tmp_[ix];
             }
-            v = sum;
             MSS_END();
         }
+
     private:
+        Signal orig_, tmp_;
     };
 
+    //Terminal that performs a biquad filter
     class Biquad: public Base
     {
     public:
@@ -70,10 +78,11 @@ namespace autoq { namespace gp {
             filter_.set(*tuner_.compute());
         }
 
-        bool compute(T &v)
+        bool compute(Node &node, Signal &io) override
         {
             MSS_BEGIN(bool);
-            v = filter_(v);
+            for (auto &v: io)
+                v = filter_(v);
             MSS_END();
         }
 
@@ -84,6 +93,7 @@ namespace autoq { namespace gp {
         Filter filter_;
     };
 
+    //Terminal that performs a delay line
     class Delay: public Base
     {
     public:
@@ -92,14 +102,17 @@ namespace autoq { namespace gp {
             history_.resize(samples);
         }
 
-        bool compute(T &v)
+        bool compute(Node &node, Signal &io) override
         {
             MSS_BEGIN(bool);
             if (!history_.empty())
             {
-                const auto orig = history_.back();
-                history_.push_pop(v);
-                v = orig;
+                for (auto &v: io)
+                {
+                    const auto orig = history_.back();
+                    history_.push_pop(v);
+                    v = orig;
+                }
             }
             MSS_END();
         }

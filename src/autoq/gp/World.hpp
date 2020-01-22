@@ -1,6 +1,7 @@
 #ifndef HEADER_autoq_gp_World_hpp_ALREADY_INCLUDED
 #define HEADER_autoq_gp_World_hpp_ALREADY_INCLUDED
 
+#include <autoq/Types.hpp>
 #include <autoq/gp/Node.hpp>
 #include <autoq/Options.hpp>
 #include <gubg/gp/World.hpp>
@@ -56,7 +57,7 @@ namespace autoq { namespace gp {
                         break;
                     case 1:
                         {
-                            std::uniform_int_distribution<> uniform{0, 100};
+                            std::uniform_int_distribution<unsigned int> uniform{0, 100};
                             Delay delay{uniform(rng_)};
                             ptr = gubg::gp::tree::create_terminal<Node>(delay);
                         }
@@ -101,14 +102,15 @@ namespace autoq { namespace gp {
                 L(C(ptr->size()));
             }
 
-            if (false)
+            if (true)
             {
                 const auto &input = goc_chirp_();
 
                 unsigned int cix = 0;
                 for (const auto &ptr: population)
                 {
-                    MSS(process_(tmp_output_, input, *ptr));
+                    tmp_output_ = input;
+                    MSS(process_(tmp_output_, *ptr));
 
                     std::ostringstream fn; fn << "output." << generation_ << "." << cix << ".wav";
                     gubg::wav::Writer writer{fn.str(), 1, samplerate_};
@@ -128,7 +130,8 @@ namespace autoq { namespace gp {
             MSS_BEGIN(bool, "score");
 
             const auto &input = goc_chirp_();
-            MSS(process_(tmp_output_, input, *node));
+            tmp_output_ = input;
+            MSS(process_(tmp_output_, *node));
 
             const auto blocksize = 1000;
             int bix = 0;
@@ -169,7 +172,6 @@ namespace autoq { namespace gp {
         }
 
     private:
-        using Signal = std::vector<double>;
         Signal chirp_;
         const Signal &goc_chirp_()
         {
@@ -187,16 +189,10 @@ namespace autoq { namespace gp {
             return chirp_;
         }
 
-        std::vector<double> tmp_output_;
-        bool process_(std::vector<double> &output, const std::vector<double> &input, Node &node)
+        Signal tmp_output_;
+        bool process_(Signal &io, Node &node)
         {
-            MSS_BEGIN(bool);
-            output = input;
-            for (auto &v: output)
-            {
-                MSS(node.compute(v));
-            }
-            MSS_END();
+            return node.base().compute(node, io);
         }
 
         unsigned int generation_ = 0;
