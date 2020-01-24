@@ -10,6 +10,8 @@
 #include <gubg/wav/Writer.hpp>
 #include <gubg/RMS.hpp>
 #include <gubg/prob/Bernoulli.hpp>
+#include <gubg/prob/Uniform.hpp>
+#include <gubg/hr.hpp>
 
 namespace autoq { namespace gp { 
 
@@ -91,6 +93,7 @@ namespace autoq { namespace gp {
             MSS(grow_(ptr, terminal_factory, function_factory));
             MSS_END();
         }
+
         template <typename Population>
         bool process(Population &population)
         {
@@ -102,7 +105,7 @@ namespace autoq { namespace gp {
                 L(C(ptr->size()));
             }
 
-            if (true)
+            if (false)
             {
                 const auto &input = goc_chirp_();
 
@@ -113,7 +116,7 @@ namespace autoq { namespace gp {
                     MSS(process_(tmp_output_, *ptr));
 
                     std::ostringstream fn; fn << "output." << generation_ << "." << cix << ".wav";
-                    gubg::wav::Writer writer{fn.str(), 1, samplerate_};
+                    gubg::wav::Writer writer(fn.str(), 1, samplerate_);
                     for (auto v: tmp_output_)
                         MSS(writer.add_value(v));
 
@@ -124,6 +127,7 @@ namespace autoq { namespace gp {
             ++generation_;
             MSS_END();
         }
+
         template <typename Score>
         bool score(Score &score, const NodePtr &node)
         {
@@ -158,11 +162,33 @@ namespace autoq { namespace gp {
         bool mate(Creature &dst, const Creature &a, const Creature &b)
         {
             MSS_BEGIN(bool, "");
-            if (mutate_())
+            if (true || mutate_())
             {
-                L("mutation");
+                L("mutation " C(&a)C(&b));
                 gubg::prob::Bernoulli choose_a{0.5};
                 const Creature &src = choose_a() ? a : b;
+                L(C(&src));
+                dst = src->clone(true);
+                auto paths = gubg::gp::tree::all_paths(dst);
+                for (const auto &path: paths)
+                    L(C(gubg::hr(path)));
+                auto &path = gubg::prob::select_uniform(paths, rng_);
+                L(" => " C(gubg::hr(path)));
+                auto node_pp = gubg::gp::tree::find(dst, path);
+                assert(!!node_pp);
+                MSS(!!*node_pp);
+
+                NodePtr new_subtree;
+                MSS(create(new_subtree));
+                L("subtree");
+                paths = gubg::gp::tree::all_paths(new_subtree);
+                for (const auto &path: paths)
+                    L(C(gubg::hr(path)));
+                *node_pp = new_subtree;
+                L("new paths");
+                paths = gubg::gp::tree::all_paths(dst);
+                for (const auto &path: paths)
+                    L(C(gubg::hr(path)));
             }
             else
             {
@@ -198,7 +224,7 @@ namespace autoq { namespace gp {
         unsigned int generation_ = 0;
         gubg::gp::tree::Grow<Node> grow_;
         double samplerate_ = 0;
-        std::mt19937 &rng_ = gubg::prob::rng();
+        std::mt19937 &rng_ = gubg::prob::rng(true);
         gubg::prob::Bernoulli mutate_;
     };
 

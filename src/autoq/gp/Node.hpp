@@ -2,7 +2,8 @@
 #define HEADER_autoq_gp_Node_hpp_ALREADY_INCLUDED
 
 #include <autoq/Types.hpp>
-#include <gubg/gp/tree/Node.hpp>
+#include <gubg/gp/tree/Terminal.hpp>
+#include <gubg/gp/tree/Function.hpp>
 #include <gubg/biquad/Tuner.hpp>
 #include <gubg/biquad/Filter.hpp>
 #include <gubg/History.hpp>
