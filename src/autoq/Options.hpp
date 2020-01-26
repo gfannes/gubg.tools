@@ -26,13 +26,13 @@ namespace autoq {
         {
             double terminal_prob = 0.5;
             double function_prob = 1.0;
-            unsigned int max_depth = 4;
+            unsigned int max_depth = 2;
         };
         Grow grow;
 
         struct Mate
         {
-            double mutate_prob = 0.9;
+            double mutate_prob = 0.5;
         };
         Mate mate;
 

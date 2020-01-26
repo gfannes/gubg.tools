@@ -12,6 +12,8 @@
 #include <gubg/prob/Bernoulli.hpp>
 #include <gubg/prob/Uniform.hpp>
 #include <gubg/hr.hpp>
+#include <gubg/block/each.hpp>
+#include <gubg/stat/Boxplot.hpp>
 
 namespace autoq { namespace gp { 
 
@@ -24,6 +26,7 @@ namespace autoq { namespace gp {
             grow_.set_max_depth(options.grow.max_depth);
             samplerate_ = options.samplerate;
             mutate_.set_prob(options.mate.mutate_prob);
+            write_wav_from_generation_ = options.iteration_cnt-2;
         }
 
         //World CRTP API
@@ -34,7 +37,8 @@ namespace autoq { namespace gp {
             {
                 MSS_BEGIN(bool);
                 std::uniform_int_distribution<> uniform{0,1};
-                switch (uniform(rng_))
+                /* switch (uniform(rng_)) */
+                switch (0)
                 {
                     case 0:
                         {
@@ -48,12 +52,17 @@ namespace autoq { namespace gp {
                                 std::uniform_real_distribution<> uniform{0.0,1.0};
                                 return uniform(rng_);
                             };
+                            auto draw_gain = [&]()
+                            {
+                                std::uniform_real_distribution<> uniform{-6.0,2.0};
+                                return uniform(rng_);
+                            };
                             auto draw_type = [&]()
                             {
                                 std::uniform_int_distribution<> uniform{0, int(gubg::biquad::Type::Nr_)-1};
                                 return static_cast<gubg::biquad::Type>(uniform(rng_));
                             };
-                            Biquad biquad{draw_frequency(), draw_q(), draw_type()};
+                            Biquad biquad{draw_frequency(), draw_q(), draw_gain(), draw_type()};
                             ptr = gubg::gp::tree::create_terminal<Node>(biquad);
                         }
                         break;
@@ -97,15 +106,34 @@ namespace autoq { namespace gp {
         template <typename Population>
         bool process(Population &population)
         {
-            MSS_BEGIN(bool, "");
+            MSS_BEGIN(bool);
+            std::cout << "Processing generation " << generation_ << std::endl;
+            if (boxplot_.calculate())
+            {
+                std::cout << boxplot_;
+                boxplot_.reset();
+            }
             L(C(generation_));
 
+            size_t total_bytesize = 0;
             for (const auto &ptr: population)
             {
-                L(C(ptr->size()));
+                unsigned int bytesize = 0;
+                auto update_bytesize = [&](auto &node, auto &path, bool is_enter)
+                {
+                    const auto bs = node->base().bytesize();
+                    /* L(C(node->base().name())C(bs)); */
+                    bytesize += bs;
+                    return true;
+                };
+                gubg::gp::tree::Path path;
+                MSS(gubg::gp::tree::dfs(ptr, update_bytesize, path));
+                L(C(&ptr)C(ptr->size())C(bytesize));
+                total_bytesize += bytesize;
             }
+            L(C(total_bytesize));
 
-            if (false)
+            if (generation_ >= write_wav_from_generation_)
             {
                 const auto &input = goc_chirp_();
 
@@ -131,26 +159,43 @@ namespace autoq { namespace gp {
         template <typename Score>
         bool score(Score &score, const NodePtr &node)
         {
-            MSS_BEGIN(bool, "score");
+            MSS_BEGIN(bool);
 
-            const auto &input = goc_chirp_();
-            tmp_output_ = input;
-            MSS(process_(tmp_output_, *node));
+            const auto model_complexity = std::log(node->size());
 
-            const auto blocksize = 1000;
-            int bix = 0;
-            gubg::RMS<double> rms_rms;
-            for (auto six = 0u; six < input.size()-blocksize+1; six += blocksize, ++bix)
+            double target_distance = 0;
             {
-                gubg::RMS<double> rms;
-                rms.process(&tmp_output_[six], &tmp_output_[six+blocksize]);
-                const auto wanted_rms = std::pow(1.1, -bix);
-                /* L(C(wanted_rms)C(rms.linear())); */
-                rms_rms.process(wanted_rms-rms.linear());
+                const auto &input = goc_chirp_();
+                tmp_output_ = input;
+                MSS(process_(tmp_output_, *node));
+
+                std::array<double, 48> rms_ary;
+                {
+                    const auto blocksize = tmp_output_.size()/rms_ary.size();
+                    auto dst = rms_ary.begin();
+                    auto compute_rms = [&](auto b, auto e)
+                    {
+                        gubg::RMS<double> rms;
+                        rms.process(b, e);
+                        *dst++ = rms.linear();
+                        return true;
+                    };
+                    MSS(gubg::block::each(blocksize, tmp_output_, compute_rms));
+                }
+
+                for (auto ix = 0u; ix < rms_ary.size(); ++ix)
+                {
+                    const auto target = ((ix/10)%2==0 ? 0.2 : 0.8);
+                    target_distance += std::abs(target-rms_ary[ix]);
+                }
             }
 
-            score = -rms_rms.db();
-            L(C(score));
+            score = -target_distance - model_complexity;
+            /* score = -target_distance; */
+            if (generation_ >= write_wav_from_generation_)
+            std::cout << C(score)C(target_distance)C(model_complexity) << std::endl;
+
+            boxplot_ << score;
 
             MSS_END();
         }
@@ -161,39 +206,51 @@ namespace autoq { namespace gp {
         template <typename Creature>
         bool mate(Creature &dst, const Creature &a, const Creature &b)
         {
-            MSS_BEGIN(bool, "");
-            if (true || mutate_())
-            {
-                L("mutation " C(&a)C(&b));
-                gubg::prob::Bernoulli choose_a{0.5};
-                const Creature &src = choose_a() ? a : b;
-                L(C(&src));
-                dst = src->clone(true);
-                auto paths = gubg::gp::tree::all_paths(dst);
-                for (const auto &path: paths)
-                    L(C(gubg::hr(path)));
-                auto &path = gubg::prob::select_uniform(paths, rng_);
-                L(" => " C(gubg::hr(path)));
-                auto node_pp = gubg::gp::tree::find(dst, path);
-                assert(!!node_pp);
-                MSS(!!*node_pp);
+            MSS_BEGIN(bool);
 
-                NodePtr new_subtree;
-                MSS(create(new_subtree));
-                L("subtree");
-                paths = gubg::gp::tree::all_paths(new_subtree);
-                for (const auto &path: paths)
-                    L(C(gubg::hr(path)));
-                *node_pp = new_subtree;
-                L("new paths");
-                paths = gubg::gp::tree::all_paths(dst);
-                for (const auto &path: paths)
-                    L(C(gubg::hr(path)));
-            }
-            else
+            //Create dst as a copy of either a or b
+            dst = gubg::prob::choose(a, b, 0.5)->clone(true);
+
+            //Select random node in dst
+            auto for_random_node = [&](auto &root, auto &&ftor)
             {
-                L("crossover");
+                const auto nrnodes = root->size();
+                const auto wanted_nodeix = gubg::prob::Uniform(root->size())(rng_);
+                auto nodeix = 0u;
+                auto walker = [&](auto &root, auto &path, bool is_enter)
+                {
+                    if (is_enter)
+                    {
+                        if (nodeix == wanted_nodeix)
+                            ftor(root);
+                        ++nodeix;
+                    }
+                    return true;
+                };
+                gubg::gp::tree::dfs(root, walker);
+            };
+            NodePtr *dst_node_pp = nullptr;
+            for_random_node(dst, [&](auto &node){dst_node_pp = &node;});
+            MSS(!!*dst_node_pp);
+
+            //Create new subtree
+            NodePtr new_subtree;
+            {
+                if (mutate_())
+                {
+                    L("mutate");
+                    MSS(create(new_subtree));
+                }
+                else
+                {
+                    L("crossover");
+                    const auto &src = (&a == &dst ? b : a);
+                    for_random_node(src, [&](const auto &node){new_subtree = node->clone(true);});
+                }
             }
+
+            *dst_node_pp = new_subtree;
+
             MSS_END();
         }
 
@@ -203,7 +260,7 @@ namespace autoq { namespace gp {
         {
             if (chirp_.empty())
             {
-                const double duration = 10;
+                const double duration = 1;
                 chirp_.resize(duration*samplerate_);
                 gubg::signal::LinearChirp<double> chirp{0.1, 0.0, 20, 20000, duration};
                 for (auto six = 0; six < chirp_.size(); ++six)
@@ -218,10 +275,16 @@ namespace autoq { namespace gp {
         Signal tmp_output_;
         bool process_(Signal &io, Node &node)
         {
-            return node.base().compute(node, io);
+            auto process_block = [&](auto b, auto e)
+            {
+                return node.base().compute(node, b, e);
+            };
+            return gubg::block::each(1000, io, process_block);
         }
 
         unsigned int generation_ = 0;
+        unsigned int write_wav_from_generation_ = 0;
+        gubg::stat::Boxplot boxplot_;
         gubg::gp::tree::Grow<Node> grow_;
         double samplerate_ = 0;
         std::mt19937 &rng_ = gubg::prob::rng(true);
