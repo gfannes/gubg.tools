@@ -3,6 +3,6 @@ ARGV.each do |arg|
     case arg
     when '--'
     else
-        system('vi', arg)
+        system('nvim', arg)
     end
 end
