@@ -4,6 +4,6 @@ let g:UltiSnipsJumpForwardTrigger="<c-j>"
 let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 
 " Place your snippets in $HOME/.config/nvim/my-snippets/ft.snippets
-let g:UltiSnipsSnippetDirectories=["UltiSnips", "my-snippets"]
+let g:UltiSnipsSnippetDirectories=["UltiSnips", "gubg_snippets"]
 
 map -r :call UltiSnips#RefreshSnippets()<CR>
