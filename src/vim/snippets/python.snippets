@@ -1,3 +1,8 @@
+snippet from "from $1 import $2"
+from $1 import $2
+
+endsnippet
+
 snippet np "import numpy as np"
 import numpy as np
 
@@ -8,10 +13,28 @@ import pandas as pd
 
 endsnippet
 
+snippet plt "import matplotlib.pyplot as plt"
+import matplotlib.pyplot as plt
+
+endsnippet
+
+snippet sklearn "sklearn"
+import sklearn
+from sklearn import $1
+
+endsnippet
+
+
 snippet p "print()"
 print($1)
 endsnippet
 
 snippet f "f()"
 f'$1'
+endsnippet
+
+snippet def "def function()"
+def $1(self, $2):
+	pass
+
 endsnippet

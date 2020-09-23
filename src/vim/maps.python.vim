@@ -1,7 +1,5 @@
 " Python mappings
 
-" import
-map -r O<M-p>import <Esc>:call ReadString("Package")<CR>A<M-p><Esc>j
 " from import
 map -R O<M-p>from <Esc>:call ReadString("Package")<CR>A import <M-p><Esc>A
 " class
