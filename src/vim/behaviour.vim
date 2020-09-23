@@ -15,5 +15,5 @@ set number
 " Set linenumbers while printing
 set printoptions=number:y
 
-" Wrap long lines
-set wrap
+" Do not wrap long lines by default
+set nowrap

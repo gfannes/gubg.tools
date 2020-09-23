@@ -58,6 +58,10 @@ Install [vim-plug](https://github.com/junegunn/vim-plug)
 * Open [nvim](https://neovim.org) and run `:YcmGenerateConfig`
   * This translates the `CMakeLists.txt` into a `.ycm_extra_conf.py`
 
+### Ultisnips
+
+* [Custom snippets](https://jdhao.github.io/2019/04/17/neovim_snippet_s1/)
+
 ## Vim
 
 ### rtags
