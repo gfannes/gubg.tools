@@ -30,8 +30,7 @@ task :prepare do
             end
         end
     end
-    extra = %w[vim]
-    (%w[bash bat vim neovim git tmux ccls]+extra).each do |e|
+    (%w[bash bat kak vim neovim git tmux ccls]).each do |e|
         Rake::Task["#{e}:prepare"].invoke
     end
 end
@@ -135,6 +134,13 @@ namespace :vim do
                 git_clone('https://github.com/lyuts', 'vim-rtags')
             end
         end
+    end
+end
+namespace :kak do
+    task :prepare do
+        publish('src', pattern: 'kak/*', dst: "#{home_dir}/.config")
+    end
+    task :run do
     end
 end
 namespace :ccls do
