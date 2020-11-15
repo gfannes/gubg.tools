@@ -4,6 +4,10 @@ plug "alexherbo2/prelude.kak"
 plug "alexherbo2/auto-pairs.kak"
 plug "alexherbo2/connect.kak"
 plug "andreyorst/fzf.kak"
+plug "kak-lsp/kak-lsp" do %{
+ cargo install --locked --force --path .
+}
+plug "occivink/kakoune-find"
 
 require-module auto-pairs
 auto-pairs-enable
@@ -11,3 +15,9 @@ auto-pairs-enable
 require-module connect
 
 map global normal <c-p> ': fzf-mode<ret>'
+
+add-highlighter global/ number-lines
+
+set-option global grepcmd 'rg --column'
+
+hook global FocusOut .* %{ echo -debug focus out %val{buffile} }
