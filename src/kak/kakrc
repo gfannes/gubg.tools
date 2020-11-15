@@ -2,6 +2,12 @@ source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
 plug "alexherbo2/prelude.kak"
 plug "alexherbo2/auto-pairs.kak"
+plug "alexherbo2/connect.kak"
+plug "andreyorst/fzf.kak"
 
 require-module auto-pairs
 auto-pairs-enable
+
+require-module connect
+
+map global normal <c-p> ': fzf-mode<ret>'
