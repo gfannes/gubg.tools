@@ -20,4 +20,5 @@ add-highlighter global/ number-lines
 
 set-option global grepcmd 'rg --column'
 
+#Auto-save on focus-lost
 hook global FocusOut .* %{ wa }

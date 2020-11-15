@@ -10,4 +10,5 @@ set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'tmux-plugins/tmux-yank'
 run -b '~/.tmux/plugins/tpm/tpm'
 
+#Needed to receive kakoune events in tmux, like FocusOut, needed for auto-save
 set -g focus-events on
