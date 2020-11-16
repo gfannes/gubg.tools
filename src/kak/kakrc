@@ -20,4 +20,4 @@ add-highlighter global/ number-lines
 
 set-option global grepcmd 'rg --column'
 
-hook global FocusOut .* %{ echo -debug focus out %val{buffile} }
+hook global FocusOut .* %{ wa }
