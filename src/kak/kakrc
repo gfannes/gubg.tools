@@ -3,6 +3,8 @@ source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug "alexherbo2/prelude.kak"
 plug "alexherbo2/auto-pairs.kak"
 plug "alexherbo2/connect.kak"
+plug "alexherbo2/search-highlighter.kak"
+plug "alexherbo2/volatile-highlighter.kak"
 plug "andreyorst/fzf.kak"
 plug "kak-lsp/kak-lsp" do %{
  cargo install --locked --force --path .
@@ -13,6 +15,11 @@ require-module auto-pairs
 auto-pairs-enable
 
 require-module connect
+
+require-module search-highlighter
+search-highlighter-enable
+require-module volatile-highlighter
+volatile-highlighter-enable
 
 map global normal <c-p> ': fzf-mode<ret>'
 
