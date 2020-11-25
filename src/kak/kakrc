@@ -24,8 +24,14 @@ volatile-highlighter-enable
 map global normal <c-p> ': fzf-mode<ret>'
 
 add-highlighter global/ number-lines
+add-highlighter global/ wrap
 
 set-option global grepcmd 'rg --column'
 
 #Auto-save on focus-lost
 hook global FocusOut .* %{ wa }
+
+hook global BufCreate .+\.naft %{ set buffer filetype naft }
+hook global BufSetOption filetype=naft %{
+ set-option buffer formatcmd 'kaka'
+}
