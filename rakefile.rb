@@ -91,8 +91,8 @@ namespace :vim do
         publish('src', pattern: 'vim/**/*.vim')
         case os
         when :linux
-            publish('src/vim/snippets', pattern: '*', dst: "#{ENV['HOME']}/.config/nvim/gubg_snippets")
         when :macos
+            publish('src/vim/snippets', pattern: '*', dst: "#{ENV['HOME']}/.config/nvim/gubg_snippets")
         when :windows
             #Needed for vim backup files
             GUBG::mkdir("C:/temp")
