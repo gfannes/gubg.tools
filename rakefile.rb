@@ -215,6 +215,7 @@ namespace :neovim do
     task :prepare do
         case os
         when :linux
+        when :macos
             fn = "#{home_dir}/.config/nvim/init.vim"
             unless File.exist?(fn)
                 GUBG.mkdir(File.dirname(fn))

@@ -2,6 +2,7 @@ if [ -z "$gubg" ]; then
   export gubg=$HOME/gubg
 fi
 export PATH=$gubg/bin:$PATH
+export PATH=$PATH:$HOME/software/bin
 #gem install bundler jekyll
 export PATH=$PATH:$HOME/.gem/ruby/2.6.0/bin
 export EDITOR=$gubg/bin/editor
