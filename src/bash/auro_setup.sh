@@ -12,6 +12,7 @@ fi
 export AURO_BIN=$auro_publish/bin/$auro_compiler
 export PATH=$PATH:$AURO_BIN
 export PATH=$PATH:$HOME/auro/all/core/build/cache/cook/bin
+export PATH=$PATH:/opt/local/auro/android-ndk-r21b
 
 echo auro_compiler: $auro_compiler
 echo auro_publish:  $auro_publish
