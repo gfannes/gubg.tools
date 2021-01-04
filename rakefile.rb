@@ -90,8 +90,7 @@ namespace :vim do
     task :prepare do
         publish('src', pattern: 'vim/**/*.vim')
         case os
-        when :linux
-        when :macos
+        when :linux, :macos
             publish('src/vim/snippets', pattern: '*', dst: "#{ENV['HOME']}/.config/nvim/gubg_snippets")
         when :windows
             #Needed for vim backup files
@@ -214,8 +213,7 @@ end
 namespace :neovim do
     task :prepare do
         case os
-        when :linux
-        when :macos
+        when :linux, :macos
             fn = "#{home_dir}/.config/nvim/init.vim"
             unless File.exist?(fn)
                 GUBG.mkdir(File.dirname(fn))
