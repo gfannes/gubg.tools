@@ -222,6 +222,16 @@ namespace :neovim do
                     fo.puts("source $gubg/vim/nvim.linux.vim")
                 end
             end
+
+            #TODO: move this to actual files
+            fn = "#{home_dir}/.config/nvim/ginit.vim"
+            unless File.exist?(fn)
+                GUBG.mkdir(File.dirname(fn))
+                puts("Writing initial neovim graphical init file to #{fn}")
+                File.open(fn, "w") do |fo|
+                    fo.puts("GuiFont Hack:h12")
+                end
+            end
         end
     end
 

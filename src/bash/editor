@@ -3,7 +3,9 @@ ARGV.each do |arg|
     case arg
     when '--'
     else
-        system('nvim', arg)
+        system('nvr', '--remote-tab', arg)
+        system('wmctrl -a Neovim')
+        # system('nvim', arg)
         # system('kak', arg)
     end
 end
