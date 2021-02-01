@@ -23,6 +23,7 @@ Build [neovim](https://github.com/neovim/neovim.git) from source
 * `cd neovim`
 * `make CMAKE_BUILD_TYPE=RelWithDebInfo`
 * `sudo make install`
+* `pip install --user neovim-remote`
 
 ### VIM Plug
 
