@@ -13,7 +13,6 @@ namespace app {
     using Strings = vector<string>;
     using Floats = vector<double>;
     using WavWriter = gubg::wav::Writer;
-    using WavWriter_ptr = std::shared_ptr<WavWriter>;
 
     struct Options
     {
@@ -43,7 +42,7 @@ namespace app {
     class Parser: public gubg::parse::naft::Parser_crtp<Parser>
     {
     public:
-        Parser(std::ostream *os, WavWriter_ptr ww, Strings path, std::string x_attr, Strings y_attrs): os_(os), ww_(ww), wanted_path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), 0)
+        Parser(std::ostream *os, WavWriter &ww, Strings path, std::string x_attr, Strings y_attrs): os_(os), ww_(ww), wanted_path_(path), x_attr_(x_attr), y_attrs_(y_attrs), y_values_(y_attrs.size(), 0)
         {
             if (os_)
             {
@@ -122,8 +121,8 @@ namespace app {
                         *os_ << ' ' << v;
                     *os_ << endl;
                 }
-                if (ww_)
-                    MSS(ww_->add_sample(y_values_));
+                if (ww_.valid())
+                    MSS(ww_.add_sample(y_values_));
                 std::fill(RANGE(y_values_), 0);
             }
             MSS_END();
@@ -138,7 +137,7 @@ namespace app {
 
     private:
         std::ostream *os_ = nullptr;
-        WavWriter_ptr ww_;
+        WavWriter &ww_;
         unsigned int ix_ = 0;
         const Strings wanted_path_;
         Strings path_;
@@ -172,7 +171,7 @@ namespace app {
 
         std::ostream *os = nullptr;
         std::ofstream fo;
-        WavWriter_ptr wav_writer;
+        WavWriter wav_writer;
 
         auto has_extension = [](const std::string &fn, const std::string &ext)
         {
@@ -182,7 +181,7 @@ namespace app {
         if (false) {}
         else if (has_extension(options.output_fn, ".wav"))
         {
-            wav_writer.reset(new gubg::wav::Writer(options.output_fn, options.ys.size(), 48000));
+            wav_writer.open(options.output_fn, 1, options.ys.size(), 48000);
         }
         else if (!options.output_fn.empty())
         {
