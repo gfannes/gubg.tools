@@ -244,7 +244,7 @@ namespace :neovim do
                 File.open(profile_fn, "a") do |fo|
                     fo.puts("")
                     fo.puts("# Added by gubg.tools")
-                    fo.puts("export NVIM_LISTEN_ADDRESS=/tmp/nvimsocked")
+                    fo.puts("export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket")
                     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     puts("You have to re-login for this setting to have effect")
                     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
