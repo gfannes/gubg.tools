@@ -141,6 +141,7 @@ normal
 use_pic
 use_nogstreamer
 use_nowwise
+use_vlc
 
 function klone {
     git clone https://git.auro-technologies.com/scm/$1
