@@ -207,6 +207,9 @@ namespace :git do
                 end unless File.exist?(fn)
             end
         end
+        sh "git config --global diff.tool icdiff"
+        sh "git config --global difftool.prompt false"
+        sh "git config --global difftool.icdiff.cmd \"/usr/bin/icdiff --line-numbers \\$LOCAL \\$REMOTE\""
     end
 end
 
