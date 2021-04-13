@@ -15,6 +15,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'plasticboy/vim-markdown'
+Plug 'sbdchd/neoformat'
 
 "YouCompleteMe
 " Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
