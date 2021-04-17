@@ -14,3 +14,11 @@ root.book("autoq", fun(b){
         r.depends_on("gubg/func")
     })
 })
+root.book("sar", fun(b){
+    b.recipe("exe", "executable", fun(r){
+        r.add("src", "sar/**.cpp")
+        r.add("src", "sar/**.hpp")
+
+        r.depends_on("gubg/func")
+    })
+})
