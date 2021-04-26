@@ -1,5 +1,8 @@
 export auro_publish=$HOME/pub
 export auro_ti_base=/opt/ti/ccs1011/ccs/tools/compiler
+export linbs=192.168.20.241
+export macbs=192.168.20.75
+export winbs=192.168.20.63
 
 function auro_notify {
 export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}${auro_compiler_gstreamer}${auro_compiler_wwise}

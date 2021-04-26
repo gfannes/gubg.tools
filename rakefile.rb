@@ -236,21 +236,23 @@ namespace :neovim do
                 end
             end
 
-            found = false
             profile_fn = "#{home_dir}/.profile"
-            File.open(profile_fn, "r") do |fi|
-                fi.each_line do |line|
-                    found = true if line[/^export NVIM_LISTEN_ADDRESS=/]
+            if File.exist?(profile_fn)
+                found = false
+                File.open(profile_fn, "r") do |fi|
+                    fi.each_line do |line|
+                        found = true if line[/^export NVIM_LISTEN_ADDRESS=/]
+                    end
                 end
-            end
-            unless found
-                File.open(profile_fn, "a") do |fo|
-                    fo.puts("")
-                    fo.puts("# Added by gubg.tools")
-                    fo.puts("export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket")
-                    puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    puts("You have to re-login for this setting to have effect")
-                    puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                unless found
+                    File.open(profile_fn, "a") do |fo|
+                        fo.puts("")
+                        fo.puts("# Added by gubg.tools")
+                        fo.puts("export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket")
+                        puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                        puts("You have to re-login for this setting to have effect")
+                        puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    end
                 end
             end
         end
