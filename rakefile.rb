@@ -222,7 +222,7 @@ namespace :neovim do
                 GUBG.mkdir(File.dirname(fn))
                 puts("Writing initial neovim init file to #{fn}")
                 File.open(fn, "w") do |fo|
-                    fo.puts("source $gubg/vim/nvim.linux.vim")
+                    fo.puts("source $gubg/vim/nvim.#{os}.vim")
                 end
             end
 

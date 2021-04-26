@@ -1,9 +1,5 @@
 call plug#begin('~/.nvim/plugged')
 source $gubg/vim/plugins.vim
-
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-
 Plug 'lyuts/vim-rtags'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
     " suggested extra settings:

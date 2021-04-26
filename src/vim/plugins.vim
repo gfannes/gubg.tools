@@ -12,8 +12,6 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 " Markdown
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
 Plug 'plasticboy/vim-markdown'
 Plug 'sbdchd/neoformat'
 
