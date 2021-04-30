@@ -11,16 +11,23 @@ namespace sar {
     {
     public:
         bool print_help = false;
+
         int verbose_level = 0;
+
+        std::string root_folder = "./";
+
         std::string include_filepath_pattern;
         std::list<std::string> include_extensions;
         std::list<std::string> exclude_filepath_patterns;
-        std::optional<std::string> needle;
+
+        std::optional<std::string> search_pattern;
+
         std::optional<std::string> replacement;
-        std::string root_folder = "./";
+
         bool simulate = false;
-        bool case_insensitive = false;
+        bool case_sensitive = true;
         bool word_boundary = false;
+
         bool output_filepaths = false;
 
         bool parse(int argc, const char **argv);

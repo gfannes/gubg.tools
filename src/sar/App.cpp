@@ -13,9 +13,9 @@ namespace sar {
         FilepathList filepaths;
         MSS(search_filepaths_(filepaths));
 
-        if (auto needle_re = get_needle_re_())
+        if (auto search_pattern_re = get_search_pattern_re_())
         {
-            MSS(search_and_replace_in_files_(filepaths, *needle_re, options_.replacement ? &*options_.replacement : nullptr));
+            MSS(search_and_replace_in_files_(filepaths, *search_pattern_re, options_.replacement ? &*options_.replacement : nullptr));
         }
         else
         {
@@ -35,11 +35,11 @@ namespace sar {
 
         filepaths.clear();
 
-        const std::string filepath_regex = std::string(".*")+options_.include_filepath_pattern+".*";
+        const std::string filepath_re_str = std::string(".*")+options_.include_filepath_pattern+".*";
 
         std::list<std::regex> exclude_res;
         for (const auto &exclude_pattern: options_.exclude_filepath_patterns)
-            exclude_res.emplace_back(exclude_pattern);
+            exclude_res.push_back(create_regex_(exclude_pattern));
 
         auto cb = [&](auto fp)
         {
@@ -81,32 +81,32 @@ namespace sar {
 
             return true;
         };
-        MSS(gubg::file::each_regex(filepath_regex, cb, options_.root_folder));
+        MSS(gubg::file::each_regex(create_regex_(filepath_re_str), cb, options_.root_folder));
 
         MSS_END();
     }
 
-    std::optional<std::regex> App::get_needle_re_() const
+    std::optional<std::regex> App::get_search_pattern_re_() const
     {
         std::optional<std::regex> re;
 
-        if (options_.needle)
+        if (options_.search_pattern)
         {
-            std::string needle_str = *options_.needle;
+            std::string search_pattern_str = *options_.search_pattern;
             if (options_.word_boundary)
-                needle_str = std::string("\\b")+needle_str+"\\b";
-            if (options_.case_insensitive)
-                re.emplace(needle_str, std::regex_constants::icase);
-            else
-                re.emplace(needle_str);
+                search_pattern_str = std::string("\\b")+search_pattern_str+"\\b";
+
+            re = create_regex_(search_pattern_str);
         }
 
         return re;
     }
 
-    bool App::search_and_replace_in_files_(const FilepathList &filepaths, const std::regex &needle_re, const std::string *replacement) const
+    bool App::search_and_replace_in_files_(FilepathList &filepaths, const std::regex &search_pattern_re, const std::string *replacement) const
     {
         MSS_BEGIN(bool);
+
+        FilepathList successful_filepaths;
 
         std::string content, new_content;
         std::vector<std::string> lines;
@@ -147,14 +147,14 @@ namespace sar {
                 unsigned int match_count = 0;
                 for (auto &line: lines)
                 {
-                    if (std::regex_search(line, needle_re))
+                    if (std::regex_search(line, search_pattern_re))
                     {
                         log::os(0) << line << std::endl;
                         ++match_count;
 
                         if (replacement)
                         {
-                            line = std::regex_replace(line, needle_re, *replacement);
+                            line = std::regex_replace(line, search_pattern_re, *replacement);
                         }
                     }
                 }
@@ -188,5 +188,11 @@ namespace sar {
         }
 
         MSS_END();
+    }
+
+    std::regex App::create_regex_(const std::string &str) const
+    {
+        const auto flags = options_.case_sensitive ? std::regex_constants::ECMAScript : std::regex::icase;
+        return std::regex{str, flags};
     }
 } 

@@ -35,18 +35,19 @@ namespace sar {
             else if (is("-e", "--extension")) { include_extensions.emplace_back(); MSS(pop_arg(include_extensions.back()), log::error() << "Expected extension STRING for filtering files" << std::endl); }
             else if (is("-f", "--include-filepath")) { MSS(pop_arg(include_filepath_pattern), log::error() << "Expected filepath PATTERN for including files" << std::endl); }
             else if (is("-x", "--exclude-filepath")) { exclude_filepath_patterns.emplace_back(); MSS(pop_arg(exclude_filepath_patterns.back()), log::error() << "Expected filepath PATTERN for excluding files" << std::endl); }
-            else if (is("-n", "--needle"))
+            else if (is("-p", "--search-pattern"))
             {
-                needle.emplace();
-                MSS(pop_arg(*needle), log::error() << "Expected needle PATTERN" << std::endl);
+                search_pattern.emplace();
+                MSS(pop_arg(*search_pattern), log::error() << "Expected search PATTERN" << std::endl);
             }
             else if (is("-r", "--replacement"))
             {
                 replacement.emplace();
                 MSS(pop_arg(*replacement), log::error() << "Expected replacement STRING" << std::endl);
             }
-            else if (is("-s", "--simulate")) {simulate = true;}
-            else if (is("-i", "--insensitive")) {case_insensitive = true;}
+            else if (is("-n", "--simulate")) {simulate = true;}
+            else if (is("-s", "--case-sensitive"))   {case_sensitive = true;}
+            else if (is("-i", "--case-insensitive")) {case_sensitive = false;}
             else if (is("-w", "--word")) {word_boundary = true;}
             else if (is("-l", "--output-filepaths")) {output_filepaths = true;}
             else
@@ -66,12 +67,13 @@ namespace sar {
         oss << "    -e,--extension          STRING   Filter selected files for given extensions" << std::endl;
         oss << "    -f,--include-filepath   PATTERN  Use PATTERN to select files [" << include_filepath_pattern << "]" << std::endl;
         oss << "    -x,--exclude-filepath   PATTERN  Add PATTERN to exclude files" << std::endl;
-        oss << "    -n,--needle             PATTERN  Use PATTERN as needle to find in the files" << std::endl;
-        oss << "    -r,--replacement        STRING   Use STRING as replacement for the needle" << std::endl;
-        oss << "    -s,--simulate                    Only simulate, do not overwrite files [" << simulate << "]" << std::endl;
-        oss << "    -i,--insensitive                 Use case insensitive search [" << case_insensitive << "]" << std::endl;
+        oss << "    -p,--search-pattern     PATTERN  Use PATTERN as search pattern to find in the files" << std::endl;
+        oss << "    -r,--replacement        STRING   Use STRING as replacement for the search pattern" << std::endl;
+        oss << "    -n,--simulate                    Only simulate, do not overwrite files [" << simulate << "]" << std::endl;
+        oss << "    -s,--case-sensitive              Use case sensitive search ["   << ( case_sensitive ? "enabled" : "disabled") << "]" << std::endl;
+        oss << "    -i,--case-insensitive            Use case insensitive search [" << (!case_sensitive ? "enabled" : "disabled") << "]" << std::endl;
         oss << "    -w,--word                        Search for word boundary [" << word_boundary << "]" << std::endl;
-        oss << "    -p,--output-filepaths            Output filepaths only [" << output_filepaths << "]" << std::endl;
+        oss << "    -l,--output-filepaths            Output filepaths only [" << output_filepaths << "]" << std::endl;
         oss << "Written by Geert Fannes" << std::endl;
         return oss.str();
     }
