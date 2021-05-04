@@ -55,5 +55,8 @@ autocmd BufEnter,BufNewFile,BufReadPost *.py set filetype=python
 " * XML
 autocmd BufEnter,BufNewFile,BufRead *.xml source $gubg/vim/maps.xml.vim
 autocmd BufEnter,BufNewFile,BufRead *.html source $gubg/vim/maps.xml.vim
+" * OpenSCAD
+autocmd BufEnter,BufNewFile,BufRead *.scad source $gubg/vim/maps.cpp.vim
+autocmd BufEnter,BufNewFile,BufRead *.scad set syntax=cpp
 " * NERDTree
 map <leader>g :NERDTree<CR>
