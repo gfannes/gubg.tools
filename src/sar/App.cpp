@@ -81,7 +81,7 @@ namespace sar {
 
             return true;
         };
-        MSS(gubg::file::each_regex(create_regex_(filepath_re_str), cb, options_.root_folder));
+        MSS(gubg::file::each_regex(create_regex_(filepath_re_str), cb, options_.root_folder, !options_.search_hidden_folders, !options_.search_hidden_files));
 
         MSS_END();
     }

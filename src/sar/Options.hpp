@@ -30,6 +30,9 @@ namespace sar {
 
         bool output_filepaths = false;
 
+        bool search_hidden_folders = false;
+        bool search_hidden_files = false;
+
         bool parse(int argc, const char **argv);
 
         std::string help() const;

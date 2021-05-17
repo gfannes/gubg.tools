@@ -35,6 +35,8 @@ namespace sar {
             else if (is("-e", "--extension")) { include_extensions.emplace_back(); MSS(pop_arg(include_extensions.back()), log::error() << "Expected extension STRING for filtering files" << std::endl); }
             else if (is("-f", "--include-filepath")) { MSS(pop_arg(include_filepath_pattern), log::error() << "Expected filepath PATTERN for including files" << std::endl); }
             else if (is("-x", "--exclude-filepath")) { exclude_filepath_patterns.emplace_back(); MSS(pop_arg(exclude_filepath_patterns.back()), log::error() << "Expected filepath PATTERN for excluding files" << std::endl); }
+            else if (is("", "--hidden-folders")) {search_hidden_folders = true;}
+            else if (is("", "--hidden-files")) {search_hidden_files = true;}
             else if (is("-p", "--search-pattern"))
             {
                 search_pattern.emplace();
@@ -67,6 +69,8 @@ namespace sar {
         oss << "    -e,--extension          STRING   Filter selected files for given extensions" << std::endl;
         oss << "    -f,--include-filepath   PATTERN  Use PATTERN to select files [" << include_filepath_pattern << "]" << std::endl;
         oss << "    -x,--exclude-filepath   PATTERN  Add PATTERN to exclude files" << std::endl;
+        oss << "    --hidden-folders                 Include hidden folders" << std::endl;
+        oss << "    --hidden-files                   Include hidden files" << std::endl;
         oss << "    -p,--search-pattern     PATTERN  Use PATTERN as search pattern to find in the files" << std::endl;
         oss << "    -r,--replacement        STRING   Use STRING as replacement for the search pattern" << std::endl;
         oss << "    -n,--simulate                    Only simulate, do not overwrite files [" << simulate << "]" << std::endl;

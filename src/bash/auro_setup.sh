@@ -7,7 +7,7 @@ export lindsp=192.168.20.77
 export windsp=192.168.20.172
 
 function auro_notify {
-export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}${auro_compiler_gstreamer}${auro_compiler_wwise}
+export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}${auro_compiler_gstreamer}${auro_compiler_wwise}${auro_compiler_wall}
 #Remove the previous $AURO_BIN from $PATH, if any
 if [ "$AURO_BIN" != "" ]
 then
@@ -35,6 +35,7 @@ export auro_compiler_thread=
 export auro_compiler_pic=
 export auro_compiler_vlc=
 export auro_compiler_wwise=
+export auro_compiler_wall=
 export auro_test=ut
 
 function use_gcc {
@@ -130,6 +131,15 @@ function use_nowwise {
     auro_notify
 }
 
+function use_wall {
+    export auro_compiler_wall=-wall
+    auro_notify
+}
+function use_nowall {
+    export auro_compiler_wall=
+    auro_notify
+}
+
 function publish {
 export auro_publish=$1
 auro_notify
@@ -146,6 +156,7 @@ normal
 use_pic
 use_nogstreamer
 use_nowwise
+use_nowall
 use_vlc
 
 function klone {
