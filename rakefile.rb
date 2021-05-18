@@ -40,6 +40,7 @@ task :run do
     apps = %w[fart vix neovim exvim]
     apps = %w[fart vix exvim]
     apps = %w[fart vim vix exvim ccls]
+    apps = %w[nnn vim vix exvim ccls]
     apps.each do |e|
         Rake::Task["#{e}:run"].invoke
     end
@@ -259,6 +260,22 @@ namespace :neovim do
     end
 
     task :run
+end
+namespace :nnn do
+    task :prepare
+
+    task :run
+    case os
+    when :linux
+        task :run do
+            Dir.chdir(shared_dir('extern')) do
+                git_clone('https://github.com/jarun', 'nnn') do
+                    sh 'make'
+                    publish('nnn', dst: 'bin', mode: 0755)
+                end
+            end
+        end
+    end
 end
 namespace :fart do
     task :prepare

@@ -7,6 +7,7 @@ self_dir=$( dirname "$BASH_SOURCE" )
 source "$self_dir/git.sh"
 source "$self_dir/env_setup.sh"
 source "$self_dir/gubg_setup.sh"
+source "$self_dir/nnn_setup.sh"
 source "$self_dir/auro_setup.sh"
 source "$self_dir/brew.sh"
 

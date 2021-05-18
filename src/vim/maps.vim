@@ -38,6 +38,8 @@ autocmd BufEnter,BufNewFile,BufRead *.cpp source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.hpp source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.c source $gubg/vim/maps.c.vim
 autocmd BufEnter,BufNewFile,BufRead *.h source $gubg/vim/maps.c.vim
+" ** Rust
+autocmd BufEnter,BufNewFile,BufRead *.rs source $gubg/vim/maps.rust.vim
 " * ASD
 autocmd BufEnter,BufNewFile,BufRead *.asd source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufReadPost *.asd set filetype=cpp

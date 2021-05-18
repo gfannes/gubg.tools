@@ -12,3 +12,5 @@ run -b '~/.tmux/plugins/tpm/tpm'
 
 #Needed to receive kakoune events in tmux, like FocusOut, needed for auto-save
 set -g focus-events on
+
+set -g default-command $SHELL
