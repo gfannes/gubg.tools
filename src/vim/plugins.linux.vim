@@ -3,6 +3,10 @@ source $gubg/vim/plugins.vim
 
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+Plug 'ludovicchabant/vim-gutentags'
+
+" Plug 'Yohannfra/Vim-Goto-Header'
+Plug 'vim-scripts/a.vim'
 
 Plug 'lyuts/vim-rtags'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}

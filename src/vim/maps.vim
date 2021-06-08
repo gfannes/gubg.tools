@@ -32,6 +32,11 @@ map <Space> :InsertOneCharCmd<CR>
 map <leader><Space> <C-o>
 map <leader>s :let @s = ReadStringNoEcho("Search string")<CR>/\<<C-R>s\><CR>
 nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
+
+" let g:goto_header_use_find = 0 " By default it's value is 0
+" nnoremap <leader>h :GotoHeader <CR>
+nnoremap <leader>h :A <CR>
+
 " * Per filetype
 " ** C/C++
 autocmd BufEnter,BufNewFile,BufRead *.cpp source $gubg/vim/maps.cpp.vim

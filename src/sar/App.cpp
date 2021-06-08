@@ -149,7 +149,8 @@ namespace sar {
                 {
                     if (std::regex_search(line, search_pattern_re))
                     {
-                        log::os(0) << line << std::endl;
+                        if (!options_.output_filepaths)
+                            log::os(0) << line << std::endl;
                         ++match_count;
 
                         if (replacement)
@@ -163,6 +164,8 @@ namespace sar {
                     log::os(3) << "No match in " << fp << std::endl;
                 else
                 {
+                    if (options_.output_filepaths)
+                        log::os(0) << fp << std::endl;
                     log::os(2) << "Found " << match_count << " matches in " << fp << std::endl;
                     if (replacement)
                     {
