@@ -16,6 +16,10 @@ Plug 'junegunn/fzf.vim'
 Plug 'plasticboy/vim-markdown'
 Plug 'sbdchd/neoformat'
 
+" Install rust-analyzer/rust-analyzer from github as well
+Plug 'rust-lang/rust'
+Plug 'dense-analysis/ale'
+
 "YouCompleteMe
 " Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
 " Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --clang-completer --system-libclang' }
