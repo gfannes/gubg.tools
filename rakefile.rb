@@ -40,7 +40,7 @@ task :run do
     apps = %w[fart vix neovim exvim]
     apps = %w[fart vix exvim]
     apps = %w[fart vim vix exvim ccls]
-    apps = %w[nnn vim vix exvim ccls]
+    apps = %w[nvr nnn vim vix exvim ccls]
     apps.each do |e|
         Rake::Task["#{e}:run"].invoke
     end
@@ -259,6 +259,32 @@ namespace :neovim do
         end
     end
 
+    task :run
+end
+namespace :nvr do
+    task :prepare do
+        case os
+        when :linux
+            fn = "#{home_dir}/.local/share/applications/nvr.desktop"
+            unless File.exist?(fn)
+                File.open(fn, "w") do |fo|
+                    fo.puts(<<-eod
+[Desktop Entry]
+Name=Neovim remote
+Comment=Open text files with running neovim instance
+Exec=nvr 
+Terminal=false
+Type=Application
+Icon=terminal
+Categories=Utility;TextEditor;
+StartupNotify=true
+MimeType=text/plain;
+eod
+                    )
+                end
+            end
+        end
+    end
     task :run
 end
 namespace :nnn do
