@@ -14,3 +14,15 @@ export PYTHONPATH=$PYTHONPATH:$gubg/gubg.algo/src
 
 # Enable ** recursion
 shopt -s globstar
+
+aptfzf() {
+    sudo apt update && sudo apt install $(apt-cache pkgnames | fzf --multi --cycle --reverse --preview "apt-cache show {1}" --preview-window=:57%:wrap:hidden --bind=space:toggle-preview)
+}
+
+o() {
+    mo -l $* | fzf --multi | xargs -I % nvr --remote-tab %
+}
+
+cargo install zoxide
+eval "$(zoxide init bash)"
+

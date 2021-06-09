@@ -29,6 +29,7 @@ task :prepare do
                 end
             end
         end
+        sh "git config --global core.excludesfile ~/.gitignore"
     end
     (%w[bash bat kak vim neovim git tmux ccls]).each do |e|
         Rake::Task["#{e}:prepare"].invoke
