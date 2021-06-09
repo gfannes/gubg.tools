@@ -24,7 +24,7 @@ o() {
 }
 
 c() {
-    mo -l $* | fzf --multi | xargs -I % nvr --remote-tab %
+    z `mo -L $* | fzf`
 }
 
 cargo install zoxide
