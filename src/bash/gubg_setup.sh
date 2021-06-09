@@ -20,6 +20,10 @@ aptfzf() {
 }
 
 o() {
+    mo -l $* | fzf --multi --preview 'bat --style=numbers --color=always --line-range :500 {}' --preview-window 'right:60%' | xargs -I % nvr --remote-tab %
+}
+
+c() {
     mo -l $* | fzf --multi | xargs -I % nvr --remote-tab %
 }
 
