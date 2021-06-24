@@ -257,16 +257,16 @@ namespace :neovim do
                     end
                 end
             end
-
-            Dir.chdir(shared_dir('extern')) do
-                git_clone('https://github.com/rust-analyzer', 'rust-analyzer') do
-                    sh 'cargo xtask install --server'
-                end
-            end
         end
     end
 
-    task :run
+    task :run do 
+        Dir.chdir(shared_dir('extern')) do
+            git_clone('https://github.com/rust-analyzer', 'rust-analyzer') do
+                sh 'cargo xtask install --server'
+            end
+        end
+    end
 end
 namespace :nvr do
     task :prepare do
