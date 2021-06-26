@@ -1,0 +1,17 @@
+nnoremap -o o<Esc>
+nnoremap -b o{<CR>}<Esc>k
+
+nnoremap -n oMSS_BEGIN(bool);<CR><CR><CR>MSS_END();<Esc>kk
+nnoremap -N oMSS_BEGIN(auro_ReturnCode_t);<CR><CR><CR>MSS_END();<Esc>kk
+nnoremap -m oMSS();<Esc>hi
+
+nnoremap -r O#include <lt>><Esc>i
+
+nnoremap -g i#ifndef HEADER__ALREADY_INCLUDED<CR>#define HEADER__ALREADY_INCLUDED<CR><CR><CR><CR><CR>#endif<Esc>0kkkkkklllllllllllllll<C-v>jI
+
+nnoremap -s Anamespace  { <Esc>j0i} <Esc>k$hhi
+
+nnoremap -v ovoid ()<Esc>o{<CR>}<Esc>kk$hi
+nnoremap -V obool ()<Esc>o{<Esc>oMSS_BEGIN(bool);<Esc>o<Esc>o<Esc>oMSS_END();<Esc>o}<Esc>kkkkkk$hi
+
+nnoremap -l oauto lambda = [&](){<Esc>o};<Esc>k$hh
