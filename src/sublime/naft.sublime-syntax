@@ -1,0 +1,33 @@
+%YAML 1.2
+---
+name: Naft
+file_extensions: [naft]
+scope: source.naft
+
+contexts:
+  main:
+    - meta_scope: string.naft
+    - match: '\['
+      push: node
+    - match: '\('
+      push: attribute
+    - match: '{'
+      push: main
+    - match: '}'
+      pop: true
+
+  node:
+    - meta_scope: entity.name.function.naft
+    - match: '\]'
+      pop: true
+
+  attribute:
+    - meta_content_scope: constant.language.naft
+    - match: '\b(s|e|d|b|pause)\b'
+      scope: storage.type.numeric.naft
+    - match: ':\d+\b'
+      scope: constant.numeric.naft
+    - match: ':[^)]+'
+      scope: comment.naft
+    - match: '\)'
+      pop: true    
