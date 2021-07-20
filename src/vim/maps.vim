@@ -69,3 +69,5 @@ autocmd BufEnter,BufNewFile,BufRead *.scad set syntax=cpp
 "map <leader>g :NERDTree<CR>
 " * rnvimr
 map <leader>g :RnvimrToggle<CR>
+" * nvim-toggleterm
+map <leader>t :execute 'ToggleTerm dir='.expand('%:p:h')<CR>
