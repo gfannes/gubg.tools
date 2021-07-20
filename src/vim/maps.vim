@@ -65,5 +65,7 @@ autocmd BufEnter,BufNewFile,BufRead *.html source $gubg/vim/maps.xml.vim
 " * OpenSCAD
 autocmd BufEnter,BufNewFile,BufRead *.scad source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.scad set syntax=cpp
-" * NERDTree
-map <leader>g :NERDTree<CR>
+"" * NERDTree
+"map <leader>g :NERDTree<CR>
+" * rnvimr
+map <leader>g :RnvimrToggle<CR>

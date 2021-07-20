@@ -16,4 +16,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
     set nowritebackup
     " don't give |ins-completion-menu| messages.
     set shortmess+=c
+
+Plug 'kevinhwang91/rnvimr'
+
 call plug#end()
