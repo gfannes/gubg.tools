@@ -65,9 +65,15 @@ autocmd BufEnter,BufNewFile,BufRead *.html source $gubg/vim/maps.xml.vim
 " * OpenSCAD
 autocmd BufEnter,BufNewFile,BufRead *.scad source $gubg/vim/maps.cpp.vim
 autocmd BufEnter,BufNewFile,BufRead *.scad set syntax=cpp
+
 "" * NERDTree
 "map <leader>g :NERDTree<CR>
 " * rnvimr
 map <leader>g :RnvimrToggle<CR>
-" * nvim-toggleterm
-map <leader>t :execute 'ToggleTerm dir='.expand('%:p:h')<CR>
+"" * floaterm ranger
+"map <leader>g :FloatermNew ranger<CR>
+
+"" * nvim-toggleterm
+"map <leader>t :execute 'ToggleTerm dir='.expand('%:p:h')<CR>
+" * floaterm
+map <leader>t :FloatermNew<CR>

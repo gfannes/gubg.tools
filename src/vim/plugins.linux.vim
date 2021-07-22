@@ -18,6 +18,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
     set shortmess+=c
 
 Plug 'kevinhwang91/rnvimr'
-Plug 'akinsho/nvim-toggleterm.lua'
+" Plug 'akinsho/nvim-toggleterm.lua'
+Plug 'voldikss/vim-floaterm'
 
 call plug#end()

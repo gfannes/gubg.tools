@@ -16,5 +16,6 @@ source $gubg/vim/coc.vim
 " source $gubg/vim/youcompleteme.vim
 source $gubg/vim/clang-format.vim
 source $gubg/vim/cscope_maps.vim
+source $gubg/vim/floaterm.vim
 
 echomsg "gubg/vim/nvim.linux.vim loaded"
