@@ -22,3 +22,11 @@ root.book("sar", fun(b){
         r.depends_on("gubg/func")
     })
 })
+root.book("naft", fun(b){
+    b.recipe("exe", "executable", fun(r){
+        r.add("src/naft", "main.cpp")
+        r.add("src/naft", "app/**.[hc]pp")
+
+        r.depends_on("gubg/func")
+    })
+})

@@ -42,6 +42,7 @@ task :run do
     apps = %w[fart vix exvim]
     apps = %w[fart vim vix exvim ccls]
     apps = %w[nvr nnn vim vix exvim ccls]
+    apps = %w[nvr nnn vim vix exvim]
     apps.each do |e|
         Rake::Task["#{e}:run"].invoke
     end
