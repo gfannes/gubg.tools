@@ -1,4 +1,5 @@
 #include <app/Options.hpp>
+#include <gubg/cli/Range.hpp>
 #include <gubg/mss.hpp>
 
 namespace app { 
@@ -6,17 +7,11 @@ namespace app {
     {
         MSS_BEGIN(bool);
 
-        unsigned int argix = 0;
-        auto pop_arg = [&](std::string &arg){
-            if (argix >= argc)
-                return false;
-            arg = argv[argix++];
-            return true;
-        };
+        gubg::cli::Range argr{argc, argv};
 
-        MSS(pop_arg(exe_name));
+        MSS(argr.pop(exe_name));
 
-        for (std::string arg; pop_arg(arg);)
+        for (std::string arg; argr.pop(arg);)
         {
             auto is = [&](const char *sh, const char *lh){return arg == sh || arg == lh;};
 
@@ -24,7 +19,15 @@ namespace app {
             else if (is("-h", "--help")){print_help = true;}
             else if (is("-p", "--pack"))
             {
-                MSS(pop_opt(pack_fp), std::cout << "Error: ");
+                operation_ = Pack;
+                MSS(argr.pop(input_fp), std::cout << "Error: Expected folder to pack" << std::endl);
+                MSS(argr.pop(output_fp), std::cout << "Error: Expected output file" << std::endl);
+            }
+            else if (is("-u", "--unpack"))
+            {
+                operation_ = Unpack;
+                MSS(argr.pop(input_fp), std::cout << "Error: Expected file to unpack" << std::endl);
+                MSS(argr.pop(output_fp), std::cout << "Error: Expected output folder" << std::endl);
             }
             else MSS(false, std::cout << "Error: Unknown argument `" << arg << "`" << std::endl);
         }

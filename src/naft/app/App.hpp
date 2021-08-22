@@ -2,6 +2,9 @@
 #define HEADER_app_App_hpp_ALREADY_INCLUDED
 
 #include <app/Options.hpp>
+#include <gubg/naft/Node.hpp>
+#include <gubg/naft/Range.hpp>
+#include <filesystem>
 
 namespace app { 
     class App
@@ -12,7 +15,11 @@ namespace app {
         bool run();
 
     private:
+        bool pack_(const std::filesystem::path &folder, gubg::naft::Node &node);
+        bool unpack_(const std::filesystem::path &folder, gubg::naft::Range &r);
+
         Options options_;
+        std::filesystem::path output_fp_;
     };
 }
 
