@@ -22,6 +22,10 @@ namespace app {
 
             if (false) {}
             else if (is("-h", "--help")){print_help = true;}
+            else if (is("-p", "--pack"))
+            {
+                MSS(pop_opt(pack_fp), std::cout << "Error: ");
+            }
             else MSS(false, std::cout << "Error: Unknown argument `" << arg << "`" << std::endl);
         }
 
@@ -31,7 +35,9 @@ namespace app {
     std::string Options::help() const
     {
         return R"eod(naft <options>
-    -h    --help    Print this help
+    -h    --help                         Print this help
+    -p    --pack     FOLDER   FILEPATH   Pack FOLDER into FILEPATH
+    -u    --unpack   FILEPATH FOLDER     Unpack FILEPATH into FOLDER
 Developed by Geert Fannes
 )eod";
     }
