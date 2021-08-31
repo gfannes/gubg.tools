@@ -9,13 +9,13 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'vim-scripts/a.vim'
 
 Plug 'lyuts/vim-rtags'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    " suggested extra settings:
-    " Some server have issues with backup files, see #649
-    set nobackup
-    set nowritebackup
-    " don't give |ins-completion-menu| messages.
-    set shortmess+=c
+"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"    " suggested extra settings:
+"    " Some server have issues with backup files, see #649
+"    set nobackup
+"    set nowritebackup
+"    " don't give |ins-completion-menu| messages.
+"    set shortmess+=c
 
 Plug 'kevinhwang91/rnvimr'
 " Plug 'akinsho/nvim-toggleterm.lua'
