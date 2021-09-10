@@ -31,16 +31,13 @@ task :prepare do
         end
         sh "git config --global core.excludesfile ~/.gitignore"
     end
-    (%w[bash bat kak vim neovim git tmux ccls]).each do |e|
+    (%w[bash bat kak vim neovim git tmux ccls ghist]).each do |e|
         Rake::Task["#{e}:prepare"].invoke
     end
 end
 
 desc "Run this module: build all apps"
 task :run do
-    apps = %w[fart vix neovim exvim]
-    apps = %w[fart vix exvim]
-    apps = %w[fart vim vix exvim ccls]
     apps = %w[nvr nnn vim vix exvim ccls]
     apps = %w[nvr nnn vim vix exvim]
     apps.each do |e|
@@ -311,24 +308,9 @@ namespace :nnn do
         end
     end
 end
-namespace :fart do
-    task :prepare
-
-    task :run
-    case os
-    when :linux
-        task :run do
-            Dir.chdir(shared_dir('extern')) do
-                git_clone('https://github.com/gfannes', 'FartIT') do
-                    sh 'rake prepare run'
-                end
-            end
-        end
-    end
-end
 namespace :tmux do
     task :prepare do
-        GUBG.publish("src/tmux/conf", dst: home_dir){"#{home_dir}/.tmux.conf"}
+        publish("src/tmux/conf", dst: home_dir){"#{home_dir}/.tmux.conf"}
         Dir.chdir(GUBG.mkdir("#{home_dir}/.tmux/plugins")) do
             git_clone('https://github.com/tmux-plugins', 'tpm') do
             end
@@ -367,4 +349,12 @@ namespace :vix do
         end
     end
     task :run => :build
+end
+namespace :ghist do
+    task :prepare do
+        publish('src/ghist', pattern: "ghist", dst: 'bin', mode: 0755)
+        publish('src/ghist', pattern: "*.rb", dst: 'ruby')
+    end
+    task :build do
+    end
 end

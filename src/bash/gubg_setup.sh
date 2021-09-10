@@ -23,16 +23,16 @@ aptfzf() {
 }
 
 o() {
-    mo -l $* | fzf --multi --preview 'bat --style=numbers --color=always --line-range :500 {}' --preview-window 'right:60%' | xargs -I % gg %
+    mo -l "$@" | fzf --multi --preview 'bat --style=numbers --color=always --line-range :500 {}' --preview-window 'right:60%' | xargs -I % gg %
 }
 
 s() {
     export all_args="$*"
-    mo -l $* | fzf --multi --preview 'mo -c -i ${all_args} -C {}' --preview-window 'right:60%' | xargs -I % gg %
+    mo -l "$@" | fzf --multi --preview 'mo -c -i ${all_args} -C {}' --preview-window 'right:60%' | xargs -I % gg %
 }
 
 c() {
-    z `mo -L $* | fzf`
+    z `mo -L "$@" | fzf`
 }
 
 # cargo install zoxide
