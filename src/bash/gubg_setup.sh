@@ -22,6 +22,10 @@ aptfzf() {
     sudo apt update && sudo apt install $(apt-cache pkgnames | fzf --multi --cycle --reverse --preview "apt-cache show {1}" --preview-window=:57%:wrap:hidden --bind=space:toggle-preview)
 }
 
+# from https://wiki.archlinux.org/title/Fzf#Pacman
+alias yays="yay -Slq | fzf --multi --preview 'yay -Si {1}' | xargs -ro yay -S"
+alias yayr="yay -Qq | fzf --multi --preview 'yay -Qi {1}' | xargs -ro yay -Rns"
+
 o() {
     mo -l "$@" | fzf --multi --preview 'bat --style=numbers --color=always --line-range :500 {}' --preview-window 'right:60%' | xargs -I % gg %
 }
@@ -37,4 +41,3 @@ c() {
 
 # cargo install zoxide
 eval "$(zoxide init bash)"
-
