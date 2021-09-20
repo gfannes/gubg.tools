@@ -1,5 +1,11 @@
 export auro_publish=$HOME/pub
-export auro_ti_base=/opt/ti/ccs1011/ccs/tools/compiler
+ti_base_dirs=("/opt/ti/ccs1011/ccs/tools/compiler" "/opt/ti/ccs1031/ccs/tools/compiler")
+for dir in ${ti_base_dirs[*]}; do
+    if [ -d $dir ]; then
+        echo Found TI install dir $dir
+        export auro_ti_base=$dir
+    fi
+done
 export master=192.168.20.241
 export linbs=192.168.20.252
 export macbs=192.168.20.248
