@@ -1,0 +1,11 @@
+echo ">> Loading environment from $gubg_script_dir ..."
+source "$gubg_script_dir/git.sh"
+source "$gubg_script_dir/env_setup.sh"
+source "$gubg_script_dir/gubg_setup.sh"
+source "$gubg_script_dir/nnn_setup.sh"
+source "$gubg_script_dir/tmux_setup.sh"
+source "$gubg_script_dir/auro_setup.sh"
+source "$gubg_script_dir/brew.sh"
+echo "<< ... done"
+
+source "$gubg_script_dir/gubg_touches.sh"

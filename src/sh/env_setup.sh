@@ -1,5 +1,4 @@
-self_dir=$( dirname "$BASH_SOURCE" )
-source "$self_dir/os.sh"
+source "$gubg_script_dir/os.sh"
 
 if [[ "$os" == macos ]]; then
   alias ls="ls "

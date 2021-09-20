@@ -19,19 +19,21 @@ task :prepare do
     case os
     when :linux
         Dir.chdir(home_dir) do
-            if !File.read(".bashrc")["gubg"]
-                puts("Installing GUBG environment into .bashrc. Restart you shell.")
-                File.open(".bashrc", "a") do |fo|
-                    fo.puts("\n\n#GUBG environment setup")
-                    fo.puts("export gubg=$HOME/gubg")
-                    fo.puts("export PATH=$PATH:$gubg/bin")
-                    fo.puts("export RUBYLIB=$gubg/ruby")
+            %w[.bashrc .zshrc].each do |shrc|
+                if !File.read(shrc)["gubg"]
+                    puts("Installing GUBG environment into #{shrc}. Restart you shell.")
+                    File.open(shrc, "a") do |fo|
+                        fo.puts("\n\n#GUBG environment setup")
+                        fo.puts("export gubg=$HOME/gubg")
+                        fo.puts("export PATH=$PATH:$gubg/bin")
+                        fo.puts("export RUBYLIB=$gubg/ruby")
+                    end
                 end
             end
         end
         sh "git config --global core.excludesfile ~/.gitignore"
     end
-    (%w[bash bat kak vim neovim git tmux ccls ghist]).each do |e|
+    (%w[sh bat kak vim neovim git tmux ccls ghist]).each do |e|
         Rake::Task["#{e}:prepare"].invoke
     end
 end
@@ -47,11 +49,11 @@ end
 
 build_ok_fn = 'gubg.build.ok'
 
-namespace :bash do
+namespace :sh do
     task :prepare do
         case os
         when :linux, :macos
-            publish('src/bash', dst: 'bin', mode: 0755)
+            publish('src/sh', dst: 'bin', mode: 0755)
             link_unless_exists(shared_file('bin', 'dotinputrc'), File.join(home_dir, '.inputrc'))
             publish('src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
         end
