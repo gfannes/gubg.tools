@@ -14,7 +14,7 @@ case $gubg_shell in
   PS1="\[\033[1;32m\]\u\[\033[1;32m\]@\[\033[1;34m\]\h \[\033[1;34m\]\W\[\033[1;32m\]>\[\033[0m\] "
   ;;
   zsh)
-  PS1='${newline}[%F{yellow}%n%f@%F{green}%m%f :: %~]${newline}# '
+  PS1='${newline}[%F{blue}%n%f@%F{green}%m%f :: %~]${newline}# '
   ;;
 esac
 
