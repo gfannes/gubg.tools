@@ -9,12 +9,13 @@ alias l="find ./ -name "
 alias mymount="sudo mount -o rw,noauto,async,user,umask=1000 "
 alias myumount="sudo umount "
 
+export newline=$'\n'
 case $gubg_shell in
   bash)
-  PS1="\[\033[1;32m\]\u\[\033[1;32m\]@\[\033[1;34m\]\h \[\033[1;34m\]\W\[\033[1;32m\]>\[\033[0m\] "
+  export PS1="\[\033[1;32m\]\u\[\033[1;32m\]@\[\033[1;34m\]\h \[\033[1;34m\]\W\[\033[1;32m\]>\[\033[0m\] "
   ;;
   zsh)
-  PS1='${newline}[%F{blue}%n%f@%F{green}%m%f :: %~]${newline}# '
+  export PS1='${newline}[%F{blue}%n%f@%F{green}%m%f :: %~]${newline}# '
   ;;
 esac
 
