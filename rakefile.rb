@@ -28,7 +28,7 @@ task :prepare do
                         fo.puts("export PATH=$PATH:$gubg/bin")
                         fo.puts("export RUBYLIB=$gubg/ruby")
                     end
-                end
+                end if File.exist?(shrc)
             end
         end
         sh "git config --global core.excludesfile ~/.gitignore"
