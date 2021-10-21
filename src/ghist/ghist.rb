@@ -2,6 +2,7 @@ require("optparse")
 require("open3")
 require("fileutils")
 require("rake")
+require("set")
 
 module My
 	def self.parse_cli_options()
