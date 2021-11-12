@@ -13,6 +13,8 @@ export winbs=192.168.20.249
 export lindsp=192.168.20.250
 export windsp=192.168.20.251
 export crunch=192.168.20.253
+#Thomas machine, auro/****
+export marvin=10.5.0.6
 
 function auro_notify {
 export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}${auro_compiler_gstreamer}${auro_compiler_wwise}${auro_compiler_wall}
