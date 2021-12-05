@@ -14,6 +14,7 @@ export RUBYLIB=$RUBYLIB:$gubg/ruby
 export PYTHONPATH=$PYTHONPATH:$gubg/gubg.io/src
 export PYTHONPATH=$PYTHONPATH:$gubg/gubg.ml/src
 export PYTHONPATH=$PYTHONPATH:$gubg/gubg.algo/src
+export PYTHONPATH=$PYTHONPATH:$gubg/gubg.data/src
 
 # Enable ** recursion
 case $gubg_shell in
