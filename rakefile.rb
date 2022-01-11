@@ -179,13 +179,15 @@ namespace :git do
                when :windows then '%1 %2 %3 %4 %5'
                else raise("Unknown os #{os}") end
         Dir.chdir(shared_dir('bin')) do
+            print("Creating Q commands:")
             {
                 qs: 'git status',
                 #qd: 'git diff',
                 #qd: 'git difftool -t meld --ignore-submodules',
-                qd: 'git difftool -t meld -y --ignore-submodules',
+                #qd: 'git difftool -t meld -y --ignore-submodules',
                 #qd: 'git difftool -t diffuse -y --ignore-submodules',
                 #qd: 'git difftool -t kdiff3 -y --ignore-submodules',
+                qd: 'git icdiff',
                 qc: 'git commit -a',
                 qp: 'git pull --rebase',
                 qq: 'git push',
@@ -201,13 +203,14 @@ namespace :git do
                          "#{fn}.bat"
                      else raise("Unknown os #{os}") end
                 File.open(fn, "w", 0755) do |fo|
-                    puts("creating #{fn}")
+                    print(" #{fn}")
                     case os
                     when :linux, :macos then fo.puts(bash)
                     end
                     fo.puts([cmd].join("\n")+' '+args)
-                end unless File.exist?(fn)
+                end
             end
+            puts()
         end
         sh "git config --global diff.tool icdiff"
         sh "git config --global difftool.prompt false"
