@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 ENV["gubg"] = "#{ENV["HOME"]}/gubg" unless ENV.has_key?("gubg")
-case :subl
+case (ENV["gubg_gg"] || :subl).to_sym()
 when :gvim
     case ARGV.size
     when 1 then system("gvim --remote-tab-silent \"#{ARGV[0]}\" 2> /dev/null")
