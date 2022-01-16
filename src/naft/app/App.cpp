@@ -104,11 +104,12 @@ namespace app {
                 MSS(r.pop_attr(key, name));
                 MSS(key == "name");
                 L("Found folder `" << name << "`");
-                gubg::naft::Range rr;
-                MSS(r.pop_block(rr));
+
                 const auto new_folder = folder/std::filesystem::path{name};
                 std::filesystem::create_directories(new_folder);
-                MSS(unpack_(new_folder, rr));
+
+                if (gubg::naft::Range rr; r.pop_block(rr))
+                    MSS(unpack_(new_folder, rr));
             }
             else if (tag == "file")
             {
