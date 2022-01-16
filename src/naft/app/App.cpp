@@ -80,11 +80,7 @@ namespace app {
 
                     std::string content;
                     MSS(gubg::file::read(content, fp));
-                    gubg::Strange strange{content};
-                    for (gubg::Strange line; strange.pop_line(line); )
-                    {
-                        file.node(line.str());
-                    }
+                    file.attr("content", content);
                 }
             }
         }
@@ -101,12 +97,13 @@ namespace app {
 
         for (std::string tag; r.pop_tag(tag); )
         {
-            std::string key, name;
+            std::string key, name, content;
             if (false) {}
             else if (tag == "folder")
             {
                 MSS(r.pop_attr(key, name));
                 MSS(key == "name");
+                L("Found folder `" << name << "`");
                 gubg::naft::Range rr;
                 MSS(r.pop_block(rr));
                 const auto new_folder = folder/std::filesystem::path{name};
@@ -117,17 +114,11 @@ namespace app {
             {
                 MSS(r.pop_attr(key, name));
                 MSS(key == "name");
-                gubg::naft::Range rr;
-                MSS(r.pop_block(rr));
+                L("Found file `" << name << "`");
+                MSS(r.pop_attr(key, content));
+                MSS(key == "content");
                 const auto new_file = folder/std::filesystem::path{name};
-                std::ofstream fo{new_file};
-                bool add_endl = false;
-                for (std::string line; rr.pop_tag(line); add_endl = true)
-                {
-                    if (add_endl)
-                        fo << std::endl;
-                    fo << line;
-                }
+                MSS(gubg::file::write(content, new_file));
             }
             else MSS(false, std::cout << "Error: Unexpected tag `" << tag << "`" << std::endl);
         }
