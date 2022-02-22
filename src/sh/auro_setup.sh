@@ -9,6 +9,7 @@ done
 export master=192.168.20.241
 export linbs=192.168.20.252
 export macbs=192.168.20.248
+export macm1=192.168.20.85
 export winbs=192.168.20.249
 export lindsp=192.168.20.250
 export windsp=192.168.20.251
