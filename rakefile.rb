@@ -64,15 +64,6 @@ namespace :bat do
         case os
         when :windows
             publish('src/bat', dst: 'bin')
-            generated_dir = "generated/src/bat"
-            Dir.chdir(GUBG::mkdir(generated_dir)) do
-                File.open("gg.bat", "w") do |fo|
-                    fo.puts("set gubg=#{ENV['gubg']}")
-                    fo.puts("set neovim_exe=\"#{home_dir}\\software\\Neovim\\bin\\nvim-qt.exe\"")
-                    fo.puts("%neovim_exe% --maximized %1")
-                end
-            end
-            publish(generated_dir, dst: 'bin')
         end
     end
 end
