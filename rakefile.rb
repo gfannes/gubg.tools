@@ -2,10 +2,6 @@ require_relative("../gubg.build/bootstrap.rb")
 require("gubg/shared")
 include GUBG
 
-home_dir = case os
-           when :windows then "#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}"
-           else ENV["HOME"] end
-
 task :default do
     sh "rake -T"
 end
@@ -26,7 +22,6 @@ task :prepare do
                         fo.puts("\n\n#GUBG environment setup")
                         fo.puts("export gubg=$HOME/gubg")
                         fo.puts("export PATH=$PATH:$gubg/bin")
-                        fo.puts("export RUBYLIB=$gubg/ruby")
                     end
                 end if File.exist?(shrc)
             end
