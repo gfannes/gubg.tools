@@ -22,7 +22,7 @@ namespace :tools do
 			sh "git config --global core.excludesfile ~/.gitignore"
 		end
 		%w[sh git ghist].each do |e|
-			Rake::Task["tools:#{e}:prepare"].invoke()
+			Rake::Task["gubg:tools:#{e}:prepare"].invoke()
 		end
 	end
 
