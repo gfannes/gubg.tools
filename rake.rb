@@ -7,7 +7,7 @@ namespace :tools do
 	task :prepare do
 		case os()
 		when :linux
-			GUBG.chdir(here, GUBG.home_dir) do
+			GUBG.chdir(GUBG.home_dir) do
 				%w[.bashrc .zshrc].each do |shrc|
 					if !File.read(shrc)["gubg"]
 						puts("Installing GUBG environment into #{shrc}. Restart you shell.")
