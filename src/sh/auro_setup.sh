@@ -19,26 +19,18 @@ export marvin=10.5.0.6
 # Found via `journalctl -t sshd | mo geertf` on $crunch
 export biblbx=10.5.0.14
 
-function auro_notify {
-export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}${auro_compiler_gstreamer}${auro_compiler_wwise}${auro_compiler_wall}${auro_compiler_color}
-#Remove the previous $AURO_BIN from $PATH, if any
-if [ "$AURO_BIN" != "" ]
-then
-export PATH=`echo $PATH | sed "s|:$AURO_BIN||g"`
-fi
-
-export AURO_BIN=$auro_publish/bin/$auro_compiler
-export PATH=$PATH:$AURO_BIN
 export PATH=$PATH:$HOME/auro/all/core/build/cache/cook/bin
 export PATH=$PATH:/opt/local/auro/android-ndk-r21b
 
 export GST_PLUGIN_PATH=$HOME/auro/all/core/build/cache/cook/bin
 
-echo auro_compiler: $auro_compiler
-echo auro_publish:  $auro_publish
-echo auro_ti_base:  $auro_ti_base
-echo auro_test:  $auro_test
-echo Added $AURO_BIN to PATH
+function auro_notify {
+    export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}${auro_compiler_gstreamer}${auro_compiler_wwise}${auro_compiler_wall}${auro_compiler_color}
+    echo auro_compiler: $auro_compiler
+    echo auro_publish:  $auro_publish
+    echo auro_ti_base:  $auro_ti_base
+    echo auro_test:  $auro_test
+    echo Added $AURO_BIN to PATH
 }
 
 #Some defaults
