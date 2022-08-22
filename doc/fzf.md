@@ -1,0 +1,1 @@
+* {} is replaced with the single-quoted string of the focused line
