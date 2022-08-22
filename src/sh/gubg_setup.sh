@@ -29,13 +29,15 @@ aptfzf() {
 alias yays="yay -Slq | fzf --multi --preview 'yay -Si {1}' | xargs -ro yay -S"
 alias yayr="yay -Qq | fzf --multi --preview 'yay -Qi {1}' | xargs -ro yay -Rns"
 
+# Open file with 'gg' based on output from 'mo', preview with 'bat'
 o() {
     mo -l "$@" | fzf --multi --preview 'bat --style=numbers --color=always --line-range :500 {}' --preview-window 'right:60%' | xargs -I % gg %
 }
 
+# Open file with 'gg' based on output from 'mo', preview with 'mo'
 s() {
     export all_args="$*"
-    mo -l "$@" | fzf --multi --preview 'mo -c -i ${all_args} -C {}' --preview-window 'right:60%' | xargs -I % gg %
+    mo -l "$@" | fzf --multi --preview 'mo -i -k 1 -f {} -B 2 -A 4 ${all_args}' --preview-window 'right:60%' | xargs -I % gg %
 }
 
 c() {

@@ -52,6 +52,7 @@ namespace :tools do
 				print("Creating Q commands:")
 				{
 					qs: 'git status',
+	                qS: 'git status --porcelain',
 	                #qd: 'git diff',
 	                #qd: 'git difftool -t meld --ignore-submodules',
 	                #qd: 'git difftool -t meld -y --ignore-submodules',

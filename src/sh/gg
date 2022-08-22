@@ -22,7 +22,13 @@ when :nvr
     when 1 then system("nvr --remote-tab \"#{ARGV[0]}\"")
     end
 when :subl
+    filepath, linenr = nil, 0
     case ARGV.size
-    when 1 then system("subl \"#{ARGV[0]}\"")
+    when 1
+        filepath = ARGV[0]
+    when 2 then
+        filepath = ARGV[1]
+        linenr = ARGV[0][1..]
     end
+    system("subl \"#{filepath}\":#{linenr}")
 end
