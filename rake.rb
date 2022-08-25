@@ -96,12 +96,13 @@ namespace :tools do
 		end
 	end
 	
-	task :install do
+	task :install do |t, args|
 		require("gubg/build/Cooker")
 		cooker = Build::Cooker.new().option("c++.std", 17).output("bin")
 
-		recipes = %w[gplot autoq sar naft]
-		recipes = %w[gplot sar naft]
+		default_recipes = %w[gplot autoq sar naft]
+		default_recipes = %w[gplot sar naft]
+		recipes = filter_recipes(args, default_recipes)
 		cooker.generate(:ninja, *recipes).ninja()
 	end
 end
