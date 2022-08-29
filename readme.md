@@ -91,6 +91,10 @@ function compile_commands {
 
 * [Learn vimscript the hard way](http://learnvimscriptthehardway.stevelosh.com/)
 
+## Sublime text
+
+* .@ Setup neovim maps via symlink on platforms that support it via prepare
+
 ## License
 
 This software is licensed under the EUPL v1.1 license with the explicit interpretation of the term _modification_ as explained in [license.txt](license.txt).
