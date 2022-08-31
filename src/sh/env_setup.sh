@@ -35,3 +35,6 @@ function use_ccache {
     # macos installed with brew
     export PATH=/opt/homebrew/opt/ccache/libexec:$PATH
 }
+
+# Necessary for fixing a problem with valgrind wrt `Fatal error at startup`
+export DEBUGINFOD_URLS=https://debuginfod.archlinux.org
