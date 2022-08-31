@@ -8,13 +8,15 @@ namespace :tools do
 		case os()
 		when :linux
 			GUBG.chdir(GUBG.home_dir) do
-				%w[.bashrc .zshrc].each do |shrc|
+				%w[bash zsh].each do |shell|
+					shrc = ".#{shell}rc"
 					if !File.read(shrc)["gubg"]
 						puts("Installing GUBG environment into #{shrc}. Restart you shell.")
 						File.open(shrc, "a") do |fo|
 							fo.puts("\n\n#GUBG environment setup")
 							fo.puts("export gubg=$HOME/gubg")
 							fo.puts("export PATH=$PATH:$gubg/bin")
+							fo.puts("source $gubg/bin/all-#{shell}.sh")
 						end
 					end if File.exist?(shrc)
 				end
