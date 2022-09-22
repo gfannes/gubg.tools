@@ -33,7 +33,7 @@ namespace :tools do
 			case os()
 			when :linux, :macos
 				publish(here, 'src/sh', dst: 'bin', mode: 0755)
-				link_unless_exists(shared_file('bin', 'dotinputrc'), GUBG.home_dir('.inputrc'))
+				link_unless_exists(shared_file('bin', 'dotinputrc'), GUBG.home_file('.inputrc'))
 				publish(here, 'src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
 			when :windows
 				publish(here, 'src/bat', dst: 'bin')
