@@ -23,7 +23,7 @@ namespace :tools do
 			end
 			sh "git config --global core.excludesfile ~/.gitignore"
 		end
-		%w[sh git ghist].each do |e|
+		%w[sh git ghist helix].each do |e|
 			Rake::Task["gubg:tools:#{e}:prepare"].invoke()
 		end
 	end
@@ -37,6 +37,14 @@ namespace :tools do
 				publish(here, 'src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
 			when :windows
 				publish(here, 'src/bat', dst: 'bin')
+			end
+		end
+	end
+	namespace :helix do
+		task :prepare do
+			case os()
+			when :linux, :macos
+				publish(here, 'src/helix', dst: GUBG.home_file('.config/helix'), mode: 0755)
 			end
 		end
 	end
