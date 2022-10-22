@@ -1,34 +1,30 @@
 #!/usr/bin/env ruby
-ENV["gubg"] = "#{ENV["HOME"]}/gubg" unless ENV.has_key?("gubg")
-case (ENV["gubg_gg"] || :subl).to_sym()
+
+ENV['gubg'] = "#{ENV['HOME']}/gubg" unless ENV.has_key?('gubg')
+gubg = ENV['gubg']
+
+filepath, linenr = nil, 0
+case ARGV.size
+when 1
+    filepath = ARGV[0]
+when 2 then
+    filepath = ARGV[1]
+    linenr = ARGV[0][1..]
+end
+
+editor = (ENV['gubg_gg'] || :hx).to_sym()
+
+case editor
 when :gvim
-    case ARGV.size
-    when 1 then system("gvim --remote-tab-silent \"#{ARGV[0]}\" 2> /dev/null")
-    when 2 then system("gvim --remote-tab-silent \"+#{ARGV[1]}\" #{ARGV[0]} 2> /dev/null")
-    end
+    system("gvim --remote-tab-silent #{linenr} \"#{filepath}\" 2> /dev/null")
     system("wmctrl -a GVIM")
-when :vim
-    case ARGV.size
-    when 1 then system("vim \"#{ARGV[0]}\"")
-    when 2 then system("vim \"+#{ARGV[1]}\" #{ARGV[0]}")
-    end
-when :nvim
-    case ARGV.size
-    when 1 then system("nvim \"#{ARGV[0]}\"")
-    when 2 then system("nvim \"+#{ARGV[1]}\" #{ARGV[0]}")
-    end
+when :vim, :nvim
+    system("#{editor} #{linenr} \"#{filepath}\"")
 when :nvr
-    case ARGV.size
-    when 1 then system("nvr --remote-tab \"#{ARGV[0]}\"")
-    end
+    system("nvr --remote-tab \"#{filepath}\"")
 when :subl
-    filepath, linenr = nil, 0
-    case ARGV.size
-    when 1
-        filepath = ARGV[0]
-    when 2 then
-        filepath = ARGV[1]
-        linenr = ARGV[0][1..]
-    end
     system("subl \"#{filepath}\":#{linenr}")
+when :hx
+    system("hx -c #{File.join(gubg, 'gubg.tools/src/helix/config.toml')} \"#{filepath}\"")
+else raise("Unknown editor #{hx}")
 end
