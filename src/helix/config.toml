@@ -3,7 +3,7 @@ theme = "sonokai"
 [editor.cursor-shape]
 insert = "bar"
 normal = "block"
-select = "underline"
+select = "bar"
 
 [editor.statusline]
 left = ["mode", "diagnostics"]
