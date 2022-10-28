@@ -1,5 +1,8 @@
 theme = "sonokai"
 
+[editor]
+auto-save = true
+
 [editor.cursor-shape]
 insert = "bar"
 normal = "block"
