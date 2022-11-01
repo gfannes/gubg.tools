@@ -51,6 +51,8 @@ hook global BufSetOption filetype=cpp %{
     map buffer user m 'oMSS();<esc>hhi'
 }
 
-map global normal <c-c> ': comment-line<ret>'
+map global goto c '<esc>: comment-line<ret>'
+map global goto p '<esc>: buffer-previous<ret>'
+map global goto n '<esc>: buffer-next<ret>'
 
 colorscheme gruvbox-dark
