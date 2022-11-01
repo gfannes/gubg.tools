@@ -42,6 +42,7 @@ map global object k '<a-semicolon>lsp-object Class Interface Struct<ret>' -docst
 map global object d '<a-semicolon>lsp-diagnostic-object --include-warnings<ret>' -docstring 'LSP errors and warnings'
 map global object D '<a-semicolon>lsp-diagnostic-object<ret>' -docstring 'LSP errors'
 
+# Copy-paste to clipboard
 map global user y '<a-|>xclip -i -selection clipboard<ret>'
 map global user p '!xclip -selection clipboard -o<ret>'
 
@@ -49,5 +50,7 @@ hook global BufSetOption filetype=cpp %{
     map buffer user n 'oMSS_BEGIN(bool);<esc>oMSS_END();<esc>k'
     map buffer user m 'oMSS();<esc>hhi'
 }
+
+map global normal <c-c> ': comment-line<ret>'
 
 colorscheme gruvbox-dark
