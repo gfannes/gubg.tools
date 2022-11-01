@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+require('gubg/data/table')
+
+log = ->(*msg) do
+    if :do_log
+        puts(*msg)
+    end
+end
+
+fp = ARGV[0]
+yyyymm = ARGV[1]
+year = yyyymm[0,4]
+month = yyyymm[4,2]
+log.("Reading from '#{fp}'")
+table = GUBG::Data::Table.new(sep: ',', escaped: true)
+table.where{|row|row.(:User) == 'Geert Fannes'}
+table.where{|row|row.(:'Start Date')["/#{month}/#{year}"]}
+table.load(fp)
+
+day__jobs = Hash.new{|h,k|h[k] = []}
+re_day = /(\d+)\/#{month}\/#{year}/
+re_story = /\[(.+)\][: ]*(.+)/
+table.each do |row|
+    date = row.('Start Date')
+    day = re_day.match(date)[1].to_i()
+    duration = row.('Duration (h)')
+    description = row.('Description')
+    story = nil
+    if md = re_story.match(description)
+        story = md[1].gsub('-','').downcase()
+        description = md[2]
+    end
+    
+    day__jobs[day] << {
+        duration:  duration.gsub(':', ''),
+        description: description,
+        story: story,
+    }
+end
+
+puts("    [#{month}]{")
+day__jobs.keys().sort().each do |day|
+    puts("        [#{day}]{")
+    day__jobs[day].each do |job|
+        story = job[:story]
+        story = "(s:#{story})" if story
+        puts("            [#{job[:description]}](d:#{job[:duration]})#{story}")
+    end
+    puts("        }")
+end
+puts("    }")
+
+puts("Everything went OK")
