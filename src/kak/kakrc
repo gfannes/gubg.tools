@@ -1,60 +1,97 @@
-source "%val{config}/plugins/plug.kak/rc/plug.kak"
+colorscheme gruvbox-dark
 
-plug "alexherbo2/prelude.kak"
-plug "alexherbo2/auto-pairs.kak"
-plug "alexherbo2/connect.kak"
-plug "andreyorst/fzf.kak"
-plug "kak-lsp/kak-lsp" do %{
- cargo install --locked --force --path .
-}
-plug "occivink/kakoune-find"
-
-enable-auto-pairs
-
-require-module connect
-
-# Only works under tmux
-map global normal <c-p> ': fzf-mode<ret>'
+set-option global grepcmd 'rg --column'
 
 add-highlighter global/ number-lines
 add-highlighter global/ wrap
 
-set-option global grepcmd 'rg --column'
-
 #Auto-save on focus-lost
 hook global FocusOut .* %{ wa }
 
+# Naft support
 hook global BufCreate .+\.naft %{ set buffer filetype naft }
 hook global BufSetOption filetype=naft %{
- set-option buffer formatcmd 'kaka'
+    set-option buffer formatcmd 'kaka'
 }
 
-hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
-    lsp-enable-window
-}
-
-map global user l %{:enter-user-mode lsp<ret>} -docstring "LSP mode"
-map global insert <tab> '<a-;>:try lsp-snippets-select-next-placeholders catch %{ execute-keys -with-hooks <lt>tab> }<ret>' -docstring 'Select next snippet placeholder'
-map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
-map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
-map global object e '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
-map global object k '<a-semicolon>lsp-object Class Interface Struct<ret>' -docstring 'LSP class interface or struct'
-map global object d '<a-semicolon>lsp-diagnostic-object --include-warnings<ret>' -docstring 'LSP errors and warnings'
-map global object D '<a-semicolon>lsp-diagnostic-object<ret>' -docstring 'LSP errors'
+# Chaiscrip support
+hook global BufCreate .*\.(chai) %{ set buffer filetype cpp }
 
 # Copy-paste to clipboard
 map global user y '<a-|>xclip -i -selection clipboard<ret>'
 map global user p '!xclip -selection clipboard -o<ret>'
 
+# Additional GOTO commands
+map global goto c '<esc>: comment-line<ret>' -docstring 'comment line'
+map global goto p '<esc>: buffer-previous<ret>' -docstring 'previous buffer'
+map global goto n '<esc>: buffer-next<ret>' -docstring 'next buffer'
+
+# USER commands
 hook global BufSetOption filetype=cpp %{
-    map buffer user n 'oMSS_BEGIN(bool);<esc>oMSS_END();<esc>k'
-    map buffer user m 'oMSS();<esc>hhi'
+    map buffer user n 'oMSS_BEGIN(bool);<esc>oMSS_END();<esc>k' -docstring 'MSS_BEGIN()/MSS_END()'
+    map buffer user m 'oMSS();<esc>hhi' -docstring 'MSS()'
 }
 
-map global goto c '<esc>: comment-line<ret>'
-map global goto p '<esc>: buffer-previous<ret>'
-map global goto n '<esc>: buffer-next<ret>'
 
-hook global BufCreate .*\.(chai) %{ set buffer filetype cpp }
+# Plugins and their configuration
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
-colorscheme gruvbox-dark
+plug "alexherbo2/prelude.kak"
+
+plug "alexherbo2/auto-pairs.kak" config %{
+    enable-auto-pairs
+}
+
+plug "alexherbo2/connect.kak" config %{
+    require-module connect
+}
+
+plug "andreyorst/fzf.kak" config %{
+    map global normal <c-p> ': fzf-mode<ret>'
+}
+
+plug "occivink/kakoune-find"
+
+plug "lePerdu/kakboard" %{
+    hook global WinCreate .* %{ kakboard-enable }
+}
+
+plug "kak-lsp/kak-lsp" do %{
+    cargo install --locked --force --path .
+} config %{
+    hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
+        lsp-enable-window
+    }
+    map global user l %{:enter-user-mode lsp<ret>} -docstring "LSP mode"
+    map global insert <tab> '<a-;>:try lsp-snippets-select-next-placeholders catch %{ execute-keys -with-hooks <lt>tab> }<ret>' -docstring 'Select next snippet placeholder'
+    map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+    map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+    map global object e '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
+    map global object k '<a-semicolon>lsp-object Class Interface Struct<ret>' -docstring 'LSP class interface or struct'
+    map global object d '<a-semicolon>lsp-diagnostic-object --include-warnings<ret>' -docstring 'LSP errors and warnings'
+    map global object D '<a-semicolon>lsp-diagnostic-object<ret>' -docstring 'LSP errors'
+}
+
+plug "danr/kakoune-easymotion" config %{
+    map global user w :easy-motion-w<ret> -docstring 'easy-motion-w'
+    map global user W :easy-motion-W<ret> -docstring 'easy-motion-W'
+    map global user j :easy-motion-j<ret> -docstring 'easy-motion-j'
+}
+
+plug "andreyorst/kaktree" config %{
+    hook global WinSetOption filetype=kaktree %{
+        remove-highlighter buffer/numbers
+        remove-highlighter buffer/matching
+        remove-highlighter buffer/wrap
+        remove-highlighter buffer/show-whitespaces
+    }
+    kaktree-enable
+}
+
+plug "gustavo-hms/luar" %{
+    plug "gustavo-hms/peneira" %{
+        require-module peneira
+    }
+}
+
+plug "anhsirk0/kakoune-themes" noload
