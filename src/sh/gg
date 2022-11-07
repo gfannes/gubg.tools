@@ -26,6 +26,9 @@ when :subl
     system("subl \"#{filepath}\":#{linenr}")
 when :kak
     system("kak +#{linenr} #{filepath}")
+when :kakr
+    system("echo eval -client client0 edit #{File.absolute_path(filepath)} #{linenr} | kak -p main")
+    system("wmctrl -a ' - Kakoune'")
 when :hx
     system("hx -c #{File.join(gubg, 'gubg.tools/src/helix/config.toml')} \"#{filepath}\"")
 else raise("Unknown editor #{hx}")

@@ -55,4 +55,6 @@ map global goto c '<esc>: comment-line<ret>'
 map global goto p '<esc>: buffer-previous<ret>'
 map global goto n '<esc>: buffer-next<ret>'
 
+hook global BufCreate .*\.(chai) %{ set buffer filetype cpp }
+
 colorscheme gruvbox-dark
