@@ -4,6 +4,7 @@ set-option global grepcmd 'rg --column'
 
 add-highlighter global/ number-lines
 add-highlighter global/ wrap
+add-highlighter window/ dynregex '%reg{/}' 0:+i
 
 #Auto-save on focus-lost
 hook global FocusOut .* %{ wa }
@@ -17,10 +18,6 @@ hook global BufSetOption filetype=naft %{
 # Chaiscrip support
 hook global BufCreate .*\.(chai) %{ set buffer filetype cpp }
 
-# Copy-paste to clipboard
-map global user y '<a-|>xclip -i -selection clipboard<ret>'
-map global user p '!xclip -selection clipboard -o<ret>'
-
 # Additional GOTO commands
 map global goto c '<esc>: comment-line<ret>' -docstring 'comment line'
 map global goto p '<esc>: buffer-previous<ret>' -docstring 'previous buffer'
@@ -31,6 +28,7 @@ hook global BufSetOption filetype=cpp %{
     map buffer user n 'oMSS_BEGIN(bool);<esc>oMSS_END();<esc>k' -docstring 'MSS_BEGIN()/MSS_END()'
     map buffer user m 'oMSS();<esc>hhi' -docstring 'MSS()'
 }
+map global user a ': eval %val{selection}<ret>' -docstring 'Evaluate selection'
 
 
 # Plugins and their configuration
@@ -95,3 +93,11 @@ plug "gustavo-hms/luar" %{
 }
 
 plug "anhsirk0/kakoune-themes" noload
+
+plug 'delapouite/kakoune-cd' config %{
+  map global user c ': enter-user-mode cd<ret>' -docstring 'cd'
+  alias global cdb change-directory-current-buffer
+  alias global cdr change-directory-project-root
+  alias global ecd edit-current-buffer-directory
+  alias global pwd print-working-directory
+}

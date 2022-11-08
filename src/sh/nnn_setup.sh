@@ -1,4 +1,4 @@
-export NNN_PLUG="p:preview-tui"
+export NNN_PLUG="p:preview-tui;f:fzopen"
 
 #Colors
 nnn_blk="c1"
