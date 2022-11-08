@@ -4,7 +4,7 @@ set-option global grepcmd 'rg --column'
 
 add-highlighter global/ number-lines
 add-highlighter global/ wrap
-add-highlighter window/ dynregex '%reg{/}' 0:+i
+add-highlighter global/ dynregex '%reg{/}' 0:MatchingChar
 
 #Auto-save on focus-lost
 hook global FocusOut .* %{ wa }
