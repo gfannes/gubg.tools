@@ -101,3 +101,8 @@ plug 'delapouite/kakoune-cd' config %{
   alias global ecd edit-current-buffer-directory
   alias global pwd print-working-directory
 }
+
+plug "enricozb/tabs.kak" config %{
+  set-option global modelinefmt_tabs '%val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} %val{buffile}'
+  map global normal , ': enter-user-mode -lock tabs<ret>' -docstring 'tabs (lock)'
+}
