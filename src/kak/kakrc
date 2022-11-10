@@ -50,7 +50,7 @@ plug "andreyorst/fzf.kak" config %{
 
 plug "occivink/kakoune-find"
 
-plug "lePerdu/kakboard" %{
+plug "lePerdu/kakboard" config %{
     hook global WinCreate .* %{ kakboard-enable }
 }
 
@@ -104,5 +104,6 @@ plug 'delapouite/kakoune-cd' config %{
 
 plug "enricozb/tabs.kak" config %{
   set-option global modelinefmt_tabs '%val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} %val{buffile}'
+  map global normal ` ,
   map global normal , ': enter-user-mode -lock tabs<ret>' -docstring 'tabs (lock)'
 }
