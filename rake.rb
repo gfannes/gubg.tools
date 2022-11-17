@@ -8,7 +8,7 @@ namespace :tools do
 		case os()
 		when :linux
 			GUBG.chdir(GUBG.home_dir) do
-				%w[bash zsh].each do |shell|
+				%i[bash zsh].each do |shell|
 					shrc = ".#{shell}rc"
 					if !File.read(shrc)["gubg"]
 						puts("Installing GUBG environment into #{shrc}. Restart you shell.")
@@ -23,7 +23,7 @@ namespace :tools do
 			end
 			sh "git config --global core.excludesfile ~/.gitignore"
 		end
-		%w[sh git ghist helix kak].each do |e|
+		%i[sh git ghist helix kak broot].each do |e|
 			Rake::Task["gubg:tools:#{e}:prepare"].invoke()
 		end
 	end
@@ -54,6 +54,11 @@ namespace :tools do
 			when :linux, :macos
 				publish(here, 'src/kak', dst: GUBG.home_file('.config/kak'), mode: 0755)
 			end
+		end
+	end
+	namespace :broot do
+		task :prepare do
+			publish(here, 'src/broot', dst: GUBG.home_file('.config/broot'), mode: 0755)
 		end
 	end
 	namespace :git do

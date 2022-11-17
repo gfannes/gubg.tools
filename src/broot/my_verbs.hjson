@@ -1,0 +1,15 @@
+{
+
+    verbs: [
+
+        {
+            invocation: open_stay
+            key: enter
+            shortcut: o
+            apply_to: file
+            execution: "$EDITOR +{line} {file}"
+            leave_broot: false
+        }
+    ]
+
+}
