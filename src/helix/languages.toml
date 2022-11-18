@@ -1,0 +1,7 @@
+[[language]]
+name = "cpp"
+indent = {tab-width=4, unit="    "}
+
+[[language]]
+name = "ruby"
+indent = {tab-width=4, unit="    "}

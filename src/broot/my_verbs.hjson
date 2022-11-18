@@ -1,7 +1,5 @@
 {
-
     verbs: [
-
         {
             invocation: open_stay
             key: enter
@@ -10,6 +8,19 @@
             execution: "$EDITOR +{line} {file}"
             leave_broot: false
         }
-    ]
 
+        {
+            invocation: run {cmd}
+            apply_to: file
+            execution: "{cmd} {file} &"
+            leave_broot: false
+        }
+
+        {
+            invocation: yed
+            apply_to: file
+            execution: "yed {file}"
+            leave_broot: false
+        }
+    ]
 }
