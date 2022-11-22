@@ -1,5 +1,5 @@
 require("gubg/shared")
-include GUBG
+include Gubg
 
 here = File.dirname(__FILE__)
 
@@ -7,13 +7,13 @@ namespace :tools do
 	task :prepare do
 		case os()
 		when :linux
-			GUBG.chdir(GUBG.home_dir) do
+			Gubg.chdir(Gubg.home_dir) do
 				%i[bash zsh].each do |shell|
 					shrc = ".#{shell}rc"
 					if !File.read(shrc)["gubg"]
-						puts("Installing GUBG environment into #{shrc}. Restart you shell.")
+						puts("Installing Gubg environment into #{shrc}. Restart you shell.")
 						File.open(shrc, "a") do |fo|
-							fo.puts("\n\n#GUBG environment setup")
+							fo.puts("\n\n#Gubg environment setup")
 							fo.puts("export gubg=$HOME/gubg")
 							fo.puts("export PATH=$PATH:$gubg/bin")
 							fo.puts("source $gubg/bin/all-#{shell}.sh")
@@ -33,7 +33,7 @@ namespace :tools do
 			case os()
 			when :linux, :macos
 				publish(here, 'src/sh', dst: 'bin', mode: 0755)
-				link_unless_exists(shared_file('bin', 'dotinputrc'), GUBG.home_file('.inputrc'))
+				link_unless_exists(shared_file('bin', 'dotinputrc'), Gubg.home_file('.inputrc'))
 				publish(here, 'src/ruby', dst: 'bin', mode: 0755){|fn|fn.gsub(/\.rb$/,'')}
 			when :windows
 				publish(here, 'src/bat', dst: 'bin')
@@ -44,7 +44,7 @@ namespace :tools do
 		task :prepare do
 			case os()
 			when :linux, :macos
-				publish(here, 'src/helix', dst: GUBG.home_file('.config/helix'), mode: 0755)
+				publish(here, 'src/helix', dst: Gubg.home_file('.config/helix'), mode: 0755)
 			end
 		end
 	end
@@ -52,13 +52,13 @@ namespace :tools do
 		task :prepare do
 			case os()
 			when :linux, :macos
-				publish(here, 'src/kak', dst: GUBG.home_file('.config/kak'), mode: 0755)
+				publish(here, 'src/kak', dst: Gubg.home_file('.config/kak'), mode: 0755)
 			end
 		end
 	end
 	namespace :broot do
 		task :prepare do
-			publish(here, 'src/broot', dst: GUBG.home_file('.config/broot'), mode: 0755)
+			publish(here, 'src/broot', dst: Gubg.home_file('.config/broot'), mode: 0755)
 		end
 	end
 	namespace :git do
@@ -136,7 +136,7 @@ namespace :autoq do
         test_cases = (0...2).to_a
         test_cases.each do |tc|
             base = "test/ee/autoq"
-            Dir.chdir(GUBG.mkdir(here, base, tc)) do
+            Dir.chdir(Gubg.mkdir(here, base, tc)) do
                 case tc
                 when 0
                     sh "autoq -h"
