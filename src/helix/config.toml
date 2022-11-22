@@ -18,6 +18,7 @@ g = { a = "code_action", o = "goto_last_accessed_file" }
 "ret" = ["move_line_down", "goto_first_nonwhitespace"] # Maps the enter key to move to start of next line
 X = "extend_line_above"
 D = "delete_char_backward"
+"minus" = { w = ":reflow 130", r = ["open_above", ":pipe echo '#include <>'"] }
 
 [keys.insert]
 C-space = "completion"

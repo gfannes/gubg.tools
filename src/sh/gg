@@ -12,7 +12,7 @@ when 2 then
     linenr = ARGV[0][1..]
 end
 
-editor = (ENV['gubg_gg'] || :kak).to_sym()
+editor = (ENV['gubg_gg'] || :hx).to_sym()
 
 case editor
 when :gvim
