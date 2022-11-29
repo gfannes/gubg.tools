@@ -1,0 +1,67 @@
+#!/usr/bin/ruby
+
+require('open3')
+require('set')
+require('io/console')
+
+cmd = ARGV.dup()
+puts("Running '#{cmd}'")
+
+queue = Queue.new()
+
+thread = Thread.new() do
+	re_compile = /^([^:]+):(\d+):(\d+): error: /
+	re_ut = /^([^:]+):(\d+): FATAL ERROR: /
+	re_mss = /^MSS Error:/
+
+	fps = Set.new()
+	while line = queue.pop()
+		if :print_line
+			if re_mss.match(line)
+				puts(line)
+			else
+				prefix, postfix = 200, 10
+				if line.size() <= (prefix+postfix)
+					puts(line)
+				else
+					puts(line[0, prefix]+"...#{line.size()}..."+line[-postfix, postfix])
+				end
+			end
+		end
+
+		fp, line_nr = nil, nil
+		if md = re_compile.match(line)
+			if !fps.include?(fp)
+				fp, line_nr = md[1], md[2]
+				fps.add(fp)
+			end
+		elsif md = re_ut.match(line)
+			fp, line_nr = md[1], md[2]
+			puts("Press 'q' to stop, 'o' to open and any other key to skip the above failing UT")
+			ch = STDIN.getch()
+			case ch
+			when 'q' then break
+			when 'o'
+			else fp, line_nr = nil, nil
+			end
+		end
+
+		system('hx', "#{fp}:#{line_nr}") if fp
+	end
+end
+
+Open3.popen2e(*cmd) do |input, output, thread|
+	begin
+		while line = output.readline()
+			queue.push(line)
+		end
+	rescue EOFError
+	end
+
+	exit_status = thread.value()
+end
+
+# Stop the thread
+queue.push(nil)
+
+thread.join()
