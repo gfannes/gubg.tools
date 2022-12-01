@@ -84,6 +84,7 @@ namespace :tools do
 	                qd: 'git icdiff',
 	                qc: 'git commit -a',
 	                qp: 'git pull --rebase',
+					qpp: ['git stash', 'git pull --rebase', 'git stash apply'],
 	                qq: 'git push',
 	                ql: 'git log -n 5',
 	                qm: ['git checkout master', 'git branch -d'],

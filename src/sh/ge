@@ -31,8 +31,10 @@ thread = Thread.new() do
 
 		fp, line_nr = nil, nil
 		if md = re_compile.match(line)
-			if !fps.include?(fp)
-				fp, line_nr = md[1], md[2]
+			fp, line_nr = md[1], md[2]
+			if fps.include?(fp)
+				fp = nil
+			else
 				fps.add(fp)
 			end
 		elsif md = re_ut.match(line)
