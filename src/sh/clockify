@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require_relative(File.join(ENV['gubg'], 'gubg.build/load.rb'))
 require('gubg/data/table')
 
 log = ->(*msg) do
@@ -13,7 +14,7 @@ yyyymm = ARGV[1]
 year = yyyymm[0,4]
 month = yyyymm[4,2]
 log.("Reading from '#{fp}'")
-table = GUBG::Data::Table.new(sep: ',', escaped: true)
+table = Gubg::Data::Table.new(sep: ',', escaped: true)
 table.where{|row|row.(:User) == 'Geert Fannes'}
 table.where{|row|row.(:'Start Date')["/#{month}/#{year}"]}
 table.load(fp)
