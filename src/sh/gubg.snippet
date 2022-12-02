@@ -1,0 +1,15 @@
+#!/usr/bin/ruby
+
+is_auro = Dir.pwd()['/auro/']
+
+str = case ARGV[0]
+when 'test_case' then "#{is_auro ? 'TEST_CASE_FAST': 'TEST_CASE'}(\"\", \"#{is_auro ? '' : '[ut]'}\")\n{\n}\n"
+when 'section' then "SECTION(\"\")\n{\n}\n"
+when 'require' then "REQUIRE();"
+when 'stream' then "\" <<  << \""
+when 'mss_begin' then "MSS_BEGIN(bool);\nMSS_END();\n"
+when 'mss' then "MSS();"
+when 'class' then  "class \n{public:\nprivate:};\n"
+end
+
+print(str)
