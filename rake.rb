@@ -45,6 +45,8 @@ namespace :tools do
 			case os()
 			when :linux, :macos
 				publish(here, 'src/helix', dst: Gubg.home_file('.config/helix'), mode: 0755)
+			when :windows
+				publish(here, 'src/helix', dst: Gubg.home_file('AppData/Roaming/helix'), mode: 0755)
 			end
 		end
 	end
