@@ -124,7 +124,7 @@ namespace :tools do
 	
 	task :install do |t, args|
 		require("gubg/build/Cooker")
-		cooker = Build::Cooker.new().option("c++.std", 17).output("bin")
+		cooker = Build::Cooker.new().option("c++.std", 20).output("bin")
 
 		default_recipes = %w[gplot autoq sar naft]
 		default_recipes = %w[gplot sar naft]
