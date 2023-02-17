@@ -1,0 +1,44 @@
+#!/usr/bin/ruby
+
+require('open3')
+
+run_cmd = ARGV.dup()
+
+re = /^([^:]+):(\d+):(\d+): error: (.+)$/
+
+loop do
+    fp__errors = Hash.new{|h,k|h[k] = []}
+
+    puts("Running '#{run_cmd*' '}'")
+    output, status = Open3.capture2(*run_cmd)
+    puts(status)
+    if status.success?()
+        puts("Everything is fixed")
+        break
+    end
+
+    output.each_line do |line|
+        if md = re.match(line)
+            fp, line, col, msg = *md[(1...5)]
+            fp__errors[fp] << { line: line, col: col, msg: msg }
+        end
+    end
+
+    hx_cmd = %w[hx]
+
+    fp__errors.each do |fp, errors|
+        puts("\nFound #{errors.size} errors in #{fp}")
+        errors.each do |error|
+            puts("\t#{error[:line]}: #{error[:msg]}")
+        end
+
+        error = errors[0]
+        hx_cmd << "#{fp}:#{error[:line]}:#{error[:col]}"
+    end
+
+    puts("Do you want to fix these errors?")
+    answer = STDIN.gets().chomp()
+    break if !answer.empty?()
+
+    system(hx_cmd*' ')
+end

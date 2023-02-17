@@ -46,3 +46,8 @@ c() {
 
 # cargo install zoxide
 eval "$(zoxide init bash)"
+
+#VI commandline setup
+# autoload edit-command-line; zle -N edit-command-line
+# bindkey -M vicmd v edit-command-line
+# bindkey -v

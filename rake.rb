@@ -10,15 +10,20 @@ namespace :tools do
 			Gubg.chdir(Gubg.home_dir) do
 				%i[bash zsh].each do |shell|
 					shrc = ".#{shell}rc"
-					if !File.read(shrc)["gubg"]
+					next unless File.exist?(shrc)
+
+					content = File.read(shrc)
+
+					if !content['gubg']
 						puts("Installing Gubg environment into #{shrc}. Restart you shell.")
-						File.open(shrc, "a") do |fo|
+						File.open(shrc, 'a') do |fo|
 							fo.puts("\n\n#Gubg environment setup")
 							fo.puts("export gubg=$HOME/gubg")
 							fo.puts("export PATH=$PATH:$gubg/bin")
 							fo.puts("source $gubg/bin/all-#{shell}.sh")
 						end
-					end if File.exist?(shrc)
+					end
+
 				end
 			end
 			sh "git config --global core.excludesfile ~/.gitignore"
