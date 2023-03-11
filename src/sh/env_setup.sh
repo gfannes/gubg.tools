@@ -2,6 +2,7 @@ source "$gubg_script_dir/os.sh"
 
 if [[ "$os" == macos ]]; then
   alias ls="ls "
+  ulimit -n 10240
 else
   alias ls="ls --color "
 fi
