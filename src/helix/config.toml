@@ -3,6 +3,7 @@ theme = "sonokai"
 [editor]
 auto-save = true
 bufferline = "multiple"
+soft-wrap.enable = true
 
 [editor.cursor-shape]
 insert = "bar"
