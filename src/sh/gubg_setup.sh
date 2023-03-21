@@ -51,3 +51,19 @@ eval "$(zoxide init bash)"
 # autoload edit-command-line; zle -N edit-command-line
 # bindkey -M vicmd v edit-command-line
 # bindkey -v
+
+# https://blog.setale.me/2022/12/27/Switching-to-Helix-My-Experience-and-Tips/
+# Helix Search
+hxs() {
+	RG_PREFIX="rg -i --files-with-matches"
+	local files
+	files="$(
+		FZF_DEFAULT_COMMAND_DEFAULT_COMMAND="$RG_PREFIX '$1'" \
+			fzf --multi 3 --print0 --sort --preview="[[ ! -z {} ]] && rg --pretty --context 5 {q} {}" \
+				--phony -i -q "$1" \
+				--bind "change:reload:$RG_PREFIX {q}" \
+				--preview-window="70%:wrap" \
+				--bind 'ctrl-a:select-all'
+	)"
+	[[ "$files" ]] && hx --vsplit $(echo $files | tr \\0 " ")
+}

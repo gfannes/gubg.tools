@@ -1,0 +1,74 @@
+#!/usr/bin/ruby
+
+require('fileutils')
+
+what = ARGV.shift()
+args = ARGV
+
+case what
+when 'class'
+    if :pop_and_parse_path
+        path = args.shift().split('/')
+        base, rel, name = [], [], nil
+        base << path.shift() while !%w[auro gubg].include?(path[0])
+        rel << path.shift() while path.size() > 1
+        name = path.shift()
+    end
+
+    options = {force: false, template: false}
+    while arg = args.shift()
+        arg = arg.to_sym()
+        options[arg] = true
+    end
+
+    folder = File.join(*base, *rel)
+    FileUtils.mkdir_p(folder)
+
+    hpp_fp, cpp_fp = *%w[hpp cpp].map do |ext|
+        fp = File.join(folder, "#{name}.#{ext}")
+        if File.exist?(fp)
+            if options[:force]
+                puts("Warning: removing existing file '#{fp}'")
+                FileUtils.rm(fp)
+            else
+                raise("File #{fp} already exists") 
+            end
+        end
+        fp
+    end
+
+    puts("Creating class declaration for '#{name}' in '#{hpp_fp}'")
+    File.open(hpp_fp, 'w') do |fo|
+        fo.puts("#ifndef HEADER_#{(rel+[name, 'hpp'])*'_'}_ALREAD_INCLUDED")
+        fo.puts("#define HEADER_#{(rel+[name, 'hpp'])*'_'}_ALREAD_INCLUDED")
+        fo.puts("")
+        fo.puts(rel.map{|e|"namespace #{e} {"}*' ')
+        fo.puts("")
+        if options[:template]
+            fo.puts("    template<typename T>")
+        end
+        fo.puts("    class #{name}")
+        fo.puts("    {")
+        fo.puts("    public:")
+        fo.puts("    private:")
+        fo.puts("    };")
+        fo.puts("")
+        fo.puts("#{'}'*rel.size()} // namespace #{rel*'::'}")
+        fo.puts("")
+        fo.puts("#endif")
+    end
+
+    if !options[:template]
+        puts("Creating class definition for '#{name}' in '#{cpp_fp}'")
+        File.open(cpp_fp, 'w') do |fo|
+            fo.puts("#include <#{rel*'/'}/#{name}.hpp>")
+            fo.puts("")
+            fo.puts(rel.map{|e|"namespace #{e} {"}*' ')
+            fo.puts("")
+            fo.puts("")
+            fo.puts("#{'}'*rel.size()} // namespace #{rel*'::'}")
+        end
+    end
+
+else raise("Don't know how to create '#{what}'")
+end
