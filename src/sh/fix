@@ -4,7 +4,7 @@ require('open3')
 
 run_cmd = ARGV.dup()
 
-re_error = /^([^:]+):(\d+):(\d+): error: (.+)$/
+re_error = /^([^:]+):(\d+):(\d+): .*error: (.+)$/
 re_progress = /^\[(\d+)\/(\d+)\]/
 
 loop do
