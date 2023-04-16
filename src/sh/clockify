@@ -9,6 +9,13 @@ log = ->(*msg) do
     end
 end
 
+def print_help()
+    puts("clockify <filepath> <yyyymm>")
+    exit(-1)
+end
+
+print_help() unless (0...2).all?{|ix|ARGV[ix]}
+
 fp = ARGV[0]
 yyyymm = ARGV[1]
 year = yyyymm[0,4]
