@@ -4,6 +4,7 @@ theme = "sonokai"
 auto-save = true
 bufferline = "multiple"
 soft-wrap.enable = true
+lsp.display-inlay-hints = true
 
 [editor.cursor-shape]
 insert = "bar"
