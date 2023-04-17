@@ -33,7 +33,7 @@ when 'class'
     if :pop_and_parse_path
         path = args.shift().split('/')
         base, rel, name = [], [], nil
-        base << path.shift() while !%w[auro gubg].include?(path[0])
+        base << path.shift() while !%w[gubg auro app].include?(path[0])
         rel << path.shift() while path.size() > 1
         name = path.shift()
     end
