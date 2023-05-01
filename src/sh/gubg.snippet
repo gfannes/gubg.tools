@@ -7,7 +7,8 @@ when 'test_case' then "#{is_auro ? 'TEST_CASE_FAST': 'TEST_CASE'}(\"\", \"#{is_a
 when 'section' then "SECTION(\"\")\n{\n}\n"
 when 'require' then "REQUIRE();"
 when 'stream' then "\" <<  << \""
-when 'mss_begin' then "MSS_BEGIN(bool);\nMSS_END();\n"
+when 'mss_begin_bool' then "MSS_BEGIN(bool);\nMSS_END();\n"
+when 'mss_begin_RC' then "MSS_BEGIN(auro_ReturnCode_t);\nMSS_END();\n"
 when 'mss' then "MSS();"
 when 'class' then  "class \n{public:\nprivate:};\n"
 end
