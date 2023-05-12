@@ -1,2 +1,2 @@
 #!/usr/bin/env ruby
-system('gg', *ARGV)
+system('hx', *ARGV)
