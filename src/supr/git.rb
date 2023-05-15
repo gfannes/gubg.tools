@@ -52,6 +52,53 @@ module Supr
                 @root = nil
             end
 
+            def push(toplevel_dir)
+                dirs = [toplevel_dir]
+                recurse = ->(repo){
+                    dir = File.join(dirs[-1], repo.rel)
+                    git = ::Git.open(dir)
+                    branch = git.lib.branch_current()
+                    os(2, "Branch: #{branch}")
+
+                    fail("I cannot force-push to branch '#{branch}'") if %w[master stable main develop].include?(branch)
+
+                    begin
+                        git.lib.send(:command, 'push', '--set-upstream', 'origin', branch)
+                    rescue ::Git::FailedError
+                        error("Could not push '#{dir}' to branch '#{branch}'")
+                    end
+
+                    dirs.push(dir)
+                    repo.subrepos.each do |subrepo|
+                        recurse.(subrepo)
+                    end
+                    dirs.pop()
+                }
+                recurse.(@root)
+            end
+
+            def branch(toplevel_dir, name)
+                dirs = [toplevel_dir]
+                recurse = ->(repo){
+                    dir = File.join(dirs[-1], repo.rel)
+                    git = ::Git.open(dir)
+                    if git.is_branch?(name)
+                        git.checkout(name)
+                        git.reset_hard(repo.sha)
+                    else
+                        git.lib.branch_new(name)
+                    end
+                    git.checkout(name)
+
+                    dirs.push(dir)
+                    repo.subrepos.each do |subrepo|
+                        recurse.(subrepo)
+                    end
+                    dirs.pop()
+                }
+                recurse.(@root)
+            end
+
             def apply(toplevel_dir, force: nil)
                 git = ::Git.open(toplevel_dir)
                 git.fetch()
@@ -87,7 +134,7 @@ module Supr
             end
 
             def from_dir(toplevel_dir)
-                @root = Repo.new(sha: ::Git.open(toplevel_dir).log.first.sha)
+                @root = Repo.new(rel: '', sha: ::Git.open(toplevel_dir).log.first.sha)
 
                 stack = [@root]
                 recurse = ->(dir){

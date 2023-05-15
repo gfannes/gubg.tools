@@ -11,13 +11,16 @@ module Supr
         def call()
             set_os(@options.verbose_level)
 
-            mode = @options.mode
-            if !mode
-                error("No mode was specified")
-                mode = :help
+            verb = @options.verb
+            if !verb
+                error("No verb was specified")
+                verb = :help
             end
 
-            self.send("run_#{mode}_".to_sym())
+            method = "run_#{verb}_".to_sym()
+            fail("Unknown verb '#{verb}'") unless self.respond_to?(method, true)
+
+            self.send(method)
         end
 
         private
@@ -39,12 +42,28 @@ module Supr
 
         def run_collect_()
             toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
-            os(3, "toplevel_dir: #{toplevel_dir}")
 
             state = Supr::Git::State.new().from_dir(toplevel_dir)
 
             fp = @options.output_fp || 'supr.naft'
             File.write(fp, state.to_naft())
+        end
+
+        def run_branch_()
+            branch = @options.branch || @options.rest[0]
+            fail("No branch was specified") unless branch
+
+            toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
+
+            state = Supr::Git::State.new().from_dir(toplevel_dir)
+            state.branch(toplevel_dir, branch)
+        end
+
+        def run_push_()
+            toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
+
+            state = Supr::Git::State.new().from_dir(toplevel_dir)
+            state.push(toplevel_dir)
         end
     end
 end
