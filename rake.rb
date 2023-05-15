@@ -28,7 +28,7 @@ namespace :tools do
 			end
 			sh "git config --global core.excludesfile ~/.gitignore"
 		end
-		%i[sh git ghist helix kak broot].each do |e|
+		%i[sh git ghist helix kak broot supr].each do |e|
 			Rake::Task["gubg:tools:#{e}:prepare"].invoke()
 		end
 	end
@@ -124,6 +124,12 @@ namespace :tools do
 		task :prepare do
 			publish(here, 'src/ghist', pattern: "ghist", dst: 'bin', mode: 0755)
 			publish(here, 'src/ghist', pattern: "*.rb", dst: 'ruby')
+		end
+	end
+	namespace :supr do
+		task :prepare do
+			publish(here, 'src/supr', pattern: "supr", dst: 'bin', mode: 0755)
+			publish(here, 'src', pattern: "supr/**/*.rb", dst: 'ruby')
 		end
 	end
 	
