@@ -311,13 +311,13 @@ module Supr
 
             def apply(force: nil)
                 scope("Applying git state", level: 1) do |out|
-                    git = ::Git.open(@toplevel_dir)
-                    out.("Running 'git fetch'"){git.fetch()}
-
                     recurse(
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             out.("Applying '#{rel_(dir)}'", level: 3) do
+                                git = ::Git.open(dir)
+                                out.("Running 'git fetch' in '#{rel_(dir)}'", level: 3){git.fetch()}
+
                                 if File.exists?(File.join(dir, '.git'))
                                     out.(".git is present", level: 3)
                                 else
@@ -336,7 +336,6 @@ module Supr
 
                                 out.fail("Repo '#{dir}' is not clean") if !is_clean && !force
 
-                                git = ::Git.open(dir)
                                 if @protected_branches.include?(git.current_branch())
                                     git.checkout(repo.sha)
                                 else
