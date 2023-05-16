@@ -21,6 +21,7 @@ module Supr
                     run: "Run command",
                     diff: "Show a diff for all dirty files",
                     commit: "Commit all dirty files",
+                    sync: "Sync local git repo with given branch",
                 }.each do |verb, descr|
                     opts.separator("    #{verb}\t#{descr}")
                 end

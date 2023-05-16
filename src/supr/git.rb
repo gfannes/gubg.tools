@@ -260,14 +260,29 @@ module Supr
                 end
             end
 
+            def sync(branch_name)
+                scope("Syncing with branch '#{branch_name}'") do |out|
+                    Supr::Cmd.run([%w[git -C], @toplevel_dir, 'fetch'])
+                    recurse(
+                        on_open: ->(repo, base_dir){
+                            dir = repo.dir(base_dir)
+                            out.("Syncing '#{rel_(dir)}'", level: 2) do
+                                Supr::Cmd.run([%w[git -C], dir, 'rebase', branch_name])
+                            end
+                        }
+                    )
+                end
+            end
+
             def apply(force: nil)
                 scope("Applying git state", level: 1) do |out|
                     git = ::Git.open(@toplevel_dir)
                     out.("Running 'git fetch'"){git.fetch()}
 
-                    recurse(on_open: ->(repo, base_dir){
+                    recurse(
+                        on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
-                            out.("Applying '#{dir}'", level: 3) do
+                            out.("Applying '#{rel_(dir)}'", level: 3) do
                                 if File.exists?(File.join(dir, '.git'))
                                     out.(".git is present", level: 3)
                                 else
