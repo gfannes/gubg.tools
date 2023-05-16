@@ -28,13 +28,13 @@ module Supr
             res = nil
             if block
                 if do_log(level)
-                    $global_scope_level += 1
                     output('  ', '🠚 ', *args)
+                    $global_scope_level += 1
                 end
                 res = block.()
                 if do_log(level)
-                    output('  ', '🠘 ', *args)
                     $global_scope_level -= 1
+                    output('  ', '🠘 ', *args)
                 end
             else
                 output('  ', *args) if do_log(level)
