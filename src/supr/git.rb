@@ -34,7 +34,7 @@ module Supr
 
             re_m = / M (.+)/
             re_d = / D (.+)/
-            Supr::Cmd.run(%w[git -C]+[dir]+%w[status -s], chomp: true) do |line|
+            Supr::Cmd.run([%w[git -C], dir, %w[status -s]], chomp: true) do |line|
                 if md = re_m.match(line)
                     fp = md[1]
                     res << fp unless File.directory?(File.join(dir, fp))
@@ -42,6 +42,16 @@ module Supr
                     fp = md[1]
                     res << fp
                 end
+            end
+
+            res
+        end
+
+        def self.branches(dir)
+            res = []
+
+            Supr::Cmd.run([%w[git -C], dir, 'branch'], chomp: true) do |line|
+                res << line[2, line.size()]
             end
 
             res
@@ -212,7 +222,7 @@ module Supr
             end
 
             def branch(branch_name, delete: nil, force: nil)
-                scope("#{delete ? 'Deleting' : 'Creating'} local branches '#{branch_name}' from '#{@toplevel_dir}'", level: 1) do |out|
+                scope("#{delete ? 'Deleting' : 'Creating'} local branche '#{branch_name}' from '#{@toplevel_dir}'", level: 1) do |out|
                     out.fail("No branch name was specified") unless branch_name
                     out.fail("I cannot #{delete ? 'delete' : 'create'} branches with name '#{branch_name}'") if @protected_branches.include?(branch_name)
 
@@ -231,7 +241,8 @@ module Supr
                                         end
                                     end
                                 else
-                                    if git.is_branch?(branch_name)
+                                    out.fail("Cannot create/update branch '#{branch_name}' for dirty repo '#{rel_(dir)}'") unless Supr::Git.dirty_files(dir).empty?()
+                                    if Supr::Git.branches(dir).include?(branch_name)
                                         out.("Resetting branch '#{branch_name}' to '#{repo.sha}'", level: 2) do
                                             git.checkout(branch_name)
                                             git.reset_hard(repo.sha)
