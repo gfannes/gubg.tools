@@ -5,7 +5,7 @@ require('open3')
 module Supr
     module Cmd
 
-        def self.run(*args, chomp: nil, &block)
+        def self.run(*args, chomp: nil, allow_fail: nil, &block)
             scope("Running command '#{args.map{|e|e.to_s()}}'", level: 3) do |out|
                 output = nil
                 status = nil
@@ -25,7 +25,13 @@ module Supr
                     output = output.chomp() if chomp
                 end
 
-                out.fail("Could not run '#{args*' '}'") unless status.success?
+                if !status.success?
+                    if allow_fail
+                        out.warning("Could not run '#{args*' '}'")
+                    else
+                        out.fail("Could not run '#{args*' '}'")
+                    end
+                end
 
                 output
             end

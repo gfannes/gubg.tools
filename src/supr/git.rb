@@ -260,6 +260,20 @@ module Supr
                 end
             end
 
+            def switch(branch_name, force: nil)
+                scope("Switching to branch '#{branch_name}'", level: 1) do |out|
+                    Supr::Cmd.run([%w[git -C], @toplevel_dir, 'fetch'])
+                    recurse(
+                        on_open: ->(repo, base_dir){
+                            dir = repo.dir(base_dir)
+                            out.("Switch to branch '#{branch_name}' in '#{rel_(dir)}'", level: 2) do
+                                Supr::Cmd.run([%w[git -C], dir, 'switch', branch_name], allow_fail: true)
+                            end
+                        }
+                    )
+                end
+            end
+
             def sync(branch_name)
                 scope("Syncing with branch '#{branch_name}'") do |out|
                     Supr::Cmd.run([%w[git -C], @toplevel_dir, 'fetch'])
