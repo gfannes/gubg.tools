@@ -102,7 +102,7 @@ module Supr
             branch = @options.branch || @rest[0]
             error("No branch was specified") unless branch
 
-            @state.sync(branch)
+            @state.sync(branch, force: @options.force)
         end
 
         def run_deliver_()

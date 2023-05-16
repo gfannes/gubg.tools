@@ -274,14 +274,14 @@ module Supr
                 end
             end
 
-            def sync(branch_name)
+            def sync(branch_name, force: true)
                 scope("Syncing with branch '#{branch_name}'", level: 0) do |out|
                     Supr::Cmd.run([%w[git -C], @toplevel_dir, 'fetch'])
                     recurse(
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             out.("Syncing '#{rel_(dir)}'", level: 2) do
-                                Supr::Cmd.run([%w[git -C], dir, 'rebase', branch_name])
+                                Supr::Cmd.run([%w[git -C], dir, 'rebase', branch_name], allow_fail: force)
                             end
                         }
                     )
