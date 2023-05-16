@@ -93,7 +93,8 @@ module Supr
 
             def push()
                 recurse(on_open: ->(repo, base_dir){
-                        git = ::Git.open(repo.dir(base_dir))
+                        dir = repo.dir(base_dir)
+                        git = ::Git.open(dir)
                         branch_name = git.lib.branch_current()
                         os(2, "Branch: #{branch_name}")
 
