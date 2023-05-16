@@ -100,12 +100,12 @@ module Supr
                             branch_name = git.lib.branch_current()
                             out.("Branch: #{branch_name}", level: 2)
 
-                            fail("I cannot force-push to branch '#{branch_name}'") if @protected_branches.include?(branch_name)
+                            out.fail("I cannot force-push to branch '#{branch_name}'") if @protected_branches.include?(branch_name)
 
                             begin
                                 git.lib.send(:command, 'push', '--set-upstream', 'origin', branch_name)
                             rescue ::Git::FailedError
-                                error("Could not push '#{dir}' to branch '#{branch_name}'")
+                                out.warning("Could not push '#{dir}' to branch '#{branch_name}'")
                             end
                         }
                     )
@@ -149,9 +149,9 @@ module Supr
 
                             git = ::Git.open(dir)
                             if !Supr::Git.is_clean?(dir)
-                                git.reset_hard(repo.sha) if force
-                                out.fail("Rep '#{dir}' is not clean") unless Supr::Git.is_clean?(dir)
+                                out.fail("Repo '#{dir}' is not clean") unless force
                             end
+                            git.reset_hard(repo.sha)
                         }
                     )
                 end

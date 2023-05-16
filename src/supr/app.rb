@@ -54,7 +54,7 @@ module Supr
 
         def run_branch_()
             branch = @options.branch || @rest[0]
-            fail("No branch was specified") unless branch
+            error("No branch was specified") unless branch
 
             @state.branch(branch)
         end

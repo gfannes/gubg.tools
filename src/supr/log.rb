@@ -1,7 +1,3 @@
-def error(*args)
-    puts('Error: '+args.map{|e|e.to_s()}*'')
-end
-
 $global_log_level = nil
 
 def set_log_level(level)
@@ -41,8 +37,12 @@ module Supr
         end
 
         def fail(*args)
+            output('XX', *args)
+            raise('Fatal failure')
+        end
+
+        def warning(*args)
             output('!!', *args)
-            raise('STOP')
         end
 
         def self.open(*args, level:, &block)
@@ -60,3 +60,11 @@ end
 def scope(*args, level:, &block)
     Supr::Logger.open(*args, level: level, &block)
 end
+
+def error(*args)
+    scope(*args, level: 0) do |out|
+        out.fail('Error: ', *args)
+    end
+end
+
+
