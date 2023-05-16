@@ -15,29 +15,35 @@ module Supr
             @start_time = Time.now()
         end
 
-        def output(prefix, *args, level: nil)
-            if $global_log_level >= (level || @level)
-                now = Time.now()
-                puts(prefix*$global_scope_level+' '+args.map{|e|e.to_s}*''+" (#{now-@start_time}s)")
-            end
+        def do_log(level)
+            $global_log_level >= (level || @level)
+        end
+
+        def output(prefix, *args)
+            now = Time.now()
+            puts(prefix*$global_scope_level+' '+args.map{|e|e.to_s}*''+" (#{now-@start_time}s)")
         end
 
         def call(*args, level: nil, &block)
             res = nil
             if block
-                $global_scope_level += 1
-                output('  ', '🠚 ', *args, level: level)
+                if do_log(level)
+                    $global_scope_level += 1
+                    output('  ', '🠚 ', *args)
+                end
                 res = block.()
-                output('  ', '🠘 ', *args, level: level)
-                $global_scope_level -= 1
+                if do_log(level)
+                    output('  ', '🠘 ', *args)
+                    $global_scope_level -= 1
+                end
             else
-                output('  ', *args, level: level)
+                output('  ', *args) if do_log(level)
             end
             res
         end
 
         def fail(*args)
-            output('☠ ', *args, level: 0)
+            output('☠ ', *args)
             raise('Fatal error')
         end
 
@@ -45,23 +51,27 @@ module Supr
             res = nil
             if block
                 $global_scope_level += 1
-                output('⛈ ', '🠚 ', *args, level: 0)
+                output('⛈ ', '🠚 ', *args)
                 res = block.()
-                output('⛈ ', '🠘 ', *args, level: 0)
+                output('⛈ ', '🠘 ', *args)
                 $global_scope_level -= 1
             else
-                output('⛈ ', *args, level: 0)
+                output('⛈ ', *args)
             end
             res
         end
 
         def self.open(*args, level:, &block)
-            $global_scope_level += 1 if $global_log_level >= level
             logger = Logger.new(level)
-            logger.output('🠚 ', *args)
+            if logger.do_log(level)
+                $global_scope_level += 1
+                logger.output('🠚 ', *args)
+            end
             res = block.(logger)
-            logger.output('🠘 ', *args)
-            $global_scope_level -= 1 if $global_log_level >= level
+            if logger.do_log(level)
+                logger.output('🠘 ', *args)
+                $global_scope_level -= 1
+            end
             res
         end
     end

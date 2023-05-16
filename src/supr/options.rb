@@ -14,6 +14,8 @@ module Supr
                 opts.separator("Verbs")
                 {
                     collect: "Collect git repo state in output file",
+                    load: "Load a git repo state from input file",
+                    clean: "Drop all local changes",
                     branch: "Create local branches for current state, 'reset --hard'-style",
                     push: "Push local branches to server, 'push --force'-style",
                     run: "Run command",

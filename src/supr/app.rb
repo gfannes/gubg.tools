@@ -14,31 +14,24 @@ module Supr
             if @options.help
                 puts(@options.help)
             elsif !@options.rest.empty?()
-                @verb = @options.rest.shift().to_sym()
+                verb = @options.rest.shift().to_sym()
                 @rest = @options.rest
 
                 toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
                 @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
 
-                if @options.state_fp
-                    scope("Collecting state from file '#{@options.state_fp}'", level: 1) do |out|
-                        out.fail("State file '#{@options.state_fp}' does not exist") unless File.exists?(@options.state_fp)
-                        content = File.read(@options.state_fp)
-                        @state.from_naft(content)
-                        @state.apply(force: @options.force)
-                    end
-                else
+                if %i[collect clean diff commit branch push run].include?(verb)
                     scope("Collecting state from dir '#{toplevel_dir}'", level: 1) do |out|
                         # We only allow working with a dirty state for specific verbs
                         # Others require an explicit force
-                        force = %i[diff commit].include?(@verb) ? true : @options.force
+                        force = %i[diff commit clean].include?(verb) ? true : @options.force
                         @state.from_dir(force: force)
                     end
                 end
 
-                scope("Running verb '#{@verb}'", level: 1) do |out|
-                    method = "run_#{@verb}_".to_sym()
-                    out.fail("Unknown verb '#{@verb}'") unless self.respond_to?(method, true)
+                scope("Running verb '#{verb}'", level: 1) do |out|
+                    method = "run_#{verb}_".to_sym()
+                    out.fail("Unknown verb '#{verb}'") unless self.respond_to?(method, true)
 
                     self.send(method)
                 end
@@ -51,11 +44,25 @@ module Supr
 
             @state.name = name
 
-            str = @state.to_naft()
-
             fp = @options.output_fp || (name && "#{name}.supr") || 'output.supr'
             scope("Writing state to '#{fp}'", level: 1) do
+                str = @state.to_naft()
                 File.write(fp, str)
+            end
+        end
+
+        def run_clean_()
+            @state.clean(force: @options.force)
+        end
+
+        def run_load_()
+            name = @rest[0]
+            state_fp = @options.state_fp || (name && "#{name}.supr")
+
+            scope("Collecting state from file '#{state_fp}'", level: 1) do |out|
+                out.fail("State file '#{state_fp}' does not exist") unless File.exists?(state_fp)
+                @state.from_naft(File.read(state_fp))
+                @state.apply(force: @options.force)
             end
         end
 

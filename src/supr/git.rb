@@ -151,6 +151,31 @@ module Supr
                 end
             end
 
+            def clean(force: nil)
+                scope("Cleaning repo", level: 1) do |out|
+                    recurse(
+                        on_open: ->(repo, base_dir){
+                            dir = repo.dir(base_dir)
+
+                            dirty_files = Supr::Git.dirty_files(dir)
+                            if !dirty_files.empty?()
+                                out.warning("Cleaning #{dirty_files.size} files from '#{rel_(dir)}'") do
+                                    if force
+                                        dirty_files.each do |fp|
+                                            out.("Restoring original state for '#{fp}' in '#{rel_(dir)}'") do
+                                                Supr::Cmd.run(*[%w[git -C], dir, 'checkout', fp])
+                                            end
+                                        end
+                                    else
+                                        out.fail("Cleaning requires the force option")
+                                    end
+                                end
+                            end
+                        }
+                    )
+                end
+            end
+
             def run(*cmd)
                 scope("Running command ", *cmd, level: 1) do |out|
                     Dir.chdir(@toplevel_dir) do
