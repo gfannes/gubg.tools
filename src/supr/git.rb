@@ -246,7 +246,7 @@ module Supr
                                 if delete
                                     if git.is_branch?(branch_name)
                                         if git.current_branch() == branch_name
-                                            out.fail("Cannot remove branch '#{branch_name}' that is currently checked-out in '#{dir}'")  unless force
+                                            out.fail("Cannot remove branch '#{branch_name}' that is currently checked-out in '#{dir}'") unless force
                                             git.checkout(repo.sha)
                                         end
                                         out.("Deleting branch '#{branch_name}'", level: 2) do
@@ -261,9 +261,13 @@ module Supr
                                             git.reset_hard(repo.sha)
                                         end
                                     else
-                                        out.("Creating new branch '#{branch_name}' at '#{repo.sha}'", level: 2) do
-                                            git.lib.branch_new(branch_name)
-                                            git.checkout(branch_name)
+                                        if force
+                                            out.("Creating new branch '#{branch_name}' at '#{repo.sha}'", level: 2) do
+                                                git.lib.branch_new(branch_name)
+                                                git.checkout(branch_name)
+                                            end
+                                        else
+                                            out.warning("Branch '#{branch_name}' does not exist yet, I will only create with with force")
                                         end
                                     end
                                 end
