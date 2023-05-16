@@ -5,8 +5,6 @@ module Supr
         attr_reader(:verb, :help, :verbose_level, :state_fp, :output_fp, :root_dir, :force, :branch, :rest)
 
         def initialize()
-            @verb = ARGV.shift() if ARGV[0] && ARGV[0][0] != '-'
-
             OptionParser.new() do |opts|
             	opts.banner = 'Usage: supr [verb] [options]* [rest]'
                 opts.separator("Verbs")

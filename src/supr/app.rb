@@ -11,12 +11,6 @@ module Supr
         def call()
             set_os(@options.verbose_level)
 
-            verb = @options.verb
-            if !verb
-                error("No verb was specified")
-                verb = :help
-            end
-
             toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
 
             @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
@@ -24,23 +18,26 @@ module Supr
                 fail("State file '#{@options.state_fp}' does not exist") unless File.exists?(@options.state_fp)
                 content = File.read(@options.state_fp)
                 @state.from_naft(content)
+                @state.apply(force: @options.force)
             else
                 @state.from_dir()
             end
 
-            method = "run_#{verb}_".to_sym()
-            fail("Unknown verb '#{verb}'") unless self.respond_to?(method, true)
+            if !@options.rest.empty?()
+                @verb = @options.rest.shift()
+                @rest = @options.rest
 
-            self.send(method)
+                os(1, "Running verb '#{@verb}'")
+                method = "run_#{@verb}_".to_sym()
+                fail("Unknown verb '#{@verb}'") unless self.respond_to?(method, true)
+
+                self.send(method)
+            end
         end
 
         private
         def run_help_()
             puts(@options.help)
-        end
-
-        def run_apply_()
-            @state.apply(force: @options.force)
         end
 
         def run_collect_()
@@ -49,7 +46,7 @@ module Supr
         end
 
         def run_branch_()
-            branch = @options.branch || @options.rest[0]
+            branch = @options.branch || @rest[0]
             fail("No branch was specified") unless branch
 
             @state.branch(branch)
@@ -60,7 +57,7 @@ module Supr
         end
 
         def run_run_()
-            output = @state.run(@options.rest)
+            output = @state.run(@rest)
             puts(output)
         end
     end
