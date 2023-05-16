@@ -2,12 +2,15 @@ require('optparse')
 
 module Supr
     class Options
+        attr_reader(:version)
         attr_reader(:help, :verbose_level, :state_fp, :output_fp, :root_dir, :force, :branch, :rest)
 
         def initialize()
+            @version = 'v1.0.0'
+
             help_str = nil
             OptionParser.new() do |opts|
-            	opts.banner = 'Usage: supr [verb] [options]* [rest]'
+            	opts.banner = "Usage (version #{@version}): supr [verb] [options]* [rest]"
                 opts.separator("Verbs")
                 {
                     help: "Print this help",
@@ -33,6 +36,7 @@ module Supr
                 help_str = opts.to_s()
             end.parse!()
 
+            @verbose_level ||= 1
             @root_dir ||= Dir.pwd()
             @help = help_str if @help
             @rest = ARGV

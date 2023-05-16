@@ -11,7 +11,7 @@ module Supr
 
             args = [args].flatten()
             if block
-                Open3.popen2(*args) do |input, output, thread|
+                Open3.popen2e(*args) do |input, output, thread|
                     input.close()
                     output.each_line do |line|
                         line = line.chomp() if chomp

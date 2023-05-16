@@ -9,19 +9,23 @@ module Supr
         end
 
         def call()
-            set_os(@options.verbose_level)
+            set_log_level(@options.verbose_level)
 
             toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
 
             @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
-            if @options.state_fp
-                fail("State file '#{@options.state_fp}' does not exist") unless File.exists?(@options.state_fp)
-                content = File.read(@options.state_fp)
-                @state.from_naft(content)
-                @state.apply(force: @options.force)
-            else
-                @state.from_dir()
-            end
+                if @options.state_fp
+                    scope("Collecting state from '#{toplevel_dir}'", level: 1) do |out|
+                        out.fail("State file '#{@options.state_fp}' does not exist") unless File.exists?(@options.state_fp)
+                        content = File.read(@options.state_fp)
+                        @state.from_naft(content)
+                        @state.apply(force: @options.force)
+                    end
+                else
+                    scope("Collecting state from '#{toplevel_dir}'", level: 1) do |out|
+                        @state.from_dir()
+                    end
+                end
 
             if @options.help
                 puts(@options.help)
@@ -29,18 +33,23 @@ module Supr
                 @verb = @options.rest.shift()
                 @rest = @options.rest
 
-                os(1, "Running verb '#{@verb}'")
-                method = "run_#{@verb}_".to_sym()
-                fail("Unknown verb '#{@verb}'") unless self.respond_to?(method, true)
+                scope("Running verb '#{@verb}'", level: 1) do |out|
+                    method = "run_#{@verb}_".to_sym()
+                    out.fail("Unknown verb '#{@verb}'") unless self.respond_to?(method, true)
 
-                self.send(method)
+                    self.send(method)
+                end
             end
         end
 
         private
         def run_collect_()
+            str = @state.to_naft()
+
             fp = @options.output_fp || 'supr.naft'
-            File.write(fp, @state.to_naft())
+            scope("Writing state to '#{fp}'", level: 1) do
+                File.write(fp, str)
+            end
         end
 
         def run_branch_()
