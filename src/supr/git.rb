@@ -275,13 +275,30 @@ module Supr
             end
 
             def sync(branch_name)
-                scope("Syncing with branch '#{branch_name}'") do |out|
+                scope("Syncing with branch '#{branch_name}'", level: 0) do |out|
                     Supr::Cmd.run([%w[git -C], @toplevel_dir, 'fetch'])
                     recurse(
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             out.("Syncing '#{rel_(dir)}'", level: 2) do
                                 Supr::Cmd.run([%w[git -C], dir, 'rebase', branch_name])
+                            end
+                        }
+                    )
+                end
+            end
+
+            def deliver(branch_name)
+                scope("Delivering local branches onto '#{branch_name}'", level: 0) do |out|
+                    recurse(
+                        on_open: ->(repo, base_dir){
+                            dir = repo.dir(base_dir)
+                            my_branch = ::Git.open(dir).current_branch()
+                            if my_branch != branch_name
+                                out.("Delivering '#{my_branch}' onto '#{branch_name}' for '#{rel_(dir)}'", level: 2) do
+                                    Supr::Cmd.run([%w[git -C], dir, 'switch', branch_name])
+                                    Supr::Cmd.run([%w[git -C], dir, %w[reset --hard], my_branch])
+                                end
                             end
                         }
                     )

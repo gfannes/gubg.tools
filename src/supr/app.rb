@@ -20,7 +20,7 @@ module Supr
                 toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
                 @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
 
-                if %i[collect clean diff commit branch switch push run sync].include?(verb)
+                if %i[collect clean diff commit branch switch push run sync deliver].include?(verb)
                     scope("Collecting state from dir '#{toplevel_dir}'", level: 1) do |out|
                         # We only allow working with a dirty state for specific verbs
                         # Others require an explicit force
@@ -103,6 +103,13 @@ module Supr
             error("No branch was specified") unless branch
 
             @state.sync(branch)
+        end
+
+        def run_deliver_()
+            branch = @options.branch || @rest[0]
+            error("No branch was specified") unless branch
+
+            @state.deliver(branch)
         end
     end
 end

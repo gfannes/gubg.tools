@@ -23,6 +23,7 @@ module Supr
                     diff: "Show a diff for all dirty files",
                     commit: "Commit all dirty files",
                     sync: "Sync local git repo with given branch",
+                    deliver: "Deliver local branches to specified branch",
                 }.each do |verb, descr|
                     opts.separator("    #{verb}\t#{descr}")
                 end
