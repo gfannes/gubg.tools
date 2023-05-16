@@ -98,7 +98,7 @@ module Supr
                             dir = repo.dir(base_dir)
                             git = ::Git.open(dir)
                             branch_name = git.lib.branch_current()
-                            out.(2, "Branch: #{branch_name}")
+                            out.("Branch: #{branch_name}", level: 2)
 
                             fail("I cannot force-push to branch '#{branch_name}'") if @protected_branches.include?(branch_name)
 
@@ -137,12 +137,12 @@ module Supr
 
                     recurse(on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
-                            out.(2, "Applying '#{dir}'")
+                            out.("Applying '#{dir}'", level: 2)
 
                             if File.exists?(File.join(dir, '.git'))
-                                out.(2, ".git already present")
+                                out.(".git already present", level: 2)
                             else
-                                out.(2, "Updating submodule '#{repo.rel}'") do
+                                out.("Updating submodule '#{repo.rel}'", level: 2) do
                                     Supr::Cmd.run(%w[git -C]+[base_dir]+%w[submodule update --init]+[repo.rel])
                                 end
                             end
