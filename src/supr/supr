@@ -1,3 +1,7 @@
 #!/usr/bin/bash
 
-ruby $gubg/ruby/supr/supr.rb "$@"
+SUPR_DIR=$gubg/gubg.tools/src
+
+export RUBYLIB=$RUBYLIB:$SUPR_DIR
+
+ruby $SUPR_DIR/supr/main.rb "$@"

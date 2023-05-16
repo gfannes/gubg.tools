@@ -28,7 +28,7 @@ module Supr
             puts(@options.help)
         end
 
-        def run_setup_()
+        def run_apply_()
             fail("Input was not set") unless @options.input_fp
             fail("Input file '#{@options.input_fp}' does not exist") unless File.exists?(@options.input_fp)
             content = File.read(@options.input_fp)

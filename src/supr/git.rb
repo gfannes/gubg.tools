@@ -43,6 +43,14 @@ module Supr
                 @sha = sha
                 @subrepos = []
             end
+
+            def dir(base_dir)
+                base_dir ? File.join(base_dir, @rel) : @rel
+            end
+
+            def has_subrepos?()
+                !@subrepos.empty?()
+            end
         end
 
         class State
@@ -50,106 +58,107 @@ module Supr
 
             def initialize()
                 @root = nil
+                @protected_branches = %w[master stable main develop]
+            end
+
+            def recurse(toplevel_dir, on_open: nil, on_close: nil)
+                dir_stack = []
+
+                my_recurse = ->(repo){
+                    base_dir = dir_stack[-1] || toplevel_dir
+
+                    on_open.(repo, base_dir) if on_open
+
+                    if repo.has_subrepos?()
+                        dir_stack.push(repo.dir(base_dir))
+                        repo.subrepos.each do |subrepo|
+                            my_recurse.(subrepo)
+                        end
+                        dir_stack.pop()
+                    end
+
+                    on_close.(repo, base_dir) if on_close
+                }
+                my_recurse.(@root)
             end
 
             def push(toplevel_dir)
-                dirs = [toplevel_dir]
-                recurse = ->(repo){
-                    dir = File.join(dirs[-1], repo.rel)
-                    git = ::Git.open(dir)
-                    branch = git.lib.branch_current()
-                    os(2, "Branch: #{branch}")
+                recurse(toplevel_dir,
+                    on_open: ->(repo, base_dir){
+                        git = ::Git.open(repo.dir(base_dir))
+                        branch_name = git.lib.branch_current()
+                        os(2, "Branch: #{branch_name}")
 
-                    fail("I cannot force-push to branch '#{branch}'") if %w[master stable main develop].include?(branch)
+                        fail("I cannot force-push to branch '#{branch_name}'") if @protected_branches.include?(branch_name)
 
-                    begin
-                        git.lib.send(:command, 'push', '--set-upstream', 'origin', branch)
-                    rescue ::Git::FailedError
-                        error("Could not push '#{dir}' to branch '#{branch}'")
-                    end
-
-                    dirs.push(dir)
-                    repo.subrepos.each do |subrepo|
-                        recurse.(subrepo)
-                    end
-                    dirs.pop()
-                }
-                recurse.(@root)
+                        begin
+                            git.lib.send(:command, 'push', '--set-upstream', 'origin', branch_name)
+                        rescue ::Git::FailedError
+                            error("Could not push '#{dir}' to branch '#{branch_name}'")
+                        end
+                    }
+                )
             end
 
-            def branch(toplevel_dir, name)
-                dirs = [toplevel_dir]
-                recurse = ->(repo){
-                    dir = File.join(dirs[-1], repo.rel)
-                    git = ::Git.open(dir)
-                    if git.is_branch?(name)
-                        git.checkout(name)
-                        git.reset_hard(repo.sha)
-                    else
-                        git.lib.branch_new(name)
-                    end
-                    git.checkout(name)
+            def branch(toplevel_dir, branch_name)
+                fail("I cannot create branches with name '#{branch_name}'") if @protected_branches.include?(branch_name)
 
-                    dirs.push(dir)
-                    repo.subrepos.each do |subrepo|
-                        recurse.(subrepo)
-                    end
-                    dirs.pop()
-                }
-                recurse.(@root)
+                recurse(toplevel_dir,
+                    on_open: ->(repo, base_dir){
+                        git = ::Git.open(repo.dir(base_dir))
+                        if git.is_branch?(branch_name)
+                            git.checkout(branch_name)
+                            git.reset_hard(repo.sha)
+                        else
+                            git.lib.branch_new(branch_name)
+                        end
+                        git.checkout(branch_name)
+                    }
+                )
             end
 
             def apply(toplevel_dir, force: nil)
                 git = ::Git.open(toplevel_dir)
                 git.fetch()
 
-                dirs = [toplevel_dir]
-                gits = [git]
-                recurse = ->(repo){
-                    dir = File.join(dirs[-1], repo.rel)
-                    os(2, "Applying '#{dir}'")
+                recurse(toplevel_dir,
+                    on_open: ->(repo, base_dir){
+                        dir = repo.dir(base_dir)
+                        os(2, "Applying '#{dir}'")
 
-                    if File.exists?(File.join(dir, '.git'))
-                        os(2, ".git already present")
-                    else
-                        os(2, "Updating submod")
-                        Supr::Cmd.run(%w[git -C]+[dirs[-1]]+%w[submodule update --init]+[repo.rel])
-                    end
+                        if File.exists?(File.join(dir, '.git'))
+                            os(2, ".git already present")
+                        else
+                            os(2, "Updating submod")
+                            Supr::Cmd.run(%w[git -C]+[base_dir]+%w[submodule update --init]+[repo.rel])
+                        end
 
-                    git = ::Git.open(dir)
-                    if !Supr::Git.is_clean?(dir)
-                        git.reset_hard(repo.sha) if force
-                        fail("Rep '#{dir}' is not clean") unless Supr::Git.is_clean?(dir)
-                    end
-
-                    dirs.push(dir)
-                    gits.push(git)
-                    repo.subrepos.each do |subrepo|
-                        recurse.(subrepo)
-                    end
-                    gits.pop()
-                    dirs.pop()
-                }
-                recurse.(@root)
+                        git = ::Git.open(dir)
+                        if !Supr::Git.is_clean?(dir)
+                            git.reset_hard(repo.sha) if force
+                            fail("Rep '#{dir}' is not clean") unless Supr::Git.is_clean?(dir)
+                        end
+                    }
+                )
             end
 
             def from_dir(toplevel_dir)
                 @root = Repo.new(rel: '', sha: ::Git.open(toplevel_dir).log.first.sha)
 
-                stack = [@root]
-                recurse = ->(dir){
-                    Supr::Git.submodules(dir).each do |rel|
-                        submod_dir = File.join(dir, rel)
+                repo_stack = [@root]
+                recurse = ->(base_dir){
+                    Supr::Git.submodules(base_dir).each do |rel|
+                        submod_dir = File.join(base_dir, rel)
 
                         repo = Repo.new(
                             rel: rel,
                             sha: ::Git.open(submod_dir).log.first.sha,
                         )
-                        stack[-1].subrepos << repo
+                        repo_stack[-1].subrepos << repo
             
-                        stack.push(repo)
+                        repo_stack.push(repo)
                         recurse.(submod_dir)
-                        stack.pop()
+                        repo_stack.pop()
                     end
                 }
                 recurse.(toplevel_dir)
@@ -187,21 +196,23 @@ module Supr
 
             def to_naft()
                 lines = []
-
                 level = 0
-                recurse = ->(repo){
-                    lines << "#{'  '*level}[Repo](rel:#{repo.rel})(sha:#{repo.sha})"
-                    if !repo.subrepos.empty?()
-                        lines << "#{'  '*level}{"
+                prev_level = 0
+                state = nil
+                recurse(nil,
+                    on_open: ->(repo, base_dir){
+                        lines << "#{'  '*level}[Repo](rel:#{repo.rel})(sha:#{repo.sha})"
+                        lines << "#{'  '*level}{" if repo.has_subrepos?()
+                        
                         level += 1
-                        repo.subrepos.each do |subrepo|
-                            recurse.(subrepo)
-                        end
+                    },
+                    on_close: ->(repo, base_dir){
                         level -= 1
-                        lines << "#{'  '*level}}"
-                    end
-                }
-                recurse.(@root)
+
+                        lines << "#{'  '*level}}" if repo.has_subrepos?()
+                        
+                    },
+                )
                 lines << nil
 
                 lines*"\n"

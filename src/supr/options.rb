@@ -9,6 +9,18 @@ module Supr
 
             OptionParser.new() do |opts|
             	opts.banner = 'Usage: supr [verb] [options]*'
+                opts.separator("Verbs")
+                {
+                    help: "Print this help",
+                    collect: "Collect git repo state in output file",
+                    apply: "Bring git repo into state as specified in input file",
+                    branch: "Create local branches for current state, 'reset --hard'-style",
+                    push: "Push local branches to server, 'push --force'-style",
+                }.each do |verb, descr|
+                    opts.separator("    #{verb}\t#{descr}")
+                end
+
+                opts.separator('Options')
     			opts.on('-h', '--help', 'Print this help') { @verb = :help }
                 opts.on('-V', '--verbose LEVEL', 'Verbosity level') { |level| @verbose_level = level.to_i() }
                 opts.on('-i', '--input FILE', 'Input file') { |file| @input_fp = file }
@@ -16,6 +28,8 @@ module Supr
                 opts.on('-C', '--root DIR', 'Root dir') { |dir| @root_dir = dir}
     			opts.on('-f', '--force', 'Force') { @force = true }
                 opts.on('-b', '--branch NAME', 'Use branch NAME') { |name| @branch = name}
+
+                opts.separator('Developed by Geert Fannes')
 
                 @help = opts.to_s()
             end.parse!()

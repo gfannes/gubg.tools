@@ -128,8 +128,8 @@ namespace :tools do
 	end
 	namespace :supr do
 		task :prepare do
+			sh 'gem install git'
 			publish(here, 'src/supr', pattern: "supr", dst: 'bin', mode: 0755)
-			publish(here, 'src', pattern: "supr/**/*.rb", dst: 'ruby')
 		end
 	end
 	
