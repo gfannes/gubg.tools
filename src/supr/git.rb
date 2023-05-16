@@ -99,7 +99,7 @@ module Supr
                 my_recurse.(@root)
             end
 
-            def commit(msg)
+            def commit(msg, force: nil)
                 scope("Committing dirty files", level: 1) do |out|
                     recurse(
                         on_open: ->(repo, base_dir){
@@ -109,11 +109,16 @@ module Supr
                             if !dirty_files.empty?()
                                 out.warning("Committing #{dirty_files.size()} files in '#{rel_(dir)}'") do
                                     git = ::Git.open(dir)
-                                    dirty_files.each do |fp|
-                                        out.(" * '#{fp}'", level: 0)
-                                        git.add(fp)
+                                    branch = git.current_branch()
+                                    if @protected_branches.include?(branch) && !force
+                                        out.fail("Direct commit to '#{branch}' is not allowed in '#{rel_(dir)}'")
+                                    else
+                                        dirty_files.each do |fp|
+                                            out.(" * '#{fp}'", level: 0)
+                                            git.add(fp)
+                                        end
+                                        git.commit(msg)
                                     end
-                                    git.commit(msg)
                                 end
                             end
                         }

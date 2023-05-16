@@ -81,7 +81,7 @@ module Supr
         def run_commit_()
             error("No commit message was specified") if @options.rest.empty?()
             msg = @options.rest*"\n"
-            @state.commit(msg)
+            @state.commit(msg, force: @options.force)
         end
     end
 end
