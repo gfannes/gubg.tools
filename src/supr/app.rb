@@ -44,9 +44,13 @@ module Supr
 
         private
         def run_collect_()
+            name = @rest[0]
+
+            @state.name = name
+
             str = @state.to_naft()
 
-            fp = @options.output_fp || 'supr.naft'
+            fp = @options.output_fp || (name && "#{name}.supr") || 'output.supr'
             scope("Writing state to '#{fp}'", level: 1) do
                 File.write(fp, str)
             end
@@ -56,7 +60,7 @@ module Supr
             branch = @options.branch || @rest[0]
             error("No branch was specified") unless branch
 
-            @state.branch(branch)
+            @state.branch(branch, delete: @options.delete, force: @options.force)
         end
 
         def run_push_()

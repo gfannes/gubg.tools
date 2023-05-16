@@ -3,6 +3,7 @@ require('supr/log')
 
 require('git')
 require('pathname')
+require('time')
 
 module Supr
     module Git
@@ -27,9 +28,22 @@ module Supr
             end
         end
 
-        def self.is_clean?(dir)
-            git = ::Git.open(dir)
-            git.status.changed.empty? && git.status.added.empty? && git.status.deleted.empty?# && git.status.untracked.empty?
+        def self.dirty_files(dir)
+            res = []
+
+            re_m = / M (.+)/
+            re_d = / D (.+)/
+            Supr::Cmd.run(%w[git -C]+[dir]+%w[status -s], chomp: true) do |line|
+                if md = re_m.match(line)
+                    fp = md[1]
+                    res << fp unless File.directory?(File.join(dir, fp))
+                elsif md = re_d.match(line)
+                    fp = md[1]
+                    res << fp
+                end
+            end
+
+            res
         end
 
         class Repo
@@ -53,12 +67,14 @@ module Supr
         end
 
         class State
-            attr_accessor(:root)
+            attr_accessor(:name, :root)
 
-            def initialize(toplevel_dir: nil)
-                @root = nil
-                @protected_branches = %w[master stable main develop]
+            def initialize(name: nil, toplevel_dir: nil)
                 @toplevel_dir = toplevel_dir
+                @name = name
+
+                @root = nil
+                @protected_branches = %w[master stable feature main develop].freeze()
             end
 
             def recurse(on_open: nil, on_close: nil)
@@ -102,29 +118,54 @@ module Supr
 
                             out.fail("I cannot force-push to branch '#{branch_name}'") if @protected_branches.include?(branch_name)
 
-                            begin
-                                git.lib.send(:command, 'push', '--set-upstream', 'origin', branch_name)
-                            rescue ::Git::FailedError
-                                out.warning("Could not push '#{dir}' to branch '#{branch_name}'")
+                            ok = if branch_name
+                                begin
+                                    git.lib.send(:command, 'push', '--set-upstream', 'origin', branch_name)
+                                    true
+                                rescue ::Git::FailedError
+                                    false
+                                end
                             end
+
+                            out.warning("Could not push '#{dir}' to branch '#{branch_name}'") unless ok
                         }
                     )
                 end
             end
 
-            def branch(branch_name)
-                scope("Creating branch '#{branch_name}'", level: 1) do |out|
-                    out.fail("I cannot create branches with name '#{branch_name}'") if @protected_branches.include?(branch_name)
+            def branch(branch_name, delete: nil, force: nil)
+                scope("#{delete ? 'Deleting' : 'Creating'} local branches '#{branch_name}' from '#{@toplevel_dir}'", level: 1) do |out|
+                    out.fail("No branch name was specified") unless branch_name
+                    out.fail("I cannot #{delete ? 'delete' : 'create'} branches with name '#{branch_name}'") if @protected_branches.include?(branch_name)
 
                     recurse(on_open: ->(repo, base_dir){
-                            git = ::Git.open(repo.dir(base_dir))
-                            if git.is_branch?(branch_name)
-                                git.checkout(branch_name)
-                                git.reset_hard(repo.sha)
-                            else
-                                git.lib.branch_new(branch_name)
+                            dir = repo.dir(base_dir)
+                            out.("Processing '#{dir}'", level: 2) do
+                                git = ::Git.open(dir)
+                                if delete
+                                    if git.is_branch?(branch_name)
+                                        if git.current_branch() == branch_name
+                                            out.fail("Cannot remove branch '#{branch_name}' that is currently checked-out in '#{dir}'")  unless force
+                                            git.checkout(repo.sha)
+                                        end
+                                        out.("Deleting branch '#{branch_name}'", level: 2) do
+                                            git.branch(branch_name).delete()
+                                        end
+                                    end
+                                else
+                                    if git.is_branch?(branch_name)
+                                        out.("Resetting branch '#{branch_name}' to '#{repo.sha}'", level: 2) do
+                                            git.checkout(branch_name)
+                                            git.reset_hard(repo.sha)
+                                        end
+                                    else
+                                        out.("Creating new branch '#{branch_name}' at '#{repo.sha}'", level: 2) do
+                                            git.lib.branch_new(branch_name)
+                                            git.checkout(branch_name)
+                                        end
+                                    end
+                                end
                             end
-                            git.checkout(branch_name)
                         }
                     )
                 end
@@ -137,21 +178,32 @@ module Supr
 
                     recurse(on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
-                            out.("Applying '#{dir}'", level: 2)
+                            out.("Applying '#{dir}'", level: 3) do
+                                if File.exists?(File.join(dir, '.git'))
+                                    out.(".git is present", level: 3)
+                                else
+                                    out.("Updating submodule '#{repo.rel}'", level: 2) do
+                                        Supr::Cmd.run(%w[git -C]+[base_dir]+%w[submodule update --init]+[repo.rel])
+                                    end
+                                end
+                                
+                                is_clean = out.("Checking if submodule '#{Pathname.new(dir).relative_path_from(@toplevel_dir)}' is clean", level: 2) do
+                                    fps = Supr::Git.dirty_files(dir)
+                                    fps.each do |fp|
+                                        out.("'#{fp}' is dirty", level: 1)
+                                    end
+                                    fps.empty?()
+                                end
 
-                            if File.exists?(File.join(dir, '.git'))
-                                out.(".git already present", level: 2)
-                            else
-                                out.("Updating submodule '#{repo.rel}'", level: 2) do
-                                    Supr::Cmd.run(%w[git -C]+[base_dir]+%w[submodule update --init]+[repo.rel])
+                                out.fail("Repo '#{dir}' is not clean") if !is_clean && !force
+
+                                git = ::Git.open(dir)
+                                if @protected_branches.include?(git.current_branch())
+                                    git.checkout(repo.sha)
+                                else
+                                    git.reset_hard(repo.sha)
                                 end
                             end
-
-                            git = ::Git.open(dir)
-                            if !Supr::Git.is_clean?(dir)
-                                out.fail("Repo '#{dir}' is not clean") unless force
-                            end
-                            git.reset_hard(repo.sha)
                         }
                     )
                 end
@@ -190,25 +242,38 @@ module Supr
 
                     re_open = /{/
                     re_close = /}/
+                    re_state = /\[State\]\(name:([^)]*)\)\(toplevel:([^)]*)\)\(date:([^)]*)\)/
                     re_repo = /\[Repo\]\(rel:([^)]*)\)\(sha:([\da-f]*)\)/
 
-                    stack = [Repo.new()]
+                    stack = []
+                    root_root = nil
+                    last_repo = nil
 
                     str.each_line do |line|
-                        puts(line)
-                        if md = re_repo.match(line)
-                            repo = Repo.new(rel: md[1], sha: md[2])
-                            stack[-1].subrepos << repo
+                        out.("line: #{line.chomp()}", level: 3)
+
+                        if md = re_state.match(line)
+                            out.("Found State", level: 3)
+                            @name ||= md[1]
+                            @toplevel_dir ||= md[2]
+                            @date ||= md[3]
+                            last_repo = Repo.new()
+                            root_root = last_repo
+                        elsif md = re_repo.match(line)
+                            out.("Found Repo", level: 3)
+                            last_repo = Repo.new(rel: md[1], sha: md[2])
+                            stack[-1].subrepos << last_repo
                         elsif re_open.match(line)
-                            stack << stack[-1].subrepos[-1]
+                            stack << last_repo
                         elsif re_close.match(line)
                             stack.pop
                         end
                     end
 
-                    out.fail("Expected one element on the stack") unless stack.size() == 1
-                    out.fail("Expected one element on the subrepos") unless stack[0].subrepos.size() == 1
-                    @root = stack[0].subrepos[0]
+                    out.fail("Expected one element on the stack") unless stack.size() == 0
+                    out.fail("Expected root_root to be set") unless root_root
+                    out.fail("Expected one element on the subrepos") unless root_root.subrepos.size() == 1
+                    @root = root_root.subrepos[0]
 
                     self
                 end
@@ -217,11 +282,19 @@ module Supr
             def to_naft()
                 scope("Writing repo state to naft string", level: 2) do |out|
                     lines = []
-                    level = 0
-                    prev_level = 0
+
+                    lines << "[State](name:#{@name})(toplevel:#{@toplevel_dir})(date:#{Time.now().iso8601()})"
+                    lines << "{"
+
+                    level = 1
+                    prev_level = level
                     state = nil
-                    recurse(on_open: ->(repo, base_dir){
-                            lines << "#{'  '*level}[Repo](rel:#{repo.rel})(sha:#{repo.sha})"
+                    recurse(
+                        on_open: ->(repo, base_dir){
+                            git = ::Git.open(repo.dir(base_dir))
+                            branch = git.current_branch() ? "(branch:#{git.current_branch()})" : ''
+
+                            lines << "#{'  '*level}[Repo](rel:#{repo.rel})(sha:#{repo.sha})#{branch}"
                             lines << "#{'  '*level}{" if repo.has_subrepos?()
                         
                             level += 1
@@ -233,6 +306,8 @@ module Supr
                         
                         },
                     )
+
+                    lines << "}"
                     lines << nil
 
                     lines*"\n"

@@ -3,7 +3,7 @@ require('optparse')
 module Supr
     class Options
         attr_reader(:version)
-        attr_reader(:help, :verbose_level, :state_fp, :output_fp, :root_dir, :force, :branch, :rest)
+        attr_reader(:help, :verbose_level, :state_fp, :output_fp, :root_dir, :force, :branch, :delete, :rest)
 
         def initialize()
             @version = 'v1.0.0'
@@ -13,7 +13,6 @@ module Supr
             	opts.banner = "Usage (version #{@version}): supr [verb] [options]* [rest]"
                 opts.separator("Verbs")
                 {
-                    help: "Print this help",
                     collect: "Collect git repo state in output file",
                     branch: "Create local branches for current state, 'reset --hard'-style",
                     push: "Push local branches to server, 'push --force'-style",
@@ -30,6 +29,7 @@ module Supr
                 opts.on('-C', '--root DIR', 'Root dir') { |dir| @root_dir = dir}
     			opts.on('-f', '--force', 'Force') { @force = true }
                 opts.on('-b', '--branch NAME', 'Use branch NAME') { |name| @branch = name}
+    			opts.on('-d', '--delete', 'Delete branch') { @delete = true }
 
                 opts.separator('Developed by Geert Fannes')
 

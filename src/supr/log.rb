@@ -26,9 +26,9 @@ module Supr
             res = nil
             if block
                 $global_scope_level += 1
-                output('  ', *args, level: level)
+                output('  ', '> ', *args, level: level)
                 res = block.()
-                output('  ', *args, level: level)
+                output('  ', '< ', *args, level: level)
                 $global_scope_level -= 1
             else
                 output('  ', *args, level: level)
