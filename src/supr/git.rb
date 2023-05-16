@@ -299,7 +299,7 @@ module Supr
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             my_branch = ::Git.open(dir).current_branch()
-                            if my_branch != branch_name
+                            if my_branch && my_branch != branch_name
                                 out.("Delivering '#{my_branch}' onto '#{branch_name}' for '#{rel_(dir)}'", level: 2) do
                                     Supr::Cmd.run([%w[git -C], dir, 'switch', branch_name])
                                     Supr::Cmd.run([%w[git -C], dir, %w[reset --hard], my_branch])
