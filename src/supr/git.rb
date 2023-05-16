@@ -110,10 +110,9 @@ module Supr
                                 out.warning("Committing #{dirty_files.size()} files in '#{rel_(dir)}'") do
                                     git = ::Git.open(dir)
                                     dirty_files.each do |fp|
-                                        puts("Adding #{fp}")
+                                        out.(" * '#{fp}'", level: 0)
                                         git.add(fp)
                                     end
-                                    puts(msg)
                                     git.commit(msg)
                                 end
                             end
