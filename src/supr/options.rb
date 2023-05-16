@@ -3,7 +3,7 @@ require('optparse')
 module Supr
     class Options
         attr_reader(:version)
-        attr_reader(:help, :verbose_level, :state_fp, :output_fp, :root_dir, :force, :branch, :delete, :rest)
+        attr_reader(:help, :verbose_level, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :rest)
 
         def initialize()
             @version = 'v1.0.0'
@@ -35,6 +35,7 @@ module Supr
                 opts.on('-o', '--output FILE', 'Output file') { |file| @output_fp = file }
                 opts.on('-C', '--root DIR', 'Root dir') { |dir| @root_dir = dir}
     			opts.on('-f', '--force', 'Force') { @force = true }
+    			opts.on('-c', '--continue', 'Continue') { @continue = true }
                 opts.on('-b', '--branch NAME', 'Use branch NAME') { |name| @branch = name}
     			opts.on('-d', '--delete', 'Delete branch') { @delete = true }
 

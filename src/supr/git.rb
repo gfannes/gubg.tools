@@ -196,7 +196,7 @@ module Supr
                 end
             end
 
-            def push(force: nil)
+            def push(continue: nil)
                 scope("Pushing repo", level: 1) do |out|
                     recurse(on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
@@ -207,9 +207,9 @@ module Supr
                             if !branch_name
                                 out.warning("No branch present for '#{rel_(dir)}'")
                             elsif @protected_branches.include?(branch_name)
-                                Supr::Cmd.run([%w[git -C], dir, %w[push]], allow_fail: force)
+                                Supr::Cmd.run([%w[git -C], dir, %w[push]], allow_fail: continue)
                             else
-                                Supr::Cmd.run([%w[git -C], dir, %w[push --set-upstream origin], branch_name], allow_fail: force)
+                                Supr::Cmd.run([%w[git -C], dir, %w[push --set-upstream origin], branch_name], allow_fail: continue)
                             end
                         }
                     )
@@ -255,21 +255,21 @@ module Supr
                 end
             end
 
-            def switch(branch_name, force: nil)
+            def switch(branch_name, continue: nil)
                 scope("Switching to branch '#{branch_name}'", level: 1) do |out|
                     Supr::Cmd.run([%w[git -C], @toplevel_dir, 'fetch'])
                     recurse(
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             out.("Switch to branch '#{branch_name}' in '#{rel_(dir)}'", level: 2) do
-                                Supr::Cmd.run([%w[git -C], dir, 'switch', branch_name], allow_fail: force)
+                                Supr::Cmd.run([%w[git -C], dir, 'switch', branch_name], allow_fail: continue)
                             end
                         }
                     )
                 end
             end
 
-            def sync(branch_name, force: nil)
+            def sync(branch_name, continue: nil)
                 scope("Syncing with branch '#{branch_name}'", level: 0) do |out|
                     Supr::Cmd.run([%w[git -C], @toplevel_dir, 'fetch'])
                     recurse(
@@ -278,9 +278,13 @@ module Supr
                             my_branch = ::Git.open(dir).current_branch()
                             if !my_branch
                                 out.warning("No branch found for '#{rel_(dir)}'")
-                            elsif my_branch != branch_name
-                                out.("Syncing '#{rel_(dir)}' with '#{branch_name}'", level: 2) do
-                                    Supr::Cmd.run([%w[git -C], dir, 'rebase', branch_name], allow_fail: force)
+                            elsif my_branch == branch_name
+                                out.("Rebasing branch '#{branch_name}' for '#{rel_(dir)}'") do
+                                    Supr::Cmd.run([%w[git -C], dir, %w[pull --rebase]], allow_fail: continue)
+                                end
+                            else
+                                out.("Syncing local branch '#{my_branch}' for '#{rel_(dir)}' with '#{branch_name}'", level: 2) do
+                                    Supr::Cmd.run([%w[git -C], dir, 'rebase', branch_name], allow_fail: continue)
                                 end
                             end
                         }
