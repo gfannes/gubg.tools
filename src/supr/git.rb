@@ -205,7 +205,7 @@ module Supr
                             out.("Branch: #{branch_name}", level: 2)
 
                             if @protected_branches.include?(branch_name)
-                                Supr::Cmd.run([%w[git -C], dir, %w[git push]], allow_fail: force)
+                                Supr::Cmd.run([%w[git -C], dir, %w[push]], allow_fail: force)
                             else
                                 out.fail("I cannot force-push to branch '#{branch_name}'") 
 
