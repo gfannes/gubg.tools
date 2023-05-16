@@ -17,6 +17,17 @@ module Supr
                 verb = :help
             end
 
+            toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
+
+            @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
+            if @options.state_fp
+                fail("State file '#{@options.state_fp}' does not exist") unless File.exists?(@options.state_fp)
+                content = File.read(@options.state_fp)
+                @state.from_naft(content)
+            else
+                @state.from_dir()
+            end
+
             method = "run_#{verb}_".to_sym()
             fail("Unknown verb '#{verb}'") unless self.respond_to?(method, true)
 
@@ -29,41 +40,28 @@ module Supr
         end
 
         def run_apply_()
-            fail("Input was not set") unless @options.input_fp
-            fail("Input file '#{@options.input_fp}' does not exist") unless File.exists?(@options.input_fp)
-            content = File.read(@options.input_fp)
-            state = Supr::Git::State.new().from_naft(content)
-
-            puts(state.to_naft())
-
-            toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
-            state.apply(toplevel_dir, force: @options.force)
+            @state.apply(force: @options.force)
         end
 
         def run_collect_()
-            toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
-
-            state = Supr::Git::State.new().from_dir(toplevel_dir)
-
             fp = @options.output_fp || 'supr.naft'
-            File.write(fp, state.to_naft())
+            File.write(fp, @state.to_naft())
         end
 
         def run_branch_()
             branch = @options.branch || @options.rest[0]
             fail("No branch was specified") unless branch
 
-            toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
-
-            state = Supr::Git::State.new().from_dir(toplevel_dir)
-            state.branch(toplevel_dir, branch)
+            @state.branch(branch)
         end
 
         def run_push_()
-            toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
+            @state.push()
+        end
 
-            state = Supr::Git::State.new().from_dir(toplevel_dir)
-            state.push(toplevel_dir)
+        def run_run_()
+            output = @state.run(@options.rest)
+            puts(output)
         end
     end
 end

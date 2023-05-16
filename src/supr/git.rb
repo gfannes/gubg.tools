@@ -56,16 +56,17 @@ module Supr
         class State
             attr_accessor(:root)
 
-            def initialize()
+            def initialize(toplevel_dir: nil)
                 @root = nil
                 @protected_branches = %w[master stable main develop]
+                @toplevel_dir = toplevel_dir
             end
 
-            def recurse(toplevel_dir, on_open: nil, on_close: nil)
+            def recurse(on_open: nil, on_close: nil)
                 dir_stack = []
 
                 my_recurse = ->(repo){
-                    base_dir = dir_stack[-1] || toplevel_dir
+                    base_dir = dir_stack[-1] || @toplevel_dir
 
                     on_open.(repo, base_dir) if on_open
 
@@ -82,9 +83,14 @@ module Supr
                 my_recurse.(@root)
             end
 
-            def push(toplevel_dir)
-                recurse(toplevel_dir,
-                    on_open: ->(repo, base_dir){
+            def run(*cmd)
+                Dir.chdir(@toplevel_dir) do
+                    Supr::Cmd.run(cmd)
+                end
+            end
+
+            def push()
+                recurse(on_open: ->(repo, base_dir){
                         git = ::Git.open(repo.dir(base_dir))
                         branch_name = git.lib.branch_current()
                         os(2, "Branch: #{branch_name}")
@@ -100,11 +106,10 @@ module Supr
                 )
             end
 
-            def branch(toplevel_dir, branch_name)
+            def branch(branch_name)
                 fail("I cannot create branches with name '#{branch_name}'") if @protected_branches.include?(branch_name)
 
-                recurse(toplevel_dir,
-                    on_open: ->(repo, base_dir){
+                recurse(on_open: ->(repo, base_dir){
                         git = ::Git.open(repo.dir(base_dir))
                         if git.is_branch?(branch_name)
                             git.checkout(branch_name)
@@ -117,12 +122,11 @@ module Supr
                 )
             end
 
-            def apply(toplevel_dir, force: nil)
-                git = ::Git.open(toplevel_dir)
+            def apply(force: nil)
+                git = ::Git.open(@toplevel_dir)
                 git.fetch()
 
-                recurse(toplevel_dir,
-                    on_open: ->(repo, base_dir){
+                recurse(on_open: ->(repo, base_dir){
                         dir = repo.dir(base_dir)
                         os(2, "Applying '#{dir}'")
 
@@ -142,8 +146,8 @@ module Supr
                 )
             end
 
-            def from_dir(toplevel_dir)
-                @root = Repo.new(rel: '', sha: ::Git.open(toplevel_dir).log.first.sha)
+            def from_dir()
+                @root = Repo.new(rel: '', sha: ::Git.open(@toplevel_dir).log.first.sha)
 
                 repo_stack = [@root]
                 recurse = ->(base_dir){
@@ -161,7 +165,7 @@ module Supr
                         repo_stack.pop()
                     end
                 }
-                recurse.(toplevel_dir)
+                recurse.(@toplevel_dir)
 
                 self
             end
@@ -199,8 +203,7 @@ module Supr
                 level = 0
                 prev_level = 0
                 state = nil
-                recurse(nil,
-                    on_open: ->(repo, base_dir){
+                recurse(on_open: ->(repo, base_dir){
                         lines << "#{'  '*level}[Repo](rel:#{repo.rel})(sha:#{repo.sha})"
                         lines << "#{'  '*level}{" if repo.has_subrepos?()
                         
