@@ -17,6 +17,8 @@ module Supr
                     branch: "Create local branches for current state, 'reset --hard'-style",
                     push: "Push local branches to server, 'push --force'-style",
                     run: "Run command",
+                    diff: "Show a diff for all dirty files",
+                    commit: "Commit all dirty files",
                 }.each do |verb, descr|
                     opts.separator("    #{verb}\t#{descr}")
                 end
@@ -39,7 +41,12 @@ module Supr
             @verbose_level ||= 1
             @root_dir ||= Dir.pwd()
             @help = help_str if @help
-            @rest = ARGV
+
+            # We consume ARGV to ensure future `gets()` won't receive its data
+            @rest = []
+            while arg = ARGV.shift()
+                @rest << arg
+            end
         end
     end
 end

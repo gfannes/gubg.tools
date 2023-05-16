@@ -28,6 +28,7 @@ module Supr
             end
         end
 
+        # Returns the dirty files, relative from `dir`, as returned by `git status -s`
         def self.dirty_files(dir)
             res = []
 
@@ -96,6 +97,54 @@ module Supr
                     on_close.(repo, base_dir) if on_close
                 }
                 my_recurse.(@root)
+            end
+
+            def commit(msg)
+                scope("Committing dirty files", level: 1) do |out|
+                    recurse(
+                        on_open: ->(repo, base_dir){
+                            dir = repo.dir(base_dir)
+
+                            dirty_files = Supr::Git.dirty_files(dir)
+                            if !dirty_files.empty?()
+                                out.warning("Committing #{dirty_files.size()} files in '#{rel_(dir)}'") do
+                                    git = ::Git.open(dir)
+                                    dirty_files.each do |fp|
+                                        puts("Adding #{fp}")
+                                        git.add(fp)
+                                    end
+                                    puts(msg)
+                                    git.commit(msg)
+                                end
+                            end
+                        }
+                    )
+                end
+            end
+
+            def diff(difftool = nil)
+                scope("Diffing dirty files", level: 1) do |out|
+                    recurse(
+                        on_open: ->(repo, base_dir){
+                            dir = repo.dir(base_dir)
+
+                            dirty_files = Supr::Git.dirty_files(dir)
+                            if !dirty_files.empty?()
+                                out.("Showing diff for '#{dir}'", level: 0)
+                                dirty_files.each do |fp|
+                                    out.warning(" * '#{fp}'")
+                                end
+                                out.("Show details? (Y/n)", level: 0)
+                                answer = gets().chomp()
+                                if !%w[n no].include?(answer)
+                                    args = [%w[git -C], dir, difftool || %w[diff --no-ext-diff], dirty_files].flatten()
+                                    puts(args)
+                                    system(*args)
+                                end
+                            end
+                        }
+                    )
+                end
             end
 
             def run(*cmd)
@@ -187,7 +236,7 @@ module Supr
                                     end
                                 end
                                 
-                                is_clean = out.("Checking if submodule '#{Pathname.new(dir).relative_path_from(@toplevel_dir)}' is clean", level: 2) do
+                                is_clean = out.("Checking if submodule '#{rel_(dir)}' is clean", level: 2) do
                                     fps = Supr::Git.dirty_files(dir)
                                     fps.each do |fp|
                                         out.("'#{fp}' is dirty", level: 1)
@@ -209,7 +258,7 @@ module Supr
                 end
             end
 
-            def from_dir()
+            def from_dir(force: nil)
                 scope("Collecting repo state from '#{@toplevel_dir}'", level: 2) do |out|
                     @root = Repo.new(rel: '', sha: ::Git.open(@toplevel_dir).log.first.sha)
 
@@ -218,6 +267,13 @@ module Supr
                         out.("Processing '#{base_dir}'", level: 2)
                         Supr::Git.submodules(base_dir).each do |rel|
                             submod_dir = File.join(base_dir, rel)
+
+                            all_clean = true
+                            Supr::Git.dirty_files(submod_dir).each do |fp|
+                                out.warning("'#{fp}' is dirty in '#{rel_(submod_dir)}'")
+                                all_clean = false
+                            end
+                            out.fail("Found dirty files in '#{rel_(submod_dir)}'") if !all_clean && !force
 
                             repo = Repo.new(
                                 rel: rel,
@@ -312,6 +368,11 @@ module Supr
 
                     lines*"\n"
                 end
+            end
+
+            private
+            def rel_(dir)
+                Pathname.new(dir).relative_path_from(@toplevel_dir)
             end
         end
     end

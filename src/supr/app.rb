@@ -11,27 +11,30 @@ module Supr
         def call()
             set_log_level(@options.verbose_level)
 
-            toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
+            if @options.help
+                puts(@options.help)
+            elsif !@options.rest.empty?()
+                @verb = @options.rest.shift().to_sym()
+                @rest = @options.rest
 
-            @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
+                toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
+                @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
+
                 if @options.state_fp
-                    scope("Collecting state from '#{toplevel_dir}'", level: 1) do |out|
+                    scope("Collecting state from file '#{@options.state_fp}'", level: 1) do |out|
                         out.fail("State file '#{@options.state_fp}' does not exist") unless File.exists?(@options.state_fp)
                         content = File.read(@options.state_fp)
                         @state.from_naft(content)
                         @state.apply(force: @options.force)
                     end
                 else
-                    scope("Collecting state from '#{toplevel_dir}'", level: 1) do |out|
-                        @state.from_dir()
+                    scope("Collecting state from dir '#{toplevel_dir}'", level: 1) do |out|
+                        # We only allow working with a dirty state for specific verbs
+                        # Others require an explicit force
+                        force = %i[diff commit].include?(@verb) ? true : @options.force
+                        @state.from_dir(force: force)
                     end
                 end
-
-            if @options.help
-                puts(@options.help)
-            elsif !@options.rest.empty?()
-                @verb = @options.rest.shift()
-                @rest = @options.rest
 
                 scope("Running verb '#{@verb}'", level: 1) do |out|
                     method = "run_#{@verb}_".to_sym()
@@ -69,6 +72,16 @@ module Supr
 
         def run_run_()
             @state.run(@rest)
+        end
+
+        def run_diff_()
+            @state.diff(@options.rest[0])
+        end
+
+        def run_commit_()
+            error("No commit message was specified") if @options.rest.empty?()
+            msg = @options.rest*"\n"
+            @state.commit(msg)
         end
     end
 end

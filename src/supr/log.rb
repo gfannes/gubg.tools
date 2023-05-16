@@ -26,9 +26,9 @@ module Supr
             res = nil
             if block
                 $global_scope_level += 1
-                output('  ', '> ', *args, level: level)
+                output('  ', '🠚 ', *args, level: level)
                 res = block.()
-                output('  ', '< ', *args, level: level)
+                output('  ', '🠘 ', *args, level: level)
                 $global_scope_level -= 1
             else
                 output('  ', *args, level: level)
@@ -37,21 +37,31 @@ module Supr
         end
 
         def fail(*args)
-            output('XX', *args)
-            raise('Fatal failure')
+            output('☠ ', *args, level: 0)
+            raise('Fatal error')
         end
 
-        def warning(*args)
-            output('!!', *args)
+        def warning(*args, &block)
+            res = nil
+            if block
+                $global_scope_level += 1
+                output('⛈ ', '🠚 ', *args, level: 0)
+                res = block.()
+                output('⛈ ', '🠘 ', *args, level: 0)
+                $global_scope_level -= 1
+            else
+                output('⛈ ', *args, level: 0)
+            end
+            res
         end
 
         def self.open(*args, level:, &block)
-            $global_scope_level += 1
+            $global_scope_level += 1 if $global_log_level >= level
             logger = Logger.new(level)
-            logger.output('>>', *args)
+            logger.output('🠚 ', *args)
             res = block.(logger)
-            logger.output('<<', *args)
-            $global_scope_level -= 1
+            logger.output('🠘 ', *args)
+            $global_scope_level -= 1 if $global_log_level >= level
             res
         end
     end
