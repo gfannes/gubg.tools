@@ -10,6 +10,7 @@ module Supr
 
         def call()
             set_log_level(@options.verbose_level)
+            set_add_time(@options.time)
 
             if @options.help
                 puts(@options.help)
@@ -20,11 +21,11 @@ module Supr
                 toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
                 @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
 
-                if %i[collect clean diff commit branch switch push run sync deliver].include?(verb)
+                if %i[collect clean status diff commit branch switch push run sync deliver].include?(verb)
                     scope("Collecting state from dir '#{toplevel_dir}'", level: 1) do |out|
                         # We only allow working with a dirty state for specific verbs
                         # Others require an explicit force
-                        force = %i[diff commit clean branch].include?(verb) ? true : @options.force
+                        force = %i[status diff commit clean branch].include?(verb) ? true : @options.force
                         @state.from_dir(force: force)
                     end
                 end
@@ -88,8 +89,13 @@ module Supr
             @state.run(@rest)
         end
 
+        def run_status_()
+            @state.status()
+        end
+
         def run_diff_()
-            @state.diff(@options.rest[0])
+            difftool = @options.rest[0]
+            @state.diff(difftool)
         end
 
         def run_commit_()

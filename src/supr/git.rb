@@ -136,6 +136,24 @@ module Supr
                 end
             end
 
+            def status()
+                scope("Showing dirty files", level: 1) do |out|
+                    recurse(
+                        on_open: ->(repo, base_dir){
+                            dir = repo.dir(base_dir)
+
+                            dirty_files = Supr::Git.dirty_files(dir)
+                            if !dirty_files.empty?()
+                                out.("Found #{dirty_files.size()} dirty files for '#{rel_(dir)}'", level: 0)
+                                dirty_files.each do |fp|
+                                    out.warning(" * '#{fp}'")
+                                end
+                            end
+                        }
+                    )
+                end
+            end
+
             def diff(difftool = nil)
                 scope("Diffing dirty files", level: 1) do |out|
                     recurse(
@@ -144,7 +162,7 @@ module Supr
 
                             dirty_files = Supr::Git.dirty_files(dir)
                             if !dirty_files.empty?()
-                                out.("Showing diff for '#{dir}'", level: 0)
+                                out.("Showing diff for '#{rel_(dir)}'", level: 0)
                                 dirty_files.each do |fp|
                                     out.warning(" * '#{fp}'")
                                 end
