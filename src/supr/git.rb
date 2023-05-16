@@ -196,7 +196,7 @@ module Supr
                 end
             end
 
-            def push()
+            def push(force: nil)
                 scope("Pushing repo", level: 1) do |out|
                     recurse(on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
@@ -204,18 +204,22 @@ module Supr
                             branch_name = git.lib.branch_current()
                             out.("Branch: #{branch_name}", level: 2)
 
-                            out.fail("I cannot force-push to branch '#{branch_name}'") if @protected_branches.include?(branch_name)
+                            if @protected_branches.include?(branch_name)
+                                Supr::Cmd.run([%w[git -C], dir, %w[git push]], allow_fail: force)
+                            else
+                                out.fail("I cannot force-push to branch '#{branch_name}'") 
 
-                            ok = if branch_name
-                                begin
-                                    git.lib.send(:command, 'push', '--set-upstream', 'origin', branch_name)
-                                    true
-                                rescue ::Git::FailedError
-                                    false
+                                ok = if branch_name
+                                    begin
+                                        git.lib.send(:command, 'push', '--set-upstream', 'origin', branch_name)
+                                        true
+                                    rescue ::Git::FailedError
+                                        false
+                                    end
                                 end
-                            end
 
-                            out.warning("Could not push '#{dir}' to branch '#{branch_name}'") unless ok
+                                out.warning("Could not push '#{dir}' to branch '#{branch_name}'") unless ok
+                            end
                         }
                     )
                 end

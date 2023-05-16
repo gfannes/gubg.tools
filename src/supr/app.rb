@@ -81,7 +81,7 @@ module Supr
         end
 
         def run_push_()
-            @state.push()
+            @state.push(force: @options.force)
         end
 
         def run_run_()
