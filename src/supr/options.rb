@@ -2,9 +2,10 @@ require('optparse')
 
 module Supr
     class Options
-        attr_reader(:verb, :help, :verbose_level, :state_fp, :output_fp, :root_dir, :force, :branch, :rest)
+        attr_reader(:help, :verbose_level, :state_fp, :output_fp, :root_dir, :force, :branch, :rest)
 
         def initialize()
+            help_str = nil
             OptionParser.new() do |opts|
             	opts.banner = 'Usage: supr [verb] [options]* [rest]'
                 opts.separator("Verbs")
@@ -19,7 +20,7 @@ module Supr
                 end
 
                 opts.separator('Options')
-    			opts.on('-h', '--help', 'Print this help') { @verb = :help }
+    			opts.on('-h', '--help', 'Print this help') { @help = true }
                 opts.on('-V', '--verbose LEVEL', 'Verbosity level') { |level| @verbose_level = level.to_i() }
                 opts.on('-s', '--state FILE', 'File containing the required git state') { |file| @state_fp = file }
                 opts.on('-o', '--output FILE', 'Output file') { |file| @output_fp = file }
@@ -29,11 +30,11 @@ module Supr
 
                 opts.separator('Developed by Geert Fannes')
 
-                @help = opts.to_s()
+                help_str = opts.to_s()
             end.parse!()
 
             @root_dir ||= Dir.pwd()
-
+            @help = help_str if @help
             @rest = ARGV
         end
     end

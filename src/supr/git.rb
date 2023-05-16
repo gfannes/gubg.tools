@@ -7,8 +7,8 @@ require('pathname')
 module Supr
     module Git
         def self.toplevel_dir(dir)
-            dir = Supr::Cmd.run(%w[git rev-parse --show-superproject-working-tree])
-            dir = Supr::Cmd.run(%w[git rev-parse --show-toplevel]) if dir.empty?()
+            dir = Supr::Cmd.run(%w[git rev-parse --show-superproject-working-tree], chomp: true)
+            dir = Supr::Cmd.run(%w[git rev-parse --show-toplevel], chomp: true) if dir.empty?()
             dir
         end
 
@@ -85,7 +85,9 @@ module Supr
 
             def run(*cmd)
                 Dir.chdir(@toplevel_dir) do
-                    Supr::Cmd.run(cmd)
+                    Supr::Cmd.run(cmd, chomp: true) do |line|
+                        puts(line)
+                    end
                 end
             end
 

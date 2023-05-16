@@ -23,7 +23,9 @@ module Supr
                 @state.from_dir()
             end
 
-            if !@options.rest.empty?()
+            if @options.help
+                puts(@options.help)
+            elsif !@options.rest.empty?()
                 @verb = @options.rest.shift()
                 @rest = @options.rest
 
@@ -36,10 +38,6 @@ module Supr
         end
 
         private
-        def run_help_()
-            puts(@options.help)
-        end
-
         def run_collect_()
             fp = @options.output_fp || 'supr.naft'
             File.write(fp, @state.to_naft())
@@ -57,8 +55,7 @@ module Supr
         end
 
         def run_run_()
-            output = @state.run(@rest)
-            puts(output)
+            @state.run(@rest)
         end
     end
 end
