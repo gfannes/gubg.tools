@@ -235,7 +235,7 @@ module Supr
             end
 
             def branch(branch_name, delete: nil, force: nil)
-                scope("#{delete ? 'Deleting' : 'Creating'} local branche '#{branch_name}' from '#{@toplevel_dir}'", level: 1) do |out|
+                scope("#{delete ? 'Deleting' : 'Creating'} local branch '#{branch_name}' from '#{@toplevel_dir}'", level: 1) do |out|
                     out.fail("No branch name was specified") unless branch_name
                     out.fail("I cannot #{delete ? 'delete' : 'create'} branches with name '#{branch_name}'") if @protected_branches.include?(branch_name)
 
@@ -267,7 +267,7 @@ module Supr
                                                 git.checkout(branch_name)
                                             end
                                         else
-                                            out.warning("Branch '#{branch_name}' does not exist yet, I will only create with with force")
+                                            out.warning("Branch '#{branch_name}' does not exist yet for '#{rel_(dir)}', I will only create with with force")
                                         end
                                     end
                                 end
