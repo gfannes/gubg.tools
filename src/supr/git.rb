@@ -167,7 +167,7 @@ module Supr
                                 dirty_files.each do |fp|
                                     out.warning(" * '#{fp}'")
                                 end
-                                out.("Show details? (Y/n)", level: 0)
+                                out.("❓ Show details? (Y/n)", level: 0)
                                 answer = gets().chomp()
                                 if !%w[n no].include?(answer)
                                     args = [%w[git -C], dir, difftool || %w[diff --no-ext-diff], dirty_files].flatten()

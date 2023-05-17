@@ -172,6 +172,8 @@ module Supr
                             debug.("Done running command")
                         rescue Errno::ENOENT => exc
                             client.puts("[Status](code:ENOENT)(msg:#{exc})")
+                        rescue RuntimeError => exc
+                            client.puts("[Status](code:RuntimeError)(msg:#{exc})")
                         else
                             client.puts("[Status](code:OK)")
                         end
