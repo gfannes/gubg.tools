@@ -340,7 +340,7 @@ module Supr
                             block.("Applying '#{repo.sha}' for '#{rel_(dir)}'") if block
                             out.("Applying '#{repo.sha}' for '#{rel_(dir)}'", level: 3) do
                                 git = ::Git.open(dir)
-                                my_sha = ::Git.open(submod_dir).log.first.sha
+                                my_sha = ::Git.open(dir).log.first.sha
                                 if my_sha != repo.sha
                                     out.("Running 'git fetch' in '#{rel_(dir)}'", level: 3){git.fetch()}
 
