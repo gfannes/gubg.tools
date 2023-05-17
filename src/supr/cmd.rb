@@ -6,11 +6,12 @@ module Supr
     module Cmd
 
         def self.run(*args, chomp: nil, allow_fail: nil, &block)
-            scope("Running command '#{args.map{|e|e.to_s()}}'", level: 3) do |out|
+            args = [args].flatten().map{|e|e.to_s()}
+
+            scope("Running command '#{args*' '}'", level: 3) do |out|
                 output = nil
                 status = nil
 
-                args = [args].flatten()
                 if block
                     Open3.popen2e(*args) do |input, output, thread|
                         input.close()

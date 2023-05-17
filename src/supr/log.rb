@@ -27,7 +27,7 @@ module Supr
         def output(prefix, *args)
             now = Time.now()
             time_diff = ($global_add_time ? " (#{now-@start_time}s)" : '')
-            puts(prefix*$global_scope_level+' '+args.map{|e|e.to_s}*''+time_diff)
+            puts(prefix*$global_scope_level+' '+args.map{|e|e.to_s()}*''+time_diff)
         end
 
         def call(*args, level: nil, &block)
