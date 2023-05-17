@@ -332,11 +332,12 @@ module Supr
                 end
             end
 
-            def apply(force: nil)
+            def apply(force: nil, &block)
                 scope("Applying git state", level: 1) do |out|
                     recurse(
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
+                            block.("Setting '#{rel_(dir)}' to '#{repo.sha}'") if block
                             out.("Applying '#{rel_(dir)}'", level: 3) do
                                 git = ::Git.open(dir)
                                 out.("Running 'git fetch' in '#{rel_(dir)}'", level: 3){git.fetch()}

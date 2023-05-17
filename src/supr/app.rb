@@ -152,7 +152,9 @@ module Supr
                     @state.from_naft(state_str)
 
                     debug.("Applying state")
-                    @state.apply(force: @options.force)
+                    @state.apply(force: @options.force) do |line|
+                        client.puts(line)
+                    end
                     debug.("Done applying state")
 
                     begin
@@ -185,7 +187,7 @@ module Supr
                 socket.shutdown(Socket::SHUT_WR)
                 status_line = nil
                 socket.each_line do |line|
-                    line = line.chomp()
+                    line = line.chomp().encode('UTF-8')
                     last_line = line
                     out.("🌐 #{line}")
                 end
