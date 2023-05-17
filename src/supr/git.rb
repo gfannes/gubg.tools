@@ -341,8 +341,17 @@ module Supr
                     recurse(
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
+
                             block.("Applying '#{repo.sha}' for '#{rel_(dir)}'") if block
                             out.("Applying '#{repo.sha}' for '#{rel_(dir)}'", level: 3) do
+                                if File.exists?(File.join(dir, '.git'))
+                                    out.(".git is present", level: 3)
+                                else
+                                    out.("Updating submodule '#{repo.rel}'", level: 2) do
+                                        Supr::Cmd.run(%w[git -C]+[base_dir]+%w[submodule update --init]+[repo.rel])
+                                    end
+                                end
+
                                 git = ::Git.open(dir)
                                 my_sha = git.log.first.sha
                                 if my_sha == repo.sha
@@ -350,14 +359,6 @@ module Supr
                                 else
                                     out.("Running 'git fetch' in '#{rel_(dir)}'", level: 3) do
                                         git.fetch()
-                                    end
-
-                                    if File.exists?(File.join(dir, '.git'))
-                                        out.(".git is present", level: 3)
-                                    else
-                                        out.("Updating submodule '#{repo.rel}'", level: 2) do
-                                            Supr::Cmd.run(%w[git -C]+[base_dir]+%w[submodule update --init]+[repo.rel])
-                                        end
                                     end
                                 
                                     is_clean = out.("Checking if submodule '#{rel_(dir)}' is clean", level: 2) do
