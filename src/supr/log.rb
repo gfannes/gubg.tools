@@ -50,13 +50,29 @@ module Supr
         end
 
         def fail(*args)
-            sym = '💀 '
+            sym = '💀'
             output(sym, *args)
             raise('Fatal error')
         end
 
         def warning(*args, &block)
             sym = '⚠️ '
+
+            res = nil
+            if block
+                $global_scope_level += 1
+                output(sym, '🠚 ', *args)
+                res = block.()
+                output(sym, '🠘 ', *args)
+                $global_scope_level -= 1
+            else
+                output(sym, *args)
+            end
+            res
+        end
+
+        def info(*args, &block)
+            sym = 'ℹ️ '
 
             res = nil
             if block

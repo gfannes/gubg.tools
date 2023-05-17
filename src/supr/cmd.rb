@@ -30,6 +30,7 @@ module Supr
                     if allow_fail
                         out.warning("Could not run '#{args*' '}'")
                     else
+                        out.info("Please use the `--continue` option to continue after this failure") if FalseClass === allow_fail
                         out.fail("Could not run '#{args*' '}'")
                     end
                 end

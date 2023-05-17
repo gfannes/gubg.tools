@@ -16,3 +16,4 @@
   * Move commands to its own TU
   * Split State/Repo from its Operations
     * Inject options into Operations
+* Replace ad-hoc naft parsing with real read/write

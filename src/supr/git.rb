@@ -57,6 +57,10 @@ module Supr
             res
         end
 
+        def self.fetch(dir)
+            Supr::Cmd.run([%w[git -C], dir, 'fetch'])
+        end
+
         class Repo
             attr_accessor(:rel)
             attr_accessor(:sha)
@@ -299,11 +303,17 @@ module Supr
 
             def switch(branch_name, continue: nil)
                 scope("Switching to branch '#{branch_name}'", level: 1) do |out|
-                    Supr::Cmd.run([%w[git -C], @toplevel_dir, 'fetch'])
                     recurse(
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
+
+                            Supr::Git.fetch(dir)
+
                             out.("Switch to branch '#{branch_name}' in '#{rel_(dir)}'", level: 2) do
+                                branches = Supr::Git.branches(dir)
+                                if !branches.include?(branch_name)
+                                    out.warning("No branch '#{branch_name}' found in '#{rel_(dir)}'")
+                                end
                                 Supr::Cmd.run([%w[git -C], dir, 'switch', branch_name], allow_fail: continue)
                             end
                         }
@@ -313,11 +323,12 @@ module Supr
 
             def sync(branch_name, continue: nil)
                 scope("Syncing with branch '#{branch_name}'", level: 0) do |out|
-                    Supr::Cmd.run([%w[git -C], @toplevel_dir, 'fetch'])
                     recurse(
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             my_branch = ::Git.open(dir).current_branch()
+
+                            Supr::Git.fetch(dir)
 
                             if !my_branch
                                 out.warning("No branch found for '#{rel_(dir)}'")
@@ -375,7 +386,7 @@ module Supr
                                     out.("Repo is already in state '#{my_sha}'", level: 3)
                                 else
                                     out.("Running 'git fetch' in '#{rel_(dir)}'", level: 3) do
-                                        git.fetch()
+                                        Supr::Git.fetch(dir)
                                     end
                                 
                                     is_clean = out.("Checking if submodule '#{rel_(dir)}' is clean", level: 2) do

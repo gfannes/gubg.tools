@@ -8,6 +8,10 @@ module Supr
         def initialize()
             @version = 'v1.0.1'.freeze()
 
+            # We set @continue to `false` to allow Supr::Cmd.run() to discriminate between commands that
+            # can be continued, and others
+            @continue = false
+
             OptionParser.new() do |opts|
             	opts.banner = "Usage (version #{@version}): supr [verb] [options]* [rest]"
                 opts.separator("Verbs")
