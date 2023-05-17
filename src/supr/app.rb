@@ -167,6 +167,8 @@ module Supr
                         debug.("Done running command")
                     rescue Errno::ENOENT => exc
                         client.puts("[Status](code:ENOENT)(msg:#{exc})")
+                    rescue Errno::EPIPE => exc
+                        out.warning("Aborting, client closed connection")
                     else
                         client.puts("[Status](code:OK)")
                     end
