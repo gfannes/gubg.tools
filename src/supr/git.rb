@@ -344,9 +344,13 @@ module Supr
                             block.("Applying '#{repo.sha}' for '#{rel_(dir)}'") if block
                             out.("Applying '#{repo.sha}' for '#{rel_(dir)}'", level: 3) do
                                 git = ::Git.open(dir)
-                                my_sha = ::Git.open(dir).log.first.sha
-                                if my_sha != repo.sha
-                                    out.("Running 'git fetch' in '#{rel_(dir)}'", level: 3){git.fetch()}
+                                my_sha = git.log.first.sha
+                                if my_sha == repo.sha
+                                    out.("Repo is already in state '#{my_sha}'", level: 3)
+                                else
+                                    out.("Running 'git fetch' in '#{rel_(dir)}'", level: 3) do
+                                        git.fetch()
+                                    end
 
                                     if File.exists?(File.join(dir, '.git'))
                                         out.(".git is present", level: 3)
@@ -367,9 +371,13 @@ module Supr
                                     out.fail("Repo '#{dir}' is not clean") if !is_clean && !force
 
                                     if @protected_branches.include?(git.current_branch())
-                                        git.checkout(repo.sha)
+                                        out.("checkout '#{repo.sha}'", level: 3) do
+                                            git.checkout(repo.sha)
+                                        end
                                     else
-                                        git.reset_hard(repo.sha)
+                                        out.("reset --hard '#{repo.sha}'", level: 3) do
+                                            git.reset_hard(repo.sha)
+                                        end
                                     end
                                 end
                             end
