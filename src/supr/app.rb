@@ -76,7 +76,7 @@ module Supr
 
             where = @rest.shift()
 
-            @state.branch(branch, delete: @options.delete, force: @options.force, where: where)
+            @state.branch(branch, delete: @options.delete, force: @options.force, where: where, noop: @options.noop)
         end
 
         def run_switch_()
@@ -87,7 +87,8 @@ module Supr
         end
 
         def run_push_()
-            @state.push(continue: @options.continue)
+            where = @rest.shift()
+            @state.push(continue: @options.continue, where: where, noop: @options.noop)
         end
 
         def run_run_()
@@ -184,7 +185,8 @@ module Supr
         end
 
         def run_remote_()
-            ip, port = @options.ip, (@options.port || @default_port)
+            ip = @options.ip || @rest.shift()
+            port = @options.port || @default_port
             scope("Running remote command on '#{ip}:#{port}'", level: 1) do |out|
                 out.fail("No TCP address was specified") unless ip
                 out.fail("No TCP port was specified") unless port

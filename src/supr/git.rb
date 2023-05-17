@@ -119,9 +119,10 @@ module Supr
                             if !dirty_files.empty?()
                                 out.warning("Committing #{dirty_files.size()} files in '#{rel_(dir)}'") do
                                     git = ::Git.open(dir)
-                                    branch = git.current_branch()
-                                    if @protected_branches.include?(branch) && !force
-                                        out.fail("Direct commit to '#{branch}' is not allowed in '#{rel_(dir)}'")
+                                    my_branch = git.current_branch()
+
+                                    if @protected_branches.include?(my_branch) && !force
+                                        out.fail("Direct commit to '#{my_branch}' is not allowed in '#{rel_(dir)}'")
                                     else
                                         dirty_files.each do |fp|
                                             out.(" * '#{fp}'", level: 0)
@@ -215,58 +216,72 @@ module Supr
                 end
             end
 
-            def push(continue: nil)
+            def push(continue: nil, where: nil, noop: nil)
                 scope("Pushing repo", level: 1) do |out|
-                    recurse(on_open: ->(repo, base_dir){
+                    recurse(
+                        on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             git = ::Git.open(dir)
-                            branch_name = git.current_branch()
-                            out.("Branch: #{branch_name}", level: 2)
+                            my_branch = git.current_branch()
+                            out.("my_branch: #{my_branch}", level: 2)
 
-                            if !branch_name
-                                out.warning("No branch present for '#{rel_(dir)}'")
-                            elsif @protected_branches.include?(branch_name)
-                                Supr::Cmd.run([%w[git -C], dir, %w[push]], allow_fail: continue)
+                            if where && where != my_branch
+                                out.warning("Skipping '#{rel_(dir)}', its branch '#{my_branch}' does not match with '#{where}'")
                             else
-                                Supr::Cmd.run([%w[git -C], dir, %w[push --set-upstream origin], branch_name], allow_fail: continue)
+                                if !my_branch
+                                    out.warning("No branch present for '#{rel_(dir)}'")
+                                elsif @protected_branches.include?(my_branch)
+                                    out.("Pushing special branch '#{my_branch}' for '#{rel_(dir)}' without --set-upstream", noop: noop) do
+                                        Supr::Cmd.run([%w[git -C], dir, %w[push]], allow_fail: continue)
+                                    end
+                                else
+                                    out.("Pushing normal branch '#{my_branch}' for '#{rel_(dir)}' with --set-upstream", noop: noop) do
+                                        Supr::Cmd.run([%w[git -C], dir, %w[push --set-upstream origin], my_branch], allow_fail: continue)
+                                    end
+                                end
                             end
                         }
                     )
                 end
             end
 
-            def branch(branch_name, delete: nil, force: nil, where: nil)
+            def branch(branch_name, delete: nil, force: nil, where: nil, noop: nil)
                 scope("#{delete ? 'Deleting' : 'Creating'} local branch '#{branch_name}' from '#{@toplevel_dir}'", level: 1) do |out|
                     out.fail("No branch name was specified") unless branch_name
                     out.fail("I cannot #{delete ? 'delete' : 'create'} branches with name '#{branch_name}'") if @protected_branches.include?(branch_name)
 
-                    recurse(on_open: ->(repo, base_dir){
+                    recurse(
+                        on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             out.("Processing '#{dir}'", level: 2) do
                                 git = ::Git.open(dir)
+                                my_branch = git.current_branch()
+
                                 if delete
                                     if git.is_branch?(branch_name)
-                                        if git.current_branch() == branch_name
+                                        if my_branch == branch_name
                                             out.fail("Cannot remove branch '#{branch_name}' that is currently checked-out in '#{dir}'") unless force
-                                            git.checkout(repo.sha)
+                                            out.("Checking-out detached head at '#{repo.sha}'", noop: noop) do
+                                                git.checkout(repo.sha)
+                                            end
                                         end
-                                        out.("Deleting branch '#{branch_name}'", level: 2) do
+                                        out.("Deleting branch '#{branch_name}'", level: 2, noop: noop) do
                                             git.branch(branch_name).delete()
                                         end
                                     end
                                 else
                                     out.fail("Cannot create/update branch '#{branch_name}' for dirty repo '#{rel_(dir)}'") unless Supr::Git.dirty_files(dir).empty?()
-                                    if where && git.current_branch() != where
-                                        out.warning("Skipping '#{rel_(dir)}', its branch '#{git.current_branch()}' does not match with '#{where}'")
+                                    if where && my_branch != where
+                                        out.warning("Skipping '#{rel_(dir)}', its branch '#{my_branch}' does not match with '#{where}'")
                                     else
                                         if Supr::Git.branches(dir).include?(branch_name)
-                                            out.("Resetting branch '#{branch_name}' to '#{repo.sha}'", level: 2) do
+                                            out.("Resetting branch '#{branch_name}' to '#{repo.sha}'", level: 2, noop: noop) do
                                                 git.checkout(branch_name)
                                                 git.reset_hard(repo.sha)
                                             end
                                         else
                                             if force
-                                                out.("Creating new branch '#{branch_name}' at '#{repo.sha}'", level: 2) do
+                                                out.("Creating new branch '#{branch_name}' at '#{repo.sha}'", level: 2, noop: noop) do
                                                     git.lib.branch_new(branch_name)
                                                     git.checkout(branch_name)
                                                 end
@@ -303,6 +318,7 @@ module Supr
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             my_branch = ::Git.open(dir).current_branch()
+
                             if !my_branch
                                 out.warning("No branch found for '#{rel_(dir)}'")
                             elsif my_branch == branch_name
@@ -325,6 +341,7 @@ module Supr
                         on_open: ->(repo, base_dir){
                             dir = repo.dir(base_dir)
                             my_branch = ::Git.open(dir).current_branch()
+
                             if my_branch && my_branch != branch_name
                                 out.("Delivering '#{my_branch}' onto '#{branch_name}' for '#{rel_(dir)}'", level: 2) do
                                     Supr::Cmd.run([%w[git -C], dir, 'switch', branch_name])
@@ -477,7 +494,8 @@ module Supr
                     recurse(
                         on_open: ->(repo, base_dir){
                             git = ::Git.open(repo.dir(base_dir))
-                            branch = git.current_branch() ? "(branch:#{git.current_branch()})" : ''
+                            my_branch = git.current_branch()
+                            branch = my_branch ? "(branch:#{my_branch})" : ''
 
                             lines << "#{'  '*level}[Repo](rel:#{repo.rel})(sha:#{repo.sha})#{branch}"
                             lines << "#{'  '*level}{" if repo.has_subrepos?()

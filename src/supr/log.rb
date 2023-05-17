@@ -30,17 +30,18 @@ module Supr
             puts(prefix*$global_scope_level+' '+args.map{|e|e.to_s()}*''+time_diff)
         end
 
-        def call(*args, level: nil, &block)
+        def call(*args, level: nil, noop: nil, &block)
+            noop_sym = (noop ? '⛔' : '')
             res = nil
             if block
                 if do_log(level)
-                    output('  ', '🠚 ', *args)
+                    output('  ', '🠚 ', noop_sym, *args)
                     $global_scope_level += 1
                 end
-                res = block.()
+                res = block.() unless noop
                 if do_log(level)
                     $global_scope_level -= 1
-                    output('  ', '🠘 ', *args)
+                    output('  ', '🠘 ', noop_sym, *args)
                 end
             else
                 output('  ', *args) if do_log(level)
@@ -55,8 +56,7 @@ module Supr
         end
 
         def warning(*args, &block)
-            sym = '⚠ '
-            # sym = '🕭 '
+            sym = '⚠️ '
 
             res = nil
             if block

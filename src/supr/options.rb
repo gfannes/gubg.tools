@@ -3,7 +3,7 @@ require('optparse')
 module Supr
     class Options
         attr_reader(:version)
-        attr_reader(:print_help, :help_msg, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :ip, :port, :rest)
+        attr_reader(:print_help, :help_msg, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :ip, :port, :noop, :rest)
 
         def initialize()
             @version = 'v1.0.1'.freeze()
@@ -17,7 +17,7 @@ module Supr
                     clean: "Drop all local changes",
                     branch: "Create local branches for current state, 'reset --hard'-style, optionally filtered by a current branch that must be checked-out",
                     switch: "Swich to specified branch",
-                    push: "Push local branches to server, 'push --force'-style",
+                    push: "Push local branches to server, 'push --force'-style, optionally filtered by a current branch that must be checked-out",
                     run: "Run command",
                     remote: "Remote run command",
                     status: "Show dirty state",
@@ -43,6 +43,7 @@ module Supr
     			opts.on('-t', '--time', 'Add timing info') { @time = true }
     			opts.on('-i', '--IP ADDRESS', 'IP address') { |ip| @ip = ip}
     			opts.on('-p', '--port PORT', 'TCP port') { |port| @port = port.to_i()}
+    			opts.on('-n', '--noop', 'No operation mode') { @noop = true }
 
                 opts.separator('Developed by Geert Fannes')
 
