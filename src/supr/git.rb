@@ -340,30 +340,33 @@ module Supr
                             block.("Applying '#{repo.sha}' for '#{rel_(dir)}'") if block
                             out.("Applying '#{repo.sha}' for '#{rel_(dir)}'", level: 3) do
                                 git = ::Git.open(dir)
-                                out.("Running 'git fetch' in '#{rel_(dir)}'", level: 3){git.fetch()}
+                                my_sha = ::Git.open(submod_dir).log.first.sha
+                                if my_sha != repo.sha
+                                    out.("Running 'git fetch' in '#{rel_(dir)}'", level: 3){git.fetch()}
 
-                                if File.exists?(File.join(dir, '.git'))
-                                    out.(".git is present", level: 3)
-                                else
-                                    out.("Updating submodule '#{repo.rel}'", level: 2) do
-                                        Supr::Cmd.run(%w[git -C]+[base_dir]+%w[submodule update --init]+[repo.rel])
+                                    if File.exists?(File.join(dir, '.git'))
+                                        out.(".git is present", level: 3)
+                                    else
+                                        out.("Updating submodule '#{repo.rel}'", level: 2) do
+                                            Supr::Cmd.run(%w[git -C]+[base_dir]+%w[submodule update --init]+[repo.rel])
+                                        end
                                     end
-                                end
                                 
-                                is_clean = out.("Checking if submodule '#{rel_(dir)}' is clean", level: 2) do
-                                    fps = Supr::Git.dirty_files(dir)
-                                    fps.each do |fp|
-                                        out.("'#{fp}' is dirty", level: 1)
+                                    is_clean = out.("Checking if submodule '#{rel_(dir)}' is clean", level: 2) do
+                                        fps = Supr::Git.dirty_files(dir)
+                                        fps.each do |fp|
+                                            out.("'#{fp}' is dirty", level: 1)
+                                        end
+                                        fps.empty?()
                                     end
-                                    fps.empty?()
-                                end
 
-                                out.fail("Repo '#{dir}' is not clean") if !is_clean && !force
+                                    out.fail("Repo '#{dir}' is not clean") if !is_clean && !force
 
-                                if @protected_branches.include?(git.current_branch())
-                                    git.checkout(repo.sha)
-                                else
-                                    git.reset_hard(repo.sha)
+                                    if @protected_branches.include?(git.current_branch())
+                                        git.checkout(repo.sha)
+                                    else
+                                        git.reset_hard(repo.sha)
+                                    end
                                 end
                             end
                         }

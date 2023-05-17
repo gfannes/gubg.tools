@@ -191,7 +191,7 @@ module Supr
                 socket.shutdown(Socket::SHUT_WR)
                 status_line = nil
                 socket.each_line do |line|
-                    line = line.chomp().encode('UTF-8')
+                    line = line.chomp().encode('utf-8', invalid: :replace, undef: :replace, replace: '?')
                     last_line = line
                     out.("🌐 #{line}")
                 end
