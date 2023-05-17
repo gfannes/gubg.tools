@@ -8,6 +8,7 @@ module Supr
     class App
         def initialize()
             @options = Options.new()
+            @default_port = 8128
         end
 
         def call()
@@ -125,7 +126,7 @@ module Supr
         def run_serve_()
             any_interface = '0.0.0.0'
             interface = @options.ip || any_interface
-            port = (@options.port || @rest.shift()).to_i()
+            port = (@options.port || @rest.shift() || @default_port).to_i()
             scope("Running TCP server on '#{interface}:#{port}'", level: 1) do |out|
                 out.fail("No port was specified") unless port
                 server = TCPServer.new(interface, port)
@@ -183,7 +184,7 @@ module Supr
         end
 
         def run_remote_()
-            ip, port = @options.ip, @options.port
+            ip, port = @options.ip, (@options.port || @default_port)
             scope("Running remote command on '#{ip}:#{port}'", level: 1) do |out|
                 out.fail("No TCP address was specified") unless ip
                 out.fail("No TCP port was specified") unless port
