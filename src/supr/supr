@@ -1,7 +1,8 @@
-#!/usr/bin/bash
+#!/usr/bin/env ruby
 
-SUPR_DIR=$gubg/gubg.tools/src
+$LOAD_PATH << File.join(ENV['gubg'], 'gubg.tools/src')
 
-export RUBYLIB=$RUBYLIB:$SUPR_DIR
+require('supr/app')
 
-ruby $SUPR_DIR/supr/main.rb "$@"
+app = Supr::App.new()
+app.()

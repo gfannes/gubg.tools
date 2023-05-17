@@ -235,7 +235,7 @@ module Supr
                 end
             end
 
-            def branch(branch_name, delete: nil, force: nil)
+            def branch(branch_name, delete: nil, force: nil, where: nil)
                 scope("#{delete ? 'Deleting' : 'Creating'} local branch '#{branch_name}' from '#{@toplevel_dir}'", level: 1) do |out|
                     out.fail("No branch name was specified") unless branch_name
                     out.fail("I cannot #{delete ? 'delete' : 'create'} branches with name '#{branch_name}'") if @protected_branches.include?(branch_name)
@@ -256,19 +256,23 @@ module Supr
                                     end
                                 else
                                     out.fail("Cannot create/update branch '#{branch_name}' for dirty repo '#{rel_(dir)}'") unless Supr::Git.dirty_files(dir).empty?()
-                                    if Supr::Git.branches(dir).include?(branch_name)
-                                        out.("Resetting branch '#{branch_name}' to '#{repo.sha}'", level: 2) do
-                                            git.checkout(branch_name)
-                                            git.reset_hard(repo.sha)
-                                        end
+                                    if where && git.current_branch() != where
+                                        out.warning("Skipping '#{rel_(dir)}', its branch '#{git.current_branch()}' does not match with '#{where}'")
                                     else
-                                        if force
-                                            out.("Creating new branch '#{branch_name}' at '#{repo.sha}'", level: 2) do
-                                                git.lib.branch_new(branch_name)
+                                        if Supr::Git.branches(dir).include?(branch_name)
+                                            out.("Resetting branch '#{branch_name}' to '#{repo.sha}'", level: 2) do
                                                 git.checkout(branch_name)
+                                                git.reset_hard(repo.sha)
                                             end
                                         else
-                                            out.warning("Branch '#{branch_name}' does not exist yet for '#{rel_(dir)}', I will only create with with force")
+                                            if force
+                                                out.("Creating new branch '#{branch_name}' at '#{repo.sha}'", level: 2) do
+                                                    git.lib.branch_new(branch_name)
+                                                    git.checkout(branch_name)
+                                                end
+                                            else
+                                                out.warning("Branch '#{branch_name}' does not exist yet for '#{rel_(dir)}', I will only create with with force")
+                                            end
                                         end
                                     end
                                 end

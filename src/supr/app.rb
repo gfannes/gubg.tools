@@ -14,10 +14,11 @@ module Supr
             set_log_level(@options.verbose_level)
             set_add_time(@options.time)
 
-            if @options.help
-                puts(@options.help)
-            elsif !@options.rest.empty?()
-                verb = @options.rest.shift().to_sym()
+            verb = ->(verb){verb && verb.to_sym()}.(@options.rest.shift())
+
+            if @options.print_help || !verb
+                puts(@options.help_msg)
+            else
                 @rest = @options.rest
 
                 toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
@@ -43,7 +44,7 @@ module Supr
 
         private
         def run_collect_()
-            name = @rest[0]
+            name = @rest.shift()
 
             @state.name = name
 
@@ -59,8 +60,7 @@ module Supr
         end
 
         def run_load_()
-            name = @rest[0]
-            state_fp = @options.state_fp || (name && "#{name}.supr")
+            state_fp = @options.state_fp || ->(name){name && "#{name}.supr"}.(@rest.shift())
 
             scope("Collecting state from file '#{state_fp}'", level: 1) do |out|
                 out.fail("State file '#{state_fp}' does not exist") unless File.exists?(state_fp)
@@ -70,14 +70,16 @@ module Supr
         end
 
         def run_branch_()
-            branch = @options.branch || @rest[0]
+            branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
-            @state.branch(branch, delete: @options.delete, force: @options.force)
+            where = @rest.shift()
+
+            @state.branch(branch, delete: @options.delete, force: @options.force, where: where)
         end
 
         def run_switch_()
-            branch = @options.branch || @rest[0]
+            branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
             @state.switch(branch, continue: @options.continue)
@@ -107,14 +109,14 @@ module Supr
         end
 
         def run_sync_()
-            branch = @options.branch || @rest[0]
+            branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
             @state.sync(branch, continue: @options.continue)
         end
 
         def run_deliver_()
-            branch = @options.branch || @rest[0]
+            branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
             @state.deliver(branch)
@@ -123,7 +125,7 @@ module Supr
         def run_serve_()
             any_interface = '0.0.0.0'
             interface = @options.ip || any_interface
-            port = @options.port || (@rest[0] && @rest[0].to_i())
+            port = (@options.port || @rest.shift()).to_i()
             scope("Running TCP server on '#{interface}:#{port}'", level: 1) do |out|
                 out.fail("No port was specified") unless port
                 server = TCPServer.new(interface, port)

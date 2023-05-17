@@ -3,12 +3,11 @@ require('optparse')
 module Supr
     class Options
         attr_reader(:version)
-        attr_reader(:help, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :ip, :port, :rest)
+        attr_reader(:print_help, :help_msg, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :ip, :port, :rest)
 
         def initialize()
             @version = 'v1.0.1'.freeze()
 
-            help_str = nil
             OptionParser.new() do |opts|
             	opts.banner = "Usage (version #{@version}): supr [verb] [options]* [rest]"
                 opts.separator("Verbs")
@@ -16,7 +15,7 @@ module Supr
                     collect: "Collect git repo state in output file",
                     load: "Load a git repo state from input file",
                     clean: "Drop all local changes",
-                    branch: "Create local branches for current state, 'reset --hard'-style",
+                    branch: "Create local branches for current state, 'reset --hard'-style, optionally filtered by a current branch that must be checked-out",
                     switch: "Swich to specified branch",
                     push: "Push local branches to server, 'push --force'-style",
                     run: "Run command",
@@ -32,7 +31,7 @@ module Supr
                 end
 
                 opts.separator('Options')
-    			opts.on('-h', '--help', 'Print this help') { @help = true }
+    			opts.on('-h', '--help', 'Print this help') { @print_help = true }
                 opts.on('-V', '--verbose LEVEL', 'Verbosity level') { |level| @verbose_level = level.to_i() }
                 opts.on('-s', '--state FILE', 'File containing the required git state') { |file| @state_fp = file }
                 opts.on('-o', '--output FILE', 'Output file') { |file| @output_fp = file }
@@ -47,12 +46,11 @@ module Supr
 
                 opts.separator('Developed by Geert Fannes')
 
-                help_str = opts.to_s()
+                @help_msg = opts.to_s()
             end.parse!()
 
             @verbose_level ||= 1
             @root_dir ||= Dir.pwd()
-            @help = help_str if @help
 
             # We consume ARGV to ensure future `gets()` won't receive its data
             @rest = []
