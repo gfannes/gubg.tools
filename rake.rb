@@ -130,6 +130,10 @@ namespace :tools do
 		task :prepare do
 			sh 'gem install git'
 			publish(here, 'src/supr', pattern: "supr", dst: 'bin', mode: 0755)
+			case os()
+			when :windows
+				publish(here, 'src/supr', pattern: "supr.bat", dst: 'bin', mode: 0755)
+			end
 		end
 	end
 	
