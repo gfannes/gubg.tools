@@ -29,7 +29,7 @@ module Supr
                     scope("Collecting state from dir '#{toplevel_dir}'", level: 1) do |out|
                         # We only allow working with a dirty state for specific verbs
                         # Others require an explicit force
-                        force = %i[status diff commit clean branch].include?(verb) ? true : @options.force
+                        force = %i[status diff commit clean branch remote].include?(verb) ? true : @options.force
                         @state.from_dir(force: force)
                     end
                 end
