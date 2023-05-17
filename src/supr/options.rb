@@ -3,10 +3,10 @@ require('optparse')
 module Supr
     class Options
         attr_reader(:version)
-        attr_reader(:help, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :rest)
+        attr_reader(:help, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :ip, :port, :rest)
 
         def initialize()
-            @version = 'v1.0.0'
+            @version = 'v1.0.1'.freeze()
 
             help_str = nil
             OptionParser.new() do |opts|
@@ -20,11 +20,13 @@ module Supr
                     switch: "Swich to specified branch",
                     push: "Push local branches to server, 'push --force'-style",
                     run: "Run command",
+                    remote: "Remote run command",
                     status: "Show dirty state",
                     diff: "Show a diff for all dirty files",
                     commit: "Commit all dirty files",
                     sync: "Sync local git repo with given branch",
                     deliver: "Deliver local branches to specified branch",
+                    serve: "Start a TCP server on specified port",
                 }.each do |verb, descr|
                     opts.separator("    #{verb}\t#{descr}")
                 end
@@ -40,6 +42,8 @@ module Supr
                 opts.on('-b', '--branch NAME', 'Use branch NAME') { |name| @branch = name}
     			opts.on('-d', '--delete', 'Delete branch') { @delete = true }
     			opts.on('-t', '--time', 'Add timing info') { @time = true }
+    			opts.on('-i', '--IP ADDRESS', 'IP address') { |ip| @ip = ip}
+    			opts.on('-p', '--port PORT', 'TCP port') { |port| @port = port.to_i()}
 
                 opts.separator('Developed by Geert Fannes')
 

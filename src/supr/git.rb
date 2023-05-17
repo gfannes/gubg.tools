@@ -204,11 +204,12 @@ module Supr
                 end
             end
 
-            def run(*cmd)
+            def run(*cmd, &block)
                 scope("Running command ", *cmd, level: 1) do |out|
                     Dir.chdir(@toplevel_dir) do
                         Supr::Cmd.run(cmd, chomp: true) do |line|
                             out.(line)
+                            block.(line) if block
                         end
                     end
                 end

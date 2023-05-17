@@ -2,6 +2,8 @@ require('supr/options')
 require('supr/log')
 require('supr/git')
 
+require('socket')
+
 module Supr
     class App
         def initialize()
@@ -21,7 +23,7 @@ module Supr
                 toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
                 @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
 
-                if %i[collect clean status diff commit branch switch push run sync deliver].include?(verb)
+                if %i[collect clean status diff commit branch switch push run sync deliver remote].include?(verb)
                     scope("Collecting state from dir '#{toplevel_dir}'", level: 1) do |out|
                         # We only allow working with a dirty state for specific verbs
                         # Others require an explicit force
@@ -116,6 +118,79 @@ module Supr
             error("No branch was specified") unless branch
 
             @state.deliver(branch)
+        end
+
+        def run_serve_()
+            any_interface = '0.0.0.0'
+            interface = @options.ip || any_interface
+            port = @options.port || (@rest[0] && @rest[0].to_i())
+            scope("Running TCP server on '#{interface}:#{port}'", level: 1) do |out|
+                out.fail("No port was specified") unless port
+                server = TCPServer.new(interface, port)
+                loop do
+                    client = out.("Waiting for a connection") {server.accept()}
+
+                    debug = ->(msg){
+                        client.puts("[Debug](msg:#{msg})")
+                    }
+
+                    debug.("Hello")
+
+                    cmd_str = out.("Reading command") do
+                        str = client.readline().chomp()
+                        out.(str)
+                        str
+                    end
+
+                    state_str = out.("Reading repo state") do
+                        # Read all data, until the client closes its write-end of the connection
+                        str = client.read()
+                        out.(str)
+                        str
+                    end
+
+                    @state.from_naft(state_str)
+
+                    debug.("Applying state")
+                    @state.apply(force: @options.force)
+                    debug.("Done applying state")
+
+                    begin
+                        cmd = cmd_str.split(' ')
+
+                        debug.("Running command '#{cmd*' '}'")
+                        @state.run(cmd) do |line|
+                            client.puts(line)
+                        end
+                        debug.("Done running command")
+                    rescue Errno::ENOENT => exc
+                        client.puts("[Status](code:ENOENT)(msg:#{exc})")
+                    else
+                        client.puts("[Status](code:OK)")
+                    end
+
+                    client.close()
+                end
+            end
+        end
+
+        def run_remote_()
+            ip, port = @options.ip, @options.port
+            scope("Running remote command on '#{ip}:#{port}'", level: 1) do |out|
+                out.fail("No TCP address was specified") unless ip
+                out.fail("No TCP port was specified") unless port
+                socket = TCPSocket.new(ip, port)
+                socket.puts(@rest*' ')
+                socket.puts(@state.to_naft())
+                socket.shutdown(Socket::SHUT_WR)
+                status_line = nil
+                socket.each_line do |line|
+                    line = line.chomp()
+                    last_line = line
+                    out.("🌐 #{line}")
+                end
+                socket.close()
+            end
         end
     end
 end
