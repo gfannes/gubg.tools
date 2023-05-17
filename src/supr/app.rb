@@ -128,52 +128,54 @@ module Supr
                 out.fail("No port was specified") unless port
                 server = TCPServer.new(interface, port)
                 loop do
-                    client = out.("Waiting for a connection") {server.accept()}
-
-                    debug = ->(msg){
-                        client.puts("[Debug](msg:#{msg})")
-                    }
-
-                    debug.("Hello")
-
-                    cmd_str = out.("Reading command") do
-                        str = client.readline().chomp()
-                        out.(str)
-                        str
-                    end
-
-                    state_str = out.("Reading repo state") do
-                        # Read all data, until the client closes its write-end of the connection
-                        str = client.read()
-                        out.(str)
-                        str
-                    end
-
-                    @state.from_naft(state_str)
-
-                    debug.("Applying state")
-                    @state.apply(force: @options.force) do |line|
-                        client.puts(line)
-                    end
-                    debug.("Done applying state")
-
                     begin
-                        cmd = cmd_str.split(' ')
+                        client = out.("Waiting for a connection") {server.accept()}
 
-                        debug.("Running command '#{cmd*' '}'")
-                        @state.run(cmd) do |line|
+                        debug = ->(msg){
+                            client.puts("[Debug](msg:#{msg})")
+                        }
+
+                        debug.("Hello")
+
+                        cmd_str = out.("Reading command") do
+                            str = client.readline().chomp()
+                            out.(str)
+                            str
+                        end
+
+                        state_str = out.("Reading repo state") do
+                            # Read all data, until the client closes its write-end of the connection
+                            str = client.read()
+                            out.(str)
+                            str
+                        end
+
+                        @state.from_naft(state_str)
+
+                        debug.("Applying state")
+                        @state.apply(force: @options.force) do |line|
                             client.puts(line)
                         end
-                        debug.("Done running command")
-                    rescue Errno::ENOENT => exc
-                        client.puts("[Status](code:ENOENT)(msg:#{exc})")
+                        debug.("Done applying state")
+
+                        begin
+                            cmd = cmd_str.split(' ')
+
+                            debug.("Running command '#{cmd*' '}'")
+                            @state.run(cmd) do |line|
+                                client.puts(line)
+                            end
+                            debug.("Done running command")
+                        rescue Errno::ENOENT => exc
+                            client.puts("[Status](code:ENOENT)(msg:#{exc})")
+                        else
+                            client.puts("[Status](code:OK)")
+                        end
                     rescue Errno::EPIPE => exc
                         out.warning("Aborting, client closed connection")
-                    else
-                        client.puts("[Status](code:OK)")
+                    ensure
+                        client.close()
                     end
-
-                    client.close()
                 end
             end
         end
