@@ -115,9 +115,9 @@ module Supr
                 run_('pull', '--rebase', allow_fail: allow_fail)
             end
 
-            def push(branch_name: nil, allow_fail: nil)
-                if branch_name
-                    run_('push', '--set-upstream', 'origin', branch_name, allow_fail: allow_fail)
+            def push(branch: nil, allow_fail: nil)
+                if branch
+                    run_('push', '--set-upstream', 'origin', branch, allow_fail: allow_fail)
                 else
                     run_('push', allow_fail: allow_fail)
                 end

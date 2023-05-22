@@ -2,7 +2,6 @@ require('supr/cmd')
 require('supr/log')
 require('supr/git/env')
 
-require('git')
 require('pathname')
 require('time')
 
@@ -246,36 +245,38 @@ module Supr
         def self.pull(m, continue: nil, where: nil, force: nil, noop: nil)
             scope("Pulling repos", level: 1) do |out|
                 m.each do |sm|
-                    g = Git::Env.new(sm)
+                    out.("Pulling '#{sm}'", level: 3) do
+                        g = Git::Env.new(sm)
 
-                    my_branch = g.branch()
-                    out.("my_branch: #{my_branch}", level: 2)
+                        my_branch = g.branch()
+                        out.("my_branch: #{my_branch}", level: 3)
 
-                    if where && where != my_branch
-                        out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
-                    else
-                        if !my_branch
-                            out.warning("No branch present for '#{sm}'")
+                        if where && where != my_branch
+                            out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                         else
-                            do_stash_pop = false
-                            dirty_files = g.dirty_files()
-                            if !dirty_files.empty?()
-                                dirty_files.each do |fp|
-                                    out.warning(" * #{fp}")
-                                end
-                                out.fail("Found #{dirty_files.size()} dirty files") unless force
+                            if !my_branch
+                                out.warning("No branch present for '#{sm}'")
+                            else
+                                do_stash_pop = false
+                                dirty_files = g.dirty_files()
+                                if !dirty_files.empty?()
+                                    dirty_files.each do |fp|
+                                        out.warning(" * #{fp}")
+                                    end
+                                    out.fail("Found #{dirty_files.size()} dirty files") unless force
 
-                                out.("Pushing local stash") do
-                                    g.stash_push()
-                                    do_stash_pop = true
+                                    out.("Pushing local stash") do
+                                        g.stash_push()
+                                        do_stash_pop = true
+                                    end
                                 end
-                            end
-                            out.("Pulling branch '#{my_branch}' for '#{rel_(dir)}'", noop: noop) do
-                                g.pull(allow_fail: continue)
-                            end
-                            if do_stash_pop
-                                out.("Popping local stash") do
-                                    g.stash_pop()
+                                out.("Pulling branch '#{my_branch}' for '#{sm}'", noop: noop) do
+                                    g.pull(allow_fail: continue)
+                                end
+                                if do_stash_pop
+                                    out.("Popping local stash") do
+                                        g.stash_pop()
+                                    end
                                 end
                             end
                         end
@@ -287,23 +288,25 @@ module Supr
         def self.push(m, continue: nil, where: nil, noop: nil)
             scope("Pushing repos", level: 1) do |out|
                 m.each do |sm|
-                    g = Git::Env.new(sm)
+                    out.("Pushing '#{sm}'", level: 3) do
+                        g = Git::Env.new(sm)
                     
-                    my_branch = g.branch()
-                    out.("my_branch: #{my_branch}", level: 2)
+                        my_branch = g.branch()
+                        out.("my_branch: #{my_branch}", level: 3)
 
-                    if where && where != my_branch
-                        out.warning("Skipping '#{rel_(dir)}', its branch '#{my_branch}' does not match with '#{where}'")
-                    else
-                        if !my_branch
-                            out.warning("No branch present for '#{sm}'")
-                        elsif @@protected_branches.include?(my_branch)
-                            out.("Pushing special branch '#{my_branch}' for '#{sm}' without --set-upstream", noop: noop) do
-                                g.push(allow_fail: continue)
-                            end
+                        if where && where != my_branch
+                            out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                         else
-                            out.("Pushing normal branch '#{my_branch}' for '#{rel_(dir)}' with --set-upstream", noop: noop) do
-                                g.push(branch: my_branch, allow_fail: continue)
+                            if !my_branch
+                                out.warning("No branch present for '#{sm}'")
+                            elsif @@protected_branches.include?(my_branch)
+                                out.("Pushing special branch '#{my_branch}' for '#{sm}' without --set-upstream", noop: noop) do
+                                    g.push(allow_fail: continue)
+                                end
+                            else
+                                out.("Pushing normal branch '#{my_branch}' for '#{sm}' with --set-upstream", noop: noop) do
+                                    g.push(branch: my_branch, allow_fail: continue)
+                                end
                             end
                         end
                     end
@@ -395,7 +398,7 @@ module Supr
                             g.pull(allow_fail: continue)
                         end
                     else
-                        out.("Syncing local branch '#{my_branch}' for '#{rel_(dir)}' with '#{branch_name}'", level: 2) do
+                        out.("Syncing local branch '#{my_branch}' for '#{sm}' with '#{branch_name}'", level: 2) do
                             g.rebase(branch_name, allow_fail: continue)
                         end
                     end
