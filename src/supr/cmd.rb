@@ -11,7 +11,8 @@ module Supr
             scope("Running command '#{args*' '}' with env '#{env}'", level: 4) do |out|
                 orig_env = {}
                 env.each do |k, v|
-                    orig_env[k] = v
+                    orig_env[k] = ENV[k]
+                    ENV[k] = v
                 end if env
 
                 output = nil
