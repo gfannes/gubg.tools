@@ -16,7 +16,6 @@ module Supr
                     g = Git::Env.new(sm)
                     sm.sha = g.sha()
                     sm.my_branch = g.branch()
-                    puts sm
                 end
             end
         end
@@ -103,7 +102,8 @@ module Supr
                 m.each do |sm|
                     out.("Applying '#{sm.sha}' for '#{sm}'", level: 3) do
                         git_fp = sm.filepath('.git')
-                        out.(".git: #{git_fp}")
+                        out.fail("Invalid path to .git") unless git_fp
+
                         if File.exists?(git_fp)
                             out.(".git is present", level: 3)
                         else
@@ -232,7 +232,8 @@ module Supr
         end
 
         def self.run(root_dir, *cmd, &block)
-            scope("Running command ", *cmd, level: 1) do |out|
+            cmd = cmd.flatten()
+            scope("Running command '#{cmd*' '}'", level: 1) do |out|
                 Dir.chdir(root_dir) do
                     Supr::Cmd.run(cmd, chomp: true) do |line|
                         out.(line)

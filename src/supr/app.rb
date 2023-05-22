@@ -161,6 +161,7 @@ module Supr
                         end
 
                         @root = Supr::Git.from_naft(state_str)
+                        @root.setup_root_dir(@root_dir)
 
                         debug.("Applying state")
                         Supr::Git.apply(@root, force: @options.force) do |line|
@@ -172,7 +173,7 @@ module Supr
                             cmd = cmd_str.split(' ')
 
                             debug.("Running command '#{cmd*' '}'")
-                            Supr::Git.run(@root, cmd) do |line|
+                            Supr::Git.run(@root_dir, cmd) do |line|
                                 client.puts(line)
                             end
                             debug.("Done running command")
