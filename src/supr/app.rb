@@ -105,7 +105,7 @@ module Supr
 
         def run_push_()
             where = @rest.shift()
-            Supr::Git.push(@root, continue: @options.continue, where: where, noop: @options.noop, j: @options.j)
+            Supr::Git.push(@root, continue: @options.continue, where: where, force: @options.force, noop: @options.noop, j: @options.j)
         end
 
         def run_run_()
@@ -140,7 +140,9 @@ module Supr
             branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
-            Supr::Git.deliver(@root, branch)
+            where = @rest.shift()
+
+            Supr::Git.deliver(@root, branch, where: where)
         end
 
         def run_serve_()

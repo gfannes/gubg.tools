@@ -115,12 +115,8 @@ module Supr
                 run_('pull', '--rebase', allow_fail: allow_fail)
             end
 
-            def push(branch: nil, allow_fail: nil)
-                if branch
-                    run_('push', '--set-upstream', 'origin', branch, allow_fail: allow_fail)
-                else
-                    run_('push', allow_fail: allow_fail)
-                end
+            def push(branch: nil, force: nil, allow_fail: nil)
+                run_('push', branch && ['--set-upstream', 'origin', branch], force && '--force', allow_fail: allow_fail)
             end
 
             def can_fast_forward?(from, to)

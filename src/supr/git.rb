@@ -298,7 +298,7 @@ module Supr
             end
         end
 
-        def self.push(m, continue: nil, where: nil, noop: nil, j: nil)
+        def self.push(m, continue: nil, where: nil, force: nil, noop: nil, j: nil)
             scope("Pushing repos", level: 1) do |out|
                 m.each_mt(j: j) do |sm|
                     out.("Pushing '#{sm}'", level: 3) do
@@ -313,12 +313,12 @@ module Supr
                             if !my_branch
                                 out.warning("No branch present for '#{sm}'")
                             elsif @@protected_branches.include?(my_branch)
-                                out.("Pushing special branch '#{my_branch}' for '#{sm}' without --set-upstream", noop: noop) do
+                                out.("Pushing special branch '#{my_branch}' for '#{sm}'", noop: noop) do
                                     g.push(allow_fail: continue)
                                 end
                             else
-                                out.("Pushing normal branch '#{my_branch}' for '#{sm}' with --set-upstream", noop: noop) do
-                                    g.push(branch: my_branch, allow_fail: continue)
+                                out.("Pushing normal branch '#{my_branch}' for '#{sm}'", noop: noop) do
+                                    g.push(branch: my_branch, force: force, allow_fail: continue)
                                 end
                             end
                         end
@@ -440,16 +440,24 @@ module Supr
             end
         end
 
-        def self.deliver(m, branch_name)
+        def self.deliver(m, branch_name, where: nil)
             scope("Delivering local branches onto '#{branch_name}'", level: 0) do |out|
                 m.each do |sm|
                     g = Git::Env.new(sm)
 
                     my_branch = g.branch()
 
-                    if my_branch && my_branch != branch_name
+                    if !my_branch
+                        out.warning("No branch found for '#{sm}'")
+                    elsif my_branch == branch_name
+                        out.warning("Delivering to the same branch '#{my_branch}' is useless")
+                    elsif where && my_branch != where
+                        out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                    else
                         out.("Delivering '#{my_branch}' onto '#{branch_name}' for '#{sm}'", level: 2) do
-                            if g.can_fast_forward?(branch_name, my_branch)
+                            if !g.can_fast_forward?(branch_name, my_branch)
+                                out.fail("Cannot deliver '#{my_branch}' onto '#{branch_name}' via FFWD")
+                            else
                                 g.switch(branch_name)
                                 g.reset_hard(my_branch)
                             end
