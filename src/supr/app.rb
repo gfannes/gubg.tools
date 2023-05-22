@@ -1,6 +1,7 @@
 require('supr/options')
 require('supr/log')
 require('supr/git')
+require('supr/git/module')
 
 require('socket')
 
@@ -25,13 +26,24 @@ module Supr
                 toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
                 @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
 
-                if %i[collect clean status diff commit branch switch push run sync deliver remote].include?(verb)
+                @root = Supr::Git::Module.load_from(toplevel_dir)
+                @root.each do |m|
+                    puts m
+                end
+
+                if %i[collect].include?(verb)
+                    Supr::Git.collect_sha_and_branch(@root)
+                end
+
+                if !:old
+                if %i[collect clean status diff commit branch switch pull push run sync deliver remote].include?(verb)
                     scope("Collecting state from dir '#{toplevel_dir}'", level: 1) do |out|
                         # We only allow working with a dirty state for specific verbs
                         # Others require an explicit force
-                        force = %i[status diff commit clean branch remote].include?(verb) ? true : @options.force
+                        force = %i[status diff commit clean branch remote pull].include?(verb) ? true : @options.force
                         @state.from_dir(force: force)
                     end
+                end
                 end
 
                 scope("Running verb '#{verb}'", level: 1) do |out|
@@ -47,11 +59,11 @@ module Supr
         def run_collect_()
             name = @rest.shift()
 
-            @state.name = name
+            @root.name = name
 
             fp = @options.output_fp || (name && "#{name}.supr") || 'output.supr'
             scope("Writing state to '#{fp}'", level: 1) do
-                str = @state.to_naft()
+                str = Supr::Git.to_naft(@root)
                 File.write(fp, str)
             end
         end
@@ -65,18 +77,22 @@ module Supr
 
             scope("Collecting state from file '#{state_fp}'", level: 1) do |out|
                 out.fail("State file '#{state_fp}' does not exist") unless File.exists?(state_fp)
-                @state.from_naft(File.read(state_fp))
-                @state.apply(force: @options.force)
+
+                str = File.read(state_fp)
+                @root = Supr::Git.from_naft(str)
+                out.(Supr::Git.to_naft(@root), level: 2)
+
+                Supr::Git.apply(@root, force: @options.force)
             end
         end
 
-        def run_branch_()
+        def run_create_()
             branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
             where = @rest.shift()
 
-            @state.branch(branch, delete: @options.delete, force: @options.force, where: where, noop: @options.noop)
+            @state.create(branch, delete: @options.delete, where: where, force: @options.force, noop: @options.noop)
         end
 
         def run_switch_()
@@ -84,6 +100,11 @@ module Supr
             error("No branch was specified") unless branch
 
             @state.switch(branch, continue: @options.continue)
+        end
+
+        def run_pull_()
+            where = @rest.shift()
+            @state.pull(continue: @options.continue, where: where, force: @options.force, noop: @options.noop)
         end
 
         def run_push_()
@@ -101,7 +122,7 @@ module Supr
 
         def run_diff_()
             difftool = @options.rest[0]
-            @state.diff(difftool)
+            Supr::Git.diff(@root, difftool: difftool)
         end
 
         def run_commit_()

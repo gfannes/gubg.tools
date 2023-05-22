@@ -17,3 +17,4 @@
   * Split State/Repo from its Operations
     * Inject options into Operations
 * Replace ad-hoc naft parsing with real read/write
+* Support MT operations

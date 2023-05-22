@@ -8,7 +8,7 @@ module Supr
         def self.run(*args, chomp: nil, allow_fail: nil, &block)
             args = [args].flatten().map{|e|e.to_s()}
 
-            scope("Running command '#{args*' '}'", level: 3) do |out|
+            scope("Running command '#{args*' '}'", level: 4) do |out|
                 output = nil
                 status = nil
 
