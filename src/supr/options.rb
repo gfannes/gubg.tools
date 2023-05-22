@@ -3,7 +3,7 @@ require('optparse')
 module Supr
     class Options
         attr_reader(:version)
-        attr_reader(:print_help, :help_msg, :j, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :ip, :port, :noop, :rest)
+        attr_reader(:print_help, :help_msg, :j, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :ip, :port, :noop, :rest)
 
         def initialize()
             @version = 'v1.0.2'.freeze()
@@ -20,8 +20,9 @@ module Supr
                     load: "Load a git modules state from input file",
                     clean: "Drop all local changes",
                     create: "Create local branches for current state, 'reset --hard'-style, optionally filtered by a current branch that must be checked-out",
+                    delete: "Delete local branches",
                     switch: "Swich to specified branch",
-                    pull: "Pull checked-out branches from server",
+                    pull: "Pull checked-out branches from server, where",
                     push: "Push local branches to server, 'push --force'-style, optionally filtered by a current branch that must be checked-out",
                     run: "\tRun command",
                     remote: "Remote run command",
@@ -44,7 +45,6 @@ module Supr
     			opts.on('-f', '--force', 'Force') { @force = true }
     			opts.on('-c', '--continue', 'Continue') { @continue = true }
                 opts.on('-b', '--branch NAME', 'Use branch NAME') { |name| @branch = name}
-    			opts.on('-d', '--delete', 'Delete branch') { @delete = true }
     			opts.on('-t', '--time', 'Add timing info') { @time = true }
     			opts.on('-i', '--IP ADDRESS', 'IP address') { |ip| @ip = ip}
     			opts.on('-p', '--port PORT', 'TCP port') { |port| @port = port.to_i()}

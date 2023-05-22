@@ -70,12 +70,25 @@ module Supr
         end
 
         def run_create_()
+            Supr::Git.collect_sha_and_branch(@root)
+
             branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
             where = @rest.shift()
 
-            Supr::Git.create(@root, branch, delete: @options.delete, where: where, force: @options.force, noop: @options.noop)
+            Supr::Git.create(@root, branch, where: where, force: @options.force, noop: @options.noop)
+        end
+
+        def run_delete_()
+            Supr::Git.collect_sha_and_branch(@root)
+
+            branch = @options.branch || @rest.shift()
+            error("No branch was specified") unless branch
+
+            where = @rest.shift()
+
+            Supr::Git.delete(@root, branch, where: where, force: @options.force, noop: @options.noop)
         end
 
         def run_switch_()
@@ -87,12 +100,12 @@ module Supr
 
         def run_pull_()
             where = @rest.shift()
-            Supr::Git.pull(@root, continue: @options.continue, where: where, force: @options.force, noop: @options.noop)
+            Supr::Git.pull(@root, continue: @options.continue, where: where, force: @options.force, noop: @options.noop, j: @options.j)
         end
 
         def run_push_()
             where = @rest.shift()
-            Supr::Git.push(@root, continue: @options.continue, where: where, noop: @options.noop)
+            Supr::Git.push(@root, continue: @options.continue, where: where, noop: @options.noop, j: @options.j)
         end
 
         def run_run_()

@@ -255,9 +255,9 @@ module Supr
             end
         end
 
-        def self.pull(m, continue: nil, where: nil, force: nil, noop: nil)
+        def self.pull(m, continue: nil, where: nil, force: nil, noop: nil, j: nil)
             scope("Pulling repos", level: 1) do |out|
-                m.each do |sm|
+                m.each_mt(j: j) do |sm|
                     out.("Pulling '#{sm}'", level: 3) do
                         g = Git::Env.new(sm)
 
@@ -298,9 +298,9 @@ module Supr
             end
         end
 
-        def self.push(m, continue: nil, where: nil, noop: nil)
+        def self.push(m, continue: nil, where: nil, noop: nil, j: nil)
             scope("Pushing repos", level: 1) do |out|
-                m.each do |sm|
+                m.each_mt(j: j) do |sm|
                     out.("Pushing '#{sm}'", level: 3) do
                         g = Git::Env.new(sm)
                     
@@ -327,10 +327,10 @@ module Supr
             end
         end
 
-        def self.create(m, branch_name, delete: nil, where: nil, force: nil, noop: nil)
-            scope("#{delete ? 'Deleting' : 'Creating'} local branch '#{branch_name}' from '#{@root_dir}'", level: 1) do |out|
+        def self.create(m, branch_name, where: nil, force: nil, noop: nil)
+            scope("Creating local branches '#{branch_name}' from '#{@root_dir}'", level: 1) do |out|
                 out.fail("No branch name was specified") unless branch_name
-                out.fail("I cannot #{delete ? 'delete' : 'create'} branches with name '#{branch_name}'") if @@protected_branches.include?(branch_name)
+                out.fail("I cannot create branches with name '#{branch_name}'") if @@protected_branches.include?(branch_name)
 
                 m.each do |sm|
                     out.("Processing '#{sm}'", level: 2) do
@@ -338,38 +338,51 @@ module Supr
 
                         my_branch = g.branch()
 
-                        if delete
-                            if g.branches().include?(branch_name)
-                                if my_branch == branch_name
-                                    out.fail("Cannot remove branch '#{branch_name}' that is currently checked-out in '#{sm}'") unless force
-                                    out.("Checking-out detached head at '#{sm.sha}'", noop: noop) do
-                                        g.checkout(sm.sha)
-                                    end
-                                end
-                                out.("Deleting branch '#{branch_name}'", level: 2, noop: noop) do
-                                    g.delete_branch(branch_name)
-                                end
-                            end
+                        out.fail("Cannot create/update branch '#{branch_name}' for dirty repo '#{sm}'") unless g.dirty_files().empty?()
+                        if where && my_branch != where
+                            out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                         else
-                            out.fail("Cannot create/update branch '#{branch_name}' for dirty repo '#{sm}'") unless g.dirty_files().empty?()
-                            if where && my_branch != where
-                                out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                            if g.branches().include?(branch_name)
+                                out.("Resetting branch '#{branch_name}' to '#{sm.sha}'", level: 2, noop: noop) do
+                                    g.switch(branch_name)
+                                    g.reset_hard(sm.sha)
+                                end
                             else
-                                if g.branches().include?(branch_name)
-                                    out.("Resetting branch '#{branch_name}' to '#{sm.sha}'", level: 2, noop: noop) do
+                                if force
+                                    out.("Creating new branch '#{branch_name}' at '#{sm.sha}'", level: 2, noop: noop) do
+                                        g.create_branch(branch_name)
                                         g.switch(branch_name)
-                                        g.reset_hard(sm.sha)
                                     end
                                 else
-                                    if force
-                                        out.("Creating new branch '#{branch_name}' at '#{sm.sha}'", level: 2, noop: noop) do
-                                            g.create_branch(branch_name)
-                                            g.switch(branch_name)
-                                        end
-                                    else
-                                        out.warning("Branch '#{branch_name}' does not exist yet for '#{sm}', I will only create with with force")
-                                    end
+                                    out.warning("Branch '#{branch_name}' does not exist yet for '#{sm}', I will only create with with force")
                                 end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        def self.delete(m, branch_name, where: nil, force: nil, noop: nil)
+            scope("Deleting local branches '#{branch_name}' from '#{@root_dir}'", level: 1) do |out|
+                out.fail("No branch name was specified") unless branch_name
+                out.fail("I cannot delete branches with name '#{branch_name}'") if @@protected_branches.include?(branch_name)
+
+                m.each do |sm|
+                    out.("Processing '#{sm}'", level: 2) do
+                        g = Git::Env.new(sm)
+
+                        my_branch = g.branch()
+
+                        if g.branches().include?(branch_name)
+                            if my_branch == branch_name
+                                out.fail("Cannot remove branch '#{branch_name}' that is currently checked-out in '#{sm}'") unless force
+                                out.("Checking-out detached head at '#{sm.sha}'", noop: noop) do
+                                    g.checkout(sm.sha)
+                                end
+                            end
+                            out.("Deleting branch '#{branch_name}'", level: 2, noop: noop) do
+                                g.delete_branch(branch_name)
                             end
                         end
                     end

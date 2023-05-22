@@ -42,7 +42,7 @@ module Supr
             end
 
             def delete_branch(name)
-                run_('branch', '-d', name)
+                run_('branch', '-D', name)
             end
             
             def update_submodule(reldir)
