@@ -368,11 +368,11 @@ module Supr
         def self.switch(m, branch_name, continue: nil)
             scope("Switching to branch '#{branch_name}'", level: 1) do |out|
                 m.each do |sm|
-                    g = Git::Env.new(sm, allow_fail: continue)
+                    out.("Switching to branch '#{branch_name}' in '#{sm}'", level: 1) do
+                        g = Git::Env.new(sm, allow_fail: continue)
 
-                    g.fetch()
+                        g.fetch()
 
-                    out.("Switch to branch '#{branch_name}' in '#{sm}'", level: 2) do
                         branches = g.branches()
                         if !branches.include?(branch_name)
                             out.warning("No branch '#{branch_name}' found in '#{sm}'")
