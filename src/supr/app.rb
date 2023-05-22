@@ -95,7 +95,7 @@ module Supr
             branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
-            @state.switch(branch, continue: @options.continue)
+            Supr::Git.switch(@root, branch, continue: @options.continue)
         end
 
         def run_pull_()

@@ -368,23 +368,21 @@ module Supr
             end
         end
 
-        def self.switch(branch_name, continue: nil)
+        def self.switch(m, branch_name, continue: nil)
             scope("Switching to branch '#{branch_name}'", level: 1) do |out|
-                recurse(
-                    on_open: ->(repo, base_dir){
-                        dir = repo.dir(base_dir)
+                m.each do |sm|
+                    g = Git::Env.new(sm, allow_fail: continue)
 
-                        Supr::Git.fetch(dir)
+                    g.fetch()
 
-                        out.("Switch to branch '#{branch_name}' in '#{rel_(dir)}'", level: 2) do
-                            branches = Supr::Git.branches(dir)
-                            if !branches.include?(branch_name)
-                                out.warning("No branch '#{branch_name}' found in '#{rel_(dir)}'")
-                            end
-                            Supr::Cmd.run([%w[git -C], dir, 'switch', branch_name], allow_fail: continue)
+                    out.("Switch to branch '#{branch_name}' in '#{sm.path}'", level: 2) do
+                        branches = g.branches()
+                        if !branches.include?(branch_name)
+                            out.warning("No branch '#{branch_name}' found in '#{sm.path}'")
                         end
-                    }
-                )
+                        g.switch(branch_name)
+                    end
+                end
             end
         end
 

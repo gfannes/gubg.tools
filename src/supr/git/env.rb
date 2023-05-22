@@ -5,8 +5,9 @@ module Supr
     module Git
 
         class Env
-            def initialize(dir)
+            def initialize(dir, allow_fail: nil)
                 @dir = (Module === dir ? dir.dir() : dir)
+                @allow_fail = allow_fail
             end
 
             def root_dir()
@@ -86,12 +87,16 @@ module Supr
                 run_('commit', msg)
             end
 
+            def switch(branch_name)
+                run_('switch', branch_name)
+            end
+
             private
             def run_(*args)
                 args = args.flatten().compact().map{|e|e.to_s()}
 
                 scope("Running 'git #{args*' '}' in '#{@dir}'", level: 3) do |out|
-                    Supr::Cmd.run('git', '-C', @dir, *args)
+                    Supr::Cmd.run('git', '-C', @dir, *args, allow_fail: @allow_fail)
                 end
             end
         end
