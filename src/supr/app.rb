@@ -23,24 +23,9 @@ module Supr
             else
                 @rest = @options.rest
 
-                root_dir = Git::Env.new(@options.root_dir).root_dir()
+                @root_dir = Git::Env.new(@options.root_dir).root_dir()
 
-                @root = Supr::Git::Module.load_from(root_dir)
-
-                if %i[collect].include?(verb)
-                    Supr::Git.collect_sha_and_branch(@root)
-                end
-
-                if !:old
-                if %i[collect clean status diff commit branch switch pull push run sync deliver remote].include?(verb)
-                    scope("Collecting state from dir '#{root_dir}'", level: 1) do |out|
-                        # We only allow working with a dirty state for specific verbs
-                        # Others require an explicit force
-                        force = %i[status diff commit clean branch remote pull].include?(verb) ? true : @options.force
-                        @state.from_dir(force: force)
-                    end
-                end
-                end
+                @root = Supr::Git::Module.load_from(@root_dir)
 
                 scope("Running verb '#{verb}'", level: 1) do |out|
                     method = "run_#{verb}_".to_sym()
@@ -56,6 +41,8 @@ module Supr
             name = @rest.shift()
 
             @root.name = name
+
+            Supr::Git.collect_sha_and_branch(@root)
 
             fp = @options.output_fp || (name && "#{name}.supr") || 'output.supr'
             scope("Writing state to '#{fp}'", level: 1) do
@@ -88,7 +75,7 @@ module Supr
 
             where = @rest.shift()
 
-            @state.create(branch, delete: @options.delete, where: where, force: @options.force, noop: @options.noop)
+            Supr::Git.create(@root, branch, delete: @options.delete, where: where, force: @options.force, noop: @options.noop)
         end
 
         def run_switch_()
@@ -100,16 +87,16 @@ module Supr
 
         def run_pull_()
             where = @rest.shift()
-            @state.pull(continue: @options.continue, where: where, force: @options.force, noop: @options.noop)
+            Supr::Git.pull(@root, continue: @options.continue, where: where, force: @options.force, noop: @options.noop)
         end
 
         def run_push_()
             where = @rest.shift()
-            @state.push(continue: @options.continue, where: where, noop: @options.noop)
+            Supr::Git.push(@root, continue: @options.continue, where: where, noop: @options.noop)
         end
 
         def run_run_()
-            @state.run(@rest)
+            Supr::Git.run(@root_dir, @rest)
         end
 
         def run_status_()
@@ -131,14 +118,14 @@ module Supr
             branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
-            @state.sync(branch, continue: @options.continue)
+            Supr::Git.sync(@root, branch, continue: @options.continue)
         end
 
         def run_deliver_()
             branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
-            @state.deliver(branch)
+            Supr::Git.deliver(@root, branch)
         end
 
         def run_serve_()
@@ -171,10 +158,10 @@ module Supr
                             str
                         end
 
-                        @state.from_naft(state_str)
+                        @root = Supr::Git.from_naft(state_str)
 
                         debug.("Applying state")
-                        @state.apply(force: @options.force) do |line|
+                        Supr::Git.apply(@root, force: @options.force) do |line|
                             client.puts(line)
                         end
                         debug.("Done applying state")
@@ -183,7 +170,7 @@ module Supr
                             cmd = cmd_str.split(' ')
 
                             debug.("Running command '#{cmd*' '}'")
-                            @state.run(cmd) do |line|
+                            Supr::Git.run(@root, cmd) do |line|
                                 client.puts(line)
                             end
                             debug.("Done running command")
@@ -204,6 +191,8 @@ module Supr
         end
 
         def run_remote_()
+            Supr::Git.collect_sha_and_branch(@root)
+
             ip = @options.ip || @rest.shift()
             port = @options.port || @default_port
             scope("Running remote command on '#{ip}:#{port}'", level: 1) do |out|
@@ -211,7 +200,7 @@ module Supr
                 out.fail("No TCP port was specified") unless port
                 socket = TCPSocket.new(ip, port)
                 socket.puts(@rest*' ')
-                socket.puts(@state.to_naft())
+                socket.puts(Supr::Git.to_naft(@root))
                 socket.shutdown(Socket::SHUT_WR)
                 status_line = nil
                 socket.each_line do |line|

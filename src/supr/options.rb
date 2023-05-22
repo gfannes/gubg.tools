@@ -6,7 +6,7 @@ module Supr
         attr_reader(:print_help, :help_msg, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :ip, :port, :noop, :rest)
 
         def initialize()
-            @version = 'v1.0.1'.freeze()
+            @version = 'v1.0.2'.freeze()
 
             # We set @continue to `false` to allow Supr::Cmd.run() to discriminate between commands that
             # can be continued, and others

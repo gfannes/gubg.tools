@@ -36,6 +36,14 @@ module Supr
                 end
                 res
             end
+
+            def create_branch(name)
+                run_('branch', name)
+            end
+
+            def delete_branch(name)
+                run_('branch', '-d', name)
+            end
             
             def update_submodule(reldir)
                 run_(%w[submodule update --init], reldir)
@@ -68,8 +76,8 @@ module Supr
                 run_('checkout', arg)
             end
 
-            def reset_hard(sha)
-                run_('reset', '--hard')
+            def reset_hard(arg)
+                run_('reset', '--hard', arg)
             end
 
             def system(*args)
@@ -91,12 +99,40 @@ module Supr
                 run_('switch', branch_name)
             end
 
+            def stash_push()
+                run_('stash', 'push')
+            end
+
+            def stash_pop()
+                run_('stash', 'pop')
+            end
+
+            def rebase(branch_name, allow_fail: nil)
+                run_('rebase', branch_name, allow_fail: allow_fail)
+            end
+
+            def pull(allow_fail: nil)
+                run_('pull', '--rebase', allow_fail: allow_fail)
+            end
+
+            def push(branch_name: nil, allow_fail: nil)
+                if branch_name
+                    run_('push', '--set-upstream', 'origin', branch_name, allow_fail: allow_fail)
+                else
+                    run_('push', allow_fail: allow_fail)
+                end
+            end
+
+            def can_fast_forward?(from, to)
+                run_('merge-base', '--is-ancestor', from, to)
+            end
+            
             private
-            def run_(*args)
+            def run_(*args, allow_fail: nil)
                 args = args.flatten().compact().map{|e|e.to_s()}
 
                 scope("Running 'git #{args*' '}' in '#{@dir}'", level: 3) do |out|
-                    Supr::Cmd.run('git', '-C', @dir, *args, allow_fail: @allow_fail)
+                    Supr::Cmd.run('git', '-C', @dir, *args, allow_fail: allow_fail || @allow_fail)
                 end
             end
         end
