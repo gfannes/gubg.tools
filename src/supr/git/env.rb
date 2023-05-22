@@ -56,8 +56,8 @@ module Supr
             def dirty_files()
                 res = []
 
-                re_m = / M (.+)/
-                re_d = / D (.+)/
+                re_m = /M\s+(.+)/
+                re_d = /D\s+(.+)/
                 Supr::Cmd.run([%w[git -C], @dir, %w[status -s]], chomp: true) do |line|
                     if md = re_m.match(line)
                         fp_rel = md[1]
@@ -92,7 +92,7 @@ module Supr
             end
 
             def commit(msg)
-                run_('commit', msg)
+                run_('commit', '-m', msg)
             end
 
             def switch(branch_name)
