@@ -118,7 +118,9 @@ module Supr
             branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
-            Supr::Git.sync(@root, branch, continue: @options.continue)
+            where = @rest.shift()
+
+            Supr::Git.sync(@root, branch, where: where, continue: @options.continue)
         end
 
         def run_deliver_()

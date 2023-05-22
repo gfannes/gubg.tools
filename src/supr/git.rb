@@ -382,24 +382,29 @@ module Supr
             end
         end
 
-        def self.sync(m, branch_name, continue: nil)
+        def self.sync(m, branch_name, where: nil, continue: nil)
             scope("Syncing with branch '#{branch_name}'", level: 0) do |out|
                 m.each do |sm|
-                    g = Git::Env.new(sm)
+                    out.("Syncing '#{sm}'", level: 1) do
+                        g = Git::Env.new(sm)
                     
-                    my_branch = g.branch()
+                        my_branch = g.branch()
+                        out.("Local branch '#{my_branch}'")
 
-                    g.fetch()
+                        g.fetch()
 
-                    if !my_branch
-                        out.warning("No branch found for '#{sm}'")
-                    elsif my_branch == branch_name
-                        out.("Rebasing branch '#{branch_name}' for '#{sm}'") do
-                            g.pull(allow_fail: continue)
-                        end
-                    else
-                        out.("Syncing local branch '#{my_branch}' for '#{sm}' with '#{branch_name}'", level: 2) do
-                            g.rebase(branch_name, allow_fail: continue)
+                        if !my_branch
+                            out.warning("No branch found for '#{sm}'")
+                        elsif where && my_branch != where
+                            out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                        elsif my_branch == branch_name
+                            out.("Rebasing branch '#{branch_name}' for '#{sm}'") do
+                                g.pull(allow_fail: continue)
+                            end
+                        else
+                            out.("Syncing local branch '#{my_branch}' for '#{sm}' with '#{branch_name}'", level: 2) do
+                                g.rebase(branch_name, allow_fail: continue)
+                            end
                         end
                     end
                 end

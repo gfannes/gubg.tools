@@ -16,19 +16,19 @@ module Supr
             	opts.banner = "Usage (version #{@version}): supr [verb] [options]* [rest]"
                 opts.separator("Verbs")
                 {
-                    collect: "Collect git repo state in output file",
-                    load: "Load a git repo state from input file",
+                    collect: "Collect git modules state in output file",
+                    load: "Load a git modules state from input file",
                     clean: "Drop all local changes",
                     create: "Create local branches for current state, 'reset --hard'-style, optionally filtered by a current branch that must be checked-out",
                     switch: "Swich to specified branch",
                     pull: "Pull checked-out branches from server",
                     push: "Push local branches to server, 'push --force'-style, optionally filtered by a current branch that must be checked-out",
-                    run: "Run command",
+                    run: "\tRun command",
                     remote: "Remote run command",
                     status: "Show dirty state",
                     diff: "Show a diff for all dirty files",
                     commit: "Commit all dirty files",
-                    sync: "Sync local git repo with given branch",
+                    sync: "Sync local git modules with specified branch, if local branch is present",
                     deliver: "Deliver local branches to specified branch",
                     serve: "Start a TCP server on specified port",
                 }.each do |verb, descr|
