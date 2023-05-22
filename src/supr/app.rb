@@ -63,6 +63,8 @@ module Supr
                 @root = Supr::Git.from_naft(str)
                 out.(Supr::Git.to_naft(@root), level: 2)
 
+                @root.setup_root_dir(@root_dir)
+
                 Supr::Git.apply(@root, force: @options.force)
             end
         end

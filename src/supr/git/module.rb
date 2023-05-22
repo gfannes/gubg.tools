@@ -50,8 +50,25 @@ module Supr
                 @submodules = []
             end
 
+            def setup_root_dir(root_dir)
+                root_absdir = File.absolute_path(root_dir)
+
+                stack = [root_absdir]
+                recurse = ->(m) do
+                    m.root_absdir = root_absdir
+                    m.parent_absdir = stack[-1]
+
+                    stack.push(m.filepath())
+                    m.submodules.each do |sm|
+                        recurse.(sm)
+                    end
+                    stack.pop()
+                end
+                recurse.(self)
+            end
+
             def filepath(*parts)
-                File.join([@parent_absdir, @path, *parts].flatten().compact())
+                @parent_absdir && File.join([@parent_absdir, @path, *parts].flatten().compact())
             end
 
             def has_submodules?()
@@ -66,7 +83,11 @@ module Supr
             end
 
             def to_s()
-                Pathname.new(filepath()).relative_path_from(@root_absdir).to_s()
+                if @root_absdir
+                    Pathname.new(filepath()).relative_path_from(@root_absdir).to_s()
+                else
+                    @path || 'ROOT'
+                end
             end
             
         end

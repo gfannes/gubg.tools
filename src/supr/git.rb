@@ -65,36 +65,34 @@ module Supr
                 re_module = /\[Module\](.+)/
                 re_attr = /\(([^:]+):([^)]+)\)/
 
-                stack = []
+                module_stack = []
                 m = nil
                 content.each_line() do |line|
                     line = line.chomp()
 
-                    out.("line: #{line}", level: 5)
                     if md = re_module.match(line)
-                        out.("Found State", level: 5)
                         m = Module.new(nil)
                         attrs = md[1]
                         attrs.scan(re_attr).each do |md|
                             key, val = md[0], md[1]
                             m.send("#{key}=".to_sym(), val)
                         end
+
                         root = m unless root
-                        puts(stack.size())
-                        if !stack.empty?()
-                            parent = stack[-1]
+
+                        if !module_stack.empty?()
+                            parent = module_stack[-1]
+                            m.parent_absdir = parent.filepath()
                             parent.submodules << m
                         end
                     elsif re_open.match(line)
-                        out.("Found Open", level: 5)
-                        stack.push(m)
+                        module_stack.push(m)
                     elsif re_close.match(line)
-                        out.("Found Close", level: 5)
-                        stack.pop()
+                        module_stack.pop()
                     end
                 end
 
-                out.fail("Expected empty stack") unless stack.empty?()
+                out.fail("Expected empty module_stack") unless module_stack.empty?()
                 out.fail("Expected root to be set") unless root
 
                 root
@@ -104,8 +102,10 @@ module Supr
         def self.apply(m, force: nil)
             scope("Applying git state", level: 1) do |out|
                 m.each do |sm|
-                    out.("Applying '#{sm.sha()}' for '#{sm}'", level: 3) do
-                        if File.exists?(sm.filepath('.git'))
+                    out.("Applying '#{sm.sha}' for '#{sm}'", level: 3) do
+                        git_fp = sm.filepath('.git')
+                        out.(".git: #{git_fp}")
+                        if File.exists?(git_fp)
                             out.(".git is present", level: 3)
                         else
                             out.("Updating submodule '#{sm}'", level: 2) do
@@ -117,7 +117,7 @@ module Supr
                         g = Git::Env.new(sm)
 
                         my_sha = g.sha()
-                        if my_sha == repo.sha
+                        if my_sha == sm.sha
                             out.("Repo is already in state '#{my_sha}'", level: 3)
                         else
                             g.fetch()
@@ -130,7 +130,7 @@ module Supr
                                 fps.empty?()
                             end
 
-                            out.fail("Repo '#{dir}' is not clean") if !is_clean && !force
+                            out.fail("Repo '#{sm}' is not clean") if !is_clean && !force
 
                             if @@protected_branches.include?(g.branch())
                                 out.("checkout '#{sm.sha}'", level: 3) do
