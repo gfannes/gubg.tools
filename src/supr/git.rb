@@ -365,9 +365,9 @@ module Supr
             end
         end
 
-        def self.switch(m, branch_name, continue: nil)
+        def self.switch(m, branch_name, continue: nil, j: nil)
             scope("Switching to branch '#{branch_name}'", level: 1) do |out|
-                m.each do |sm|
+                m.each_mt(j: j) do |sm|
                     out.("Switching to branch '#{branch_name}' in '#{sm}'", level: 1) do
                         g = Git::Env.new(sm, allow_fail: continue)
 
@@ -383,9 +383,9 @@ module Supr
             end
         end
 
-        def self.sync(m, branch_name, where: nil, continue: nil)
+        def self.sync(m, branch_name, where: nil, continue: nil, j: nil)
             scope("Syncing with branch '#{branch_name}'", level: 0) do |out|
-                m.each do |sm|
+                m.each_mt(j: j) do |sm|
                     out.("Syncing '#{sm}'", level: 1) do
                         g = Git::Env.new(sm)
                     

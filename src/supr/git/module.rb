@@ -1,4 +1,5 @@
 require('pathname')
+require('etc')
 
 module Supr
     module Git
@@ -79,6 +80,32 @@ module Supr
                 block.(self)
                 @submodules.each do |sm|
                     sm.each(&block)
+                end
+            end
+
+            def each_mt(j: nil, &block)
+                j ||= Etc.nprocessors()
+
+                if j == 0
+                    each(&block)
+                else
+                    queue = Queue.new()
+                    each{|sm|queue.push(sm)}
+
+                    threads = (0...j).map do
+                        Thread.new do
+                            loop do
+                                begin
+                                    sm = queue.pop(true)
+                                    block.(sm)
+                                rescue ThreadError
+                                    break
+                                end
+                            end
+                        end
+                    end
+
+                    threads.each{|thread|thread.join()}
                 end
             end
 

@@ -3,7 +3,7 @@ require('optparse')
 module Supr
     class Options
         attr_reader(:version)
-        attr_reader(:print_help, :help_msg, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :ip, :port, :noop, :rest)
+        attr_reader(:print_help, :help_msg, :j, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :delete, :ip, :port, :noop, :rest)
 
         def initialize()
             @version = 'v1.0.2'.freeze()
@@ -49,6 +49,7 @@ module Supr
     			opts.on('-i', '--IP ADDRESS', 'IP address') { |ip| @ip = ip}
     			opts.on('-p', '--port PORT', 'TCP port') { |port| @port = port.to_i()}
     			opts.on('-n', '--noop', 'No operation mode') { @noop = true }
+    			opts.on('-j', '--jobs COUNT', 'Thread count') { |count| @j = count.to_i()}
 
                 opts.separator('Developed by Geert Fannes')
 
