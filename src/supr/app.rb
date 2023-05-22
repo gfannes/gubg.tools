@@ -173,8 +173,13 @@ module Supr
                             cmd = cmd_str.split(' ')
 
                             debug.("Running command '#{cmd*' '}'")
-                            Supr::Git.run(@root_dir, cmd) do |line|
-                                client.puts(line)
+                            if cmd == %w[stop]
+                                out.warning("Received 'stop' command")
+                                break
+                            else
+                                Supr::Git.run(@root_dir, cmd) do |line|
+                                    client.puts(line)
+                                end
                             end
                             debug.("Done running command")
                         rescue Errno::ENOENT => exc
