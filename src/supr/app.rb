@@ -23,13 +23,9 @@ module Supr
             else
                 @rest = @options.rest
 
-                toplevel_dir = Supr::Git.toplevel_dir(@options.root_dir)
-                @state = Supr::Git::State.new(toplevel_dir: toplevel_dir)
+                root_dir = Git::Env.new(@options.root_dir).root_dir()
 
-                @root = Supr::Git::Module.load_from(toplevel_dir)
-                @root.each do |m|
-                    puts m
-                end
+                @root = Supr::Git::Module.load_from(root_dir)
 
                 if %i[collect].include?(verb)
                     Supr::Git.collect_sha_and_branch(@root)
@@ -37,7 +33,7 @@ module Supr
 
                 if !:old
                 if %i[collect clean status diff commit branch switch pull push run sync deliver remote].include?(verb)
-                    scope("Collecting state from dir '#{toplevel_dir}'", level: 1) do |out|
+                    scope("Collecting state from dir '#{root_dir}'", level: 1) do |out|
                         # We only allow working with a dirty state for specific verbs
                         # Others require an explicit force
                         force = %i[status diff commit clean branch remote pull].include?(verb) ? true : @options.force
@@ -117,7 +113,7 @@ module Supr
         end
 
         def run_status_()
-            @state.status()
+            Supr::Git.status(@root)
         end
 
         def run_diff_()
@@ -128,7 +124,7 @@ module Supr
         def run_commit_()
             error("No commit message was specified") if @options.rest.empty?()
             msg = @options.rest*"\n"
-            @state.commit(msg, force: @options.force)
+            Supr::Git.commit(@root, msg, force: @options.force)
         end
 
         def run_sync_()

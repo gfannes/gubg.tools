@@ -9,6 +9,12 @@ module Supr
                 @dir = (Module === dir ? dir.dir() : dir)
             end
 
+            def root_dir()
+                dir = run_(%w[rev-parse --show-superproject-working-tree]).chomp()
+                dir = run_(%w[rev-parse --show-toplevel]).chomp() if dir.empty?()
+                dir
+            end
+
             def sha()
                 run_('rev-parse', 'HEAD').chomp()
             end
@@ -19,6 +25,15 @@ module Supr
                 name = re.match(str)[1]
                 name = nil if name['HEAD detached at']
                 name
+            end
+
+            def branches()
+                res = []
+                run_('branch').each_line do |line|
+                    line.chomp!()
+                    res << line[2, line.size()]
+                end
+                res
             end
             
             def update_submodule(reldir)
@@ -61,6 +76,14 @@ module Supr
                 scope("Running 'git #{args*' '}' in '#{@dir}'", level: 3) do |out|
                     Kernel.system('git', '-C', @dir, *args)
                 end
+            end
+
+            def add(fp)
+                run_('add', fp)
+            end
+
+            def commit(msg)
+                run_('commit', msg)
             end
 
             private
