@@ -232,10 +232,22 @@ module Supr
         end
 
         def self.run(root_dir, *cmd, &block)
-            cmd = cmd.flatten()
-            scope("Running command '#{cmd*' '}'", level: 1) do |out|
+            env, cli, args = {}, nil, []
+            cmd.flatten().each do |e|
+                if NilClass === cli
+                    parts = e.split('=')
+                    if parts.size() == 2
+                        env[parts[0]] = parts[1]
+                    else
+                        cli = e
+                    end
+                else
+                    args << e
+                end
+            end
+            scope("Running command '#{cli}' with args '#{args*' '}' for env '#{env}'", level: 1) do |out|
                 Dir.chdir(root_dir) do
-                    Supr::Cmd.run(cmd, chomp: true) do |line|
+                    Supr::Cmd.run(cli, *args, env: env, chomp: true) do |line|
                         out.(line)
                         block.(line) if block
                     end

@@ -96,7 +96,7 @@ module Supr
         end
 
         def run_run_()
-            Supr::Git.run(@root_dir, @rest)
+            Supr::Git.run(@root_dir, @rest.map{|e|e.split(' ')})
         end
 
         def run_status_()

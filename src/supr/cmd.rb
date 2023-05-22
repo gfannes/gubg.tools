@@ -5,10 +5,15 @@ require('open3')
 module Supr
     module Cmd
 
-        def self.run(*args, chomp: nil, allow_fail: nil, &block)
+        def self.run(*args, env: nil, chomp: nil, allow_fail: nil, &block)
             args = [args].flatten().map{|e|e.to_s()}
 
-            scope("Running command '#{args*' '}'", level: 4) do |out|
+            scope("Running command '#{args*' '}' with env '#{env}'", level: 4) do |out|
+                orig_env = {}
+                env.each do |k, v|
+                    orig_env[k] = v
+                end if env
+
                 output = nil
                 status = nil
 
@@ -34,6 +39,10 @@ module Supr
                         out.fail("Could not run '#{args*' '}'")
                     end
                 end
+
+                orig_env.each do |k, v|
+                    ENV[k] = v
+                end if env
 
                 output
             end
