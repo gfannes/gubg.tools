@@ -403,6 +403,9 @@ module Supr
                             end
                         else
                             out.("Syncing local branch '#{my_branch}' for '#{sm}' with '#{branch_name}'", level: 2) do
+                                g.switch(branch_name)
+                                g.pull(allow_fail: continue)
+                                g.switch(my_branch)
                                 g.rebase(branch_name, allow_fail: continue)
                             end
                         end
