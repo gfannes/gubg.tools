@@ -166,6 +166,29 @@ module Supr
             end
         end
 
+        def self.clean(m, force: nil)
+            scope("Cleaning repo", level: 1) do |out|
+                m.each do |sm|
+                    g = Git::Env.new(sm)
+
+                    dirty_files = g.dirty_files()
+                    if !dirty_files.empty?()
+                        out.warning("Cleaning #{dirty_files.size()} files from '#{sm.path}'") do
+                            if force
+                                dirty_files.each do |fp|
+                                    out.("Restoring original state for '#{fp}' in '#{sm.path}'") do
+                                        g.checkout(fp)
+                                    end
+                                end
+                            else
+                                out.fail("Cleaning requires the force option")
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
         def self.toplevel_dir(dir)
             dir = Supr::Cmd.run(%w[git rev-parse --show-superproject-working-tree], chomp: true)
             dir = Supr::Cmd.run(%w[git rev-parse --show-toplevel], chomp: true) if dir.empty?()

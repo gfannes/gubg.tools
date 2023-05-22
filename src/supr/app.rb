@@ -69,7 +69,7 @@ module Supr
         end
 
         def run_clean_()
-            @state.clean(force: @options.force)
+            Supr::Git.clean(@root, force: @options.force)
         end
 
         def run_load_()
