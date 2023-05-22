@@ -38,11 +38,9 @@ module Supr
 
         private
         def run_collect_()
-            name = @rest.shift()
-
-            @root.name = name
-
             Supr::Git.collect_sha_and_branch(@root)
+
+            name = @rest.shift()
 
             fp = @options.output_fp || (name && "#{name}.supr") || 'output.supr'
             scope("Writing state to '#{fp}'", level: 1) do
