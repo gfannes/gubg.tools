@@ -113,7 +113,9 @@ module Supr
         end
 
         def run_status_()
-            Supr::Git.status(@root)
+            where = @options.where || @options.branch || @rest.shift()
+
+            Supr::Git.status(@root, where: where)
         end
 
         def run_diff_()
@@ -122,9 +124,12 @@ module Supr
         end
 
         def run_commit_()
+            where = @options.where || @options.branch
+
             error("No commit message was specified") if @options.rest.empty?()
             msg = @options.rest*"\n"
-            Supr::Git.commit(@root, msg, force: @options.force)
+
+            Supr::Git.commit(@root, msg, where: where, force: @options.force)
         end
 
         def run_sync_()

@@ -3,7 +3,7 @@ require('optparse')
 module Supr
     class Options
         attr_reader(:version)
-        attr_reader(:print_help, :help_msg, :j, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :ip, :port, :noop, :rest)
+        attr_reader(:print_help, :help_msg, :j, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :branch, :where, :ip, :port, :noop, :rest)
 
         def initialize()
             @version = 'v1.0.2'.freeze()
@@ -45,6 +45,7 @@ module Supr
     			opts.on('-f', '--force', 'Force') { @force = true }
     			opts.on('-c', '--continue', 'Continue') { @continue = true }
                 opts.on('-b', '--branch NAME', 'Use branch NAME') { |name| @branch = name}
+                opts.on('-w', '--where NAME', 'Use where NAME') { |name| @where = name}
     			opts.on('-t', '--time', 'Add timing info') { @time = true }
     			opts.on('-i', '--IP ADDRESS', 'IP address') { |ip| @ip = ip}
     			opts.on('-p', '--port PORT', 'TCP port') { |port| @port = port.to_i()}

@@ -190,24 +190,30 @@ module Supr
             end
         end
 
-        def self.commit(m, msg, force: nil)
+        def self.commit(m, msg, where: nil, force: nil)
             scope("Committing dirty files", level: 1) do |out|
                 m.each do |sm|
                     g = Git::Env.new(sm)
 
-                    dirty_files = g.dirty_files()
-                    if !dirty_files.empty?()
-                        out.warning("Committing #{dirty_files.size()} files in '#{sm}'") do
-                            my_branch = g.branch()
+                    my_branch = g.branch()
 
-                            if @@protected_branches.include?(my_branch) && !force
-                                out.fail("Direct commit to '#{my_branch}' is not allowed in '#{sm}'")
-                            else
-                                dirty_files.each do |fp|
-                                    out.(" * '#{fp}'", level: 0)
-                                    g.add(fp)
+                    if where && my_branch != where
+                        out.info("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                    else
+                        dirty_files = g.dirty_files()
+                        if !dirty_files.empty?()
+                            out.warning("Committing #{dirty_files.size()} files in '#{sm}'") do
+                                my_branch = g.branch()
+
+                                if @@protected_branches.include?(my_branch) && !force
+                                    out.fail("Direct commit to '#{my_branch}' is not allowed in '#{sm}'")
+                                else
+                                    dirty_files.each do |fp|
+                                        out.(" * '#{fp}'", level: 0)
+                                        g.add(fp)
+                                    end
+                                    g.commit(msg)
                                 end
-                                g.commit(msg)
                             end
                         end
                     end
@@ -215,16 +221,20 @@ module Supr
             end
         end
 
-        def self.status(m)
+        def self.status(m, where: nil)
             scope("Showing dirty files", level: 1) do |out|
                 m.each do |sm|
                     g = Git::Env.new(sm)
 
-                    dirty_files = g.dirty_files()
-                    if !dirty_files.empty?()
-                        out.("Found #{dirty_files.size()} dirty files for '#{sm}'", level: 0)
-                        dirty_files.each do |fp|
-                            out.warning(" * '#{fp}'")
+                    my_branch = g.branch()
+                    if where && my_branch != where
+                    else
+                        dirty_files = g.dirty_files()
+                        if !dirty_files.empty?()
+                            out.("Found #{dirty_files.size()} dirty files for '#{sm}'", level: 0)
+                            dirty_files.each do |fp|
+                                out.warning(" * '#{fp}'")
+                            end
                         end
                     end
                 end
@@ -265,7 +275,7 @@ module Supr
                         out.("my_branch: #{my_branch}", level: 3)
 
                         if where && where != my_branch
-                            out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                            out.info("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                         else
                             if !my_branch
                                 out.warning("No branch present for '#{sm}'")
@@ -308,7 +318,7 @@ module Supr
                         out.("my_branch: #{my_branch}", level: 3)
 
                         if where && where != my_branch
-                            out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                            out.info("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                         else
                             if !my_branch
                                 out.warning("No branch present for '#{sm}'")
@@ -340,7 +350,7 @@ module Supr
 
                         out.fail("Cannot create/update branch '#{branch_name}' for dirty repo '#{sm}'") unless g.dirty_files().empty?()
                         if where && my_branch != where
-                            out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                            out.info("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                         else
                             if g.branches().include?(branch_name)
                                 out.("Resetting branch '#{branch_name}' to '#{sm.sha}'", level: 2, noop: noop) do
@@ -422,7 +432,7 @@ module Supr
                         if !my_branch
                             out.warning("No branch found for '#{sm}'")
                         elsif where && my_branch != where
-                            out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                            out.info("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                         elsif my_branch == branch_name
                             out.("Rebasing branch '#{branch_name}' for '#{sm}'") do
                                 g.pull(allow_fail: continue)
@@ -450,9 +460,9 @@ module Supr
                     if !my_branch
                         out.warning("No branch found for '#{sm}'")
                     elsif my_branch == branch_name
-                        out.warning("Delivering to the same branch '#{my_branch}' is useless")
+                        out.info("Delivering to the same branch '#{my_branch}' is useless")
                     elsif where && my_branch != where
-                        out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                        out.info("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                     else
                         out.("Delivering '#{my_branch}' onto '#{branch_name}' for '#{sm}'", level: 2) do
                             if !g.can_fast_forward?(branch_name, my_branch)
