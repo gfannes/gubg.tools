@@ -104,7 +104,7 @@ module Supr
         end
 
         def run_diff_()
-            difftool = @options.rest[0]
+            difftool = @rest.shift() || ENV['supr_diff']
             Supr::Git.diff(@root, difftool: difftool)
         end
 

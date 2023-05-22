@@ -50,11 +50,8 @@ module Supr
                 @submodules = []
             end
 
-            def pathname(*parts)
+            def filepath(*parts)
                 File.join([@parent_absdir, @path, *parts].flatten().compact())
-            end
-            def dir()
-                pathname()
             end
 
             def has_submodules?()
@@ -69,7 +66,7 @@ module Supr
             end
 
             def to_s()
-                "[Module](name:#{@name})(path:#{@path})(sha:#{@sha})"
+                Pathname.new(filepath()).relative_path_from(@root_absdir).to_s()
             end
             
         end

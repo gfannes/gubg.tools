@@ -104,11 +104,11 @@ module Supr
         def self.apply(m, force: nil)
             scope("Applying git state", level: 1) do |out|
                 m.each do |sm|
-                    out.("Applying '#{sm.sha()}' for '#{sm.path}'", level: 3) do
-                        if File.exists?(sm.pathname('.git'))
+                    out.("Applying '#{sm.sha()}' for '#{sm}'", level: 3) do
+                        if File.exists?(sm.filepath('.git'))
                             out.(".git is present", level: 3)
                         else
-                            out.("Updating submodule '#{sm.path}'", level: 2) do
+                            out.("Updating submodule '#{sm}'", level: 2) do
                                 g = Git::Env.new(sm.parent_absdir())
                                 g.update_submodule(sm.path)
                             end
@@ -122,7 +122,7 @@ module Supr
                         else
                             g.fetch()
                         
-                            is_clean = out.("Checking if submodule '#{sm.path}' is clean", level: 2) do
+                            is_clean = out.("Checking if submodule '#{sm}' is clean", level: 2) do
                                 fps = g.dirty_files()
                                 fps.each do |fp|
                                     out.("'#{fp}' is dirty", level: 1)
@@ -154,7 +154,7 @@ module Supr
 
                     dirty_files = g.dirty_files()
                     if !dirty_files.empty?()
-                        out.("Showing diff for '#{sm.path}'", level: 0)
+                        out.("Showing diff for '#{sm}'", level: 0)
                         dirty_files.each do |fp|
                             out.warning(" * '#{fp}'")
                         end
@@ -175,10 +175,10 @@ module Supr
 
                     dirty_files = g.dirty_files()
                     if !dirty_files.empty?()
-                        out.warning("Cleaning #{dirty_files.size()} files from '#{sm.path}'") do
+                        out.warning("Cleaning #{dirty_files.size()} files from '#{sm}'") do
                             if force
                                 dirty_files.each do |fp|
-                                    out.("Restoring original state for '#{fp}' in '#{sm.path}'") do
+                                    out.("Restoring original state for '#{fp}' in '#{sm}'") do
                                         g.checkout(fp)
                                     end
                                 end
@@ -198,11 +198,11 @@ module Supr
 
                     dirty_files = g.dirty_files()
                     if !dirty_files.empty?()
-                        out.warning("Committing #{dirty_files.size()} files in '#{sm.path}'") do
+                        out.warning("Committing #{dirty_files.size()} files in '#{sm}'") do
                             my_branch = g.branch()
 
                             if @@protected_branches.include?(my_branch) && !force
-                                out.fail("Direct commit to '#{my_branch}' is not allowed in '#{sm.path}'")
+                                out.fail("Direct commit to '#{my_branch}' is not allowed in '#{sm}'")
                             else
                                 dirty_files.each do |fp|
                                     out.(" * '#{fp}'", level: 0)
@@ -223,7 +223,7 @@ module Supr
 
                     dirty_files = g.dirty_files()
                     if !dirty_files.empty?()
-                        out.("Found #{dirty_files.size()} dirty files for '#{sm.path}'", level: 0)
+                        out.("Found #{dirty_files.size()} dirty files for '#{sm}'", level: 0)
                         dirty_files.each do |fp|
                             out.warning(" * '#{fp}'")
                         end
@@ -252,10 +252,10 @@ module Supr
                     out.("my_branch: #{my_branch}", level: 2)
 
                     if where && where != my_branch
-                        out.warning("Skipping '#{sm.path}', its branch '#{my_branch}' does not match with '#{where}'")
+                        out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                     else
                         if !my_branch
-                            out.warning("No branch present for '#{sm.path}'")
+                            out.warning("No branch present for '#{sm}'")
                         else
                             do_stash_pop = false
                             dirty_files = g.dirty_files()
@@ -296,9 +296,9 @@ module Supr
                         out.warning("Skipping '#{rel_(dir)}', its branch '#{my_branch}' does not match with '#{where}'")
                     else
                         if !my_branch
-                            out.warning("No branch present for '#{sm.path}'")
+                            out.warning("No branch present for '#{sm}'")
                         elsif @@protected_branches.include?(my_branch)
-                            out.("Pushing special branch '#{my_branch}' for '#{sm.path}' without --set-upstream", noop: noop) do
+                            out.("Pushing special branch '#{my_branch}' for '#{sm}' without --set-upstream", noop: noop) do
                                 g.push(allow_fail: continue)
                             end
                         else
@@ -317,7 +317,7 @@ module Supr
                 out.fail("I cannot #{delete ? 'delete' : 'create'} branches with name '#{branch_name}'") if @@protected_branches.include?(branch_name)
 
                 m.each do |sm|
-                    out.("Processing '#{sm.path}'", level: 2) do
+                    out.("Processing '#{sm}'", level: 2) do
                         g = Git::Env.new(sm)
 
                         my_branch = g.branch()
@@ -325,7 +325,7 @@ module Supr
                         if delete
                             if g.branches().include?(branch_name)
                                 if my_branch == branch_name
-                                    out.fail("Cannot remove branch '#{branch_name}' that is currently checked-out in '#{sm.path}'") unless force
+                                    out.fail("Cannot remove branch '#{branch_name}' that is currently checked-out in '#{sm}'") unless force
                                     out.("Checking-out detached head at '#{sm.sha}'", noop: noop) do
                                         g.checkout(sm.sha)
                                     end
@@ -335,9 +335,9 @@ module Supr
                                 end
                             end
                         else
-                            out.fail("Cannot create/update branch '#{branch_name}' for dirty repo '#{sm.path}'") unless g.dirty_files().empty?()
+                            out.fail("Cannot create/update branch '#{branch_name}' for dirty repo '#{sm}'") unless g.dirty_files().empty?()
                             if where && my_branch != where
-                                out.warning("Skipping '#{sm.path}', its branch '#{my_branch}' does not match with '#{where}'")
+                                out.warning("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
                             else
                                 if g.branches().include?(branch_name)
                                     out.("Resetting branch '#{branch_name}' to '#{sm.sha}'", level: 2, noop: noop) do
@@ -351,7 +351,7 @@ module Supr
                                             g.switch(branch_name)
                                         end
                                     else
-                                        out.warning("Branch '#{branch_name}' does not exist yet for '#{sm.path}', I will only create with with force")
+                                        out.warning("Branch '#{branch_name}' does not exist yet for '#{sm}', I will only create with with force")
                                     end
                                 end
                             end
@@ -368,10 +368,10 @@ module Supr
 
                     g.fetch()
 
-                    out.("Switch to branch '#{branch_name}' in '#{sm.path}'", level: 2) do
+                    out.("Switch to branch '#{branch_name}' in '#{sm}'", level: 2) do
                         branches = g.branches()
                         if !branches.include?(branch_name)
-                            out.warning("No branch '#{branch_name}' found in '#{sm.path}'")
+                            out.warning("No branch '#{branch_name}' found in '#{sm}'")
                         end
                         g.switch(branch_name)
                     end
@@ -389,9 +389,9 @@ module Supr
                     g.fetch()
 
                     if !my_branch
-                        out.warning("No branch found for '#{sm.path}'")
+                        out.warning("No branch found for '#{sm}'")
                     elsif my_branch == branch_name
-                        out.("Rebasing branch '#{branch_name}' for '#{sm.path}'") do
+                        out.("Rebasing branch '#{branch_name}' for '#{sm}'") do
                             g.pull(allow_fail: continue)
                         end
                     else
@@ -411,7 +411,7 @@ module Supr
                     my_branch = g.branch()
 
                     if my_branch && my_branch != branch_name
-                        out.("Delivering '#{my_branch}' onto '#{branch_name}' for '#{sm.path}'", level: 2) do
+                        out.("Delivering '#{my_branch}' onto '#{branch_name}' for '#{sm}'", level: 2) do
                             if g.can_fast_forward?(branch_name, my_branch)
                                 g.switch(branch_name)
                                 g.reset_hard(my_branch)

@@ -6,7 +6,7 @@ module Supr
 
         class Env
             def initialize(dir, allow_fail: nil)
-                @dir = (Module === dir ? dir.dir() : dir)
+                @dir = (Module === dir ? dir.filepath() : dir)
                 @allow_fail = allow_fail
             end
 
@@ -60,12 +60,12 @@ module Supr
                 re_d = / D (.+)/
                 Supr::Cmd.run([%w[git -C], @dir, %w[status -s]], chomp: true) do |line|
                     if md = re_m.match(line)
-                        fp = md[1]
-                        fp = File.join(@dir, fp)
-                        res << fp unless File.directory?(fp)
+                        fp_rel = md[1]
+                        fp_abs = File.join(@dir, fp_rel)
+                        res << fp_rel unless File.directory?(fp_abs)
                     elsif md = re_d.match(line)
-                        fp = md[1]
-                        res << fp
+                        fp_rel = md[1]
+                        res << fp_rel
                     end
                 end
 
