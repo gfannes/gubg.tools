@@ -48,8 +48,8 @@ module Supr
                 res
             end
 
-            def checkout(sha)
-                run_('checkout', sha)
+            def checkout(arg)
+                run_('checkout', arg)
             end
 
             def reset_hard(sha)
