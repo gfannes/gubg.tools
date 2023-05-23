@@ -49,10 +49,6 @@ module Supr
             end
         end
 
-        def run_clean_()
-            Supr::Git.clean(@root, force: @options.force)
-        end
-
         def run_load_()
             state_fp = @options.state_fp || ->(name){name && "#{name}.supr"}.(@rest.shift())
 
@@ -69,83 +65,75 @@ module Supr
             end
         end
 
+        def run_clean_()
+            Supr::Git.clean(@root, force: @options.force)
+        end
+
         def run_create_()
             Supr::Git.collect_sha_and_branch(@root)
 
-            branch = @options.branch || @rest.shift()
+            branch = @rest.shift()
             error("No branch was specified") unless branch
 
-            where = @rest.shift()
-
-            Supr::Git.create(@root, branch, where: where, force: @options.force, noop: @options.noop)
+            Supr::Git.create(@root, branch, where: @options.where, force: @options.force, noop: @options.noop)
         end
 
         def run_delete_()
             Supr::Git.collect_sha_and_branch(@root)
 
-            branch = @options.branch || @rest.shift()
+            branch = @rest.shift()
             error("No branch was specified") unless branch
 
             Supr::Git.delete(@root, branch, force: @options.force, noop: @options.noop)
         end
 
         def run_switch_()
-            branch = @options.branch || @rest.shift()
+            branch = @rest.shift()
             error("No branch was specified") unless branch
 
-            Supr::Git.switch(@root, branch, continue: @options.continue, j: @options.j)
+            Supr::Git.switch(@root, branch, where: @options.where, continue: @options.continue, j: @options.j)
         end
 
         def run_pull_()
-            where = @rest.shift()
-            Supr::Git.pull(@root, continue: @options.continue, where: where, force: @options.force, noop: @options.noop, j: @options.j)
+            Supr::Git.pull(@root, continue: @options.continue, where: @options.where, force: @options.force, noop: @options.noop, j: @options.j)
         end
 
         def run_push_()
-            where = @rest.shift()
-            Supr::Git.push(@root, continue: @options.continue, where: where, force: @options.force, noop: @options.noop, j: @options.j)
+            Supr::Git.push(@root, continue: @options.continue, where: @options.where, force: @options.force, noop: @options.noop, j: @options.j)
+        end
+
+        def run_status_()
+            Supr::Git.status(@root, where: @options.where)
         end
 
         def run_run_()
             Supr::Git.run(@root_dir, @rest.map{|e|e.split(' ')})
         end
 
-        def run_status_()
-            where = @options.where || @options.branch || @rest.shift()
-
-            Supr::Git.status(@root, where: where)
-        end
-
         def run_diff_()
-            difftool = @rest.shift() || ENV['supr_diff']
-            Supr::Git.diff(@root, difftool: difftool)
+            difftool = @rest.shift() || ENV['supr_difftool']
+            Supr::Git.diff(@root, difftool: difftool, where: @options.where)
         end
 
         def run_commit_()
-            where = @options.where || @options.branch
-
             error("No commit message was specified") if @options.rest.empty?()
             msg = @options.rest*"\n"
 
-            Supr::Git.commit(@root, msg, where: where, force: @options.force)
+            Supr::Git.commit(@root, msg, where: @options.where, force: @options.force)
         end
 
         def run_sync_()
-            branch = @options.branch || @rest.shift()
+            branch = @rest.shift()
             error("No branch was specified") unless branch
 
-            where = @rest.shift()
-
-            Supr::Git.sync(@root, branch, where: where, continue: @options.continue, j: @options.j)
+            Supr::Git.sync(@root, branch, where: @options.where, continue: @options.continue, j: @options.j)
         end
 
         def run_deliver_()
-            branch = @options.branch || @rest.shift()
+            branch = @rest.shift()
             error("No branch was specified") unless branch
 
-            where = @rest.shift()
-
-            Supr::Git.deliver(@root, branch, where: where)
+            Supr::Git.deliver(@root, branch, where: @options.where)
         end
 
         def run_serve_()

@@ -11,3 +11,9 @@
   * Only MT first level to reduce index.lock issues
 * Support for ENV variables
 * Support for metadata for Module naft file
+* Add consistent filtering on branch
+  * Listen to `supr_branch` env var as well
+* Improve help
+  * Indicate clearly what options are taken into account
+* Add ffwd
+  * Check that a ffwd is possible between origin/branch and branch

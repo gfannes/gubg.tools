@@ -146,21 +146,27 @@ module Supr
             end
         end
 
-        def self.diff(m, difftool: nil)
+        def self.diff(m, difftool: nil, where: nil)
             scope("Diffing dirty files", level: 1) do |out|
                 m.each do |sm|
                     g = Git::Env.new(sm)
 
-                    dirty_files = g.dirty_files()
-                    if !dirty_files.empty?()
-                        out.("Showing diff for '#{sm}'", level: 0)
-                        dirty_files.each do |fp|
-                            out.warning(" * '#{fp}'")
-                        end
-                        out.("❓ Show details? (Y/n)", level: 0)
-                        answer = gets().chomp()
-                        if !%w[n no].include?(answer)
-                            g.system(difftool || %w[diff --no-ext-diff], dirty_files)
+                    my_branch = g.branch()
+
+                    if where && my_branch != where
+                        out.info("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                    else
+                        dirty_files = g.dirty_files()
+                        if !dirty_files.empty?()
+                            out.("Showing diff for '#{sm}'", level: 0)
+                            dirty_files.each do |fp|
+                                out.warning(" * '#{fp}'")
+                            end
+                            out.("❓ Show details? (Y/n)", level: 0)
+                            answer = gets().chomp()
+                            if !%w[n no].include?(answer)
+                                g.system(difftool || %w[diff --no-ext-diff], dirty_files)
+                            end
                         end
                     end
                 end
