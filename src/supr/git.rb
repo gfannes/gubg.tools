@@ -373,7 +373,7 @@ module Supr
             end
         end
 
-        def self.delete(m, branch_name, where: nil, force: nil, noop: nil)
+        def self.delete(m, branch_name, force: nil, noop: nil)
             scope("Deleting local branches '#{branch_name}' from '#{@root_dir}'", level: 1) do |out|
                 out.fail("No branch name was specified") unless branch_name
                 out.fail("I cannot delete branches with name '#{branch_name}'") if @@protected_branches.include?(branch_name)

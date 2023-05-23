@@ -86,9 +86,7 @@ module Supr
             branch = @options.branch || @rest.shift()
             error("No branch was specified") unless branch
 
-            where = @rest.shift()
-
-            Supr::Git.delete(@root, branch, where: where, force: @options.force, noop: @options.noop)
+            Supr::Git.delete(@root, branch, force: @options.force, noop: @options.noop)
         end
 
         def run_switch_()
