@@ -8,5 +8,6 @@
 * Integrate logging with callback for networked output
 * Replace ad-hoc naft parsing with real read/write
 * Parallellize some operations
+  * Only MT first level to reduce index.lock issues
 * Support for ENV variables
 * Support for metadata for Module naft file
