@@ -334,6 +334,10 @@ module Supr
                                 end
                             else
                                 out.("Pushing normal branch '#{my_branch}' for '#{sm}'", noop: noop) do
+                                    unless force
+                                        dst_branch = "origin/#{my_branch}"
+                                        out.fail("Cannot ffwd '#{dst_branch}' to '#{my_branch}' for '#{sm}'") unless g.can_fast_forward?(dst_branch, my_branch)
+                                    end
                                     g.push(branch: my_branch, force: force, allow_fail: continue)
                                 end
                             end
@@ -406,19 +410,24 @@ module Supr
             end
         end
 
-        def self.switch(m, branch_name, continue: nil, j: nil)
+        def self.switch(m, branch_name, where: nil, continue: nil, j: nil)
             scope("Switching to branch '#{branch_name}'", level: 1) do |out|
                 m.each_mt(j: j) do |sm|
                     out.("Switching to branch '#{branch_name}' in '#{sm}'", level: 1) do
                         g = Git::Env.new(sm, allow_fail: continue)
 
-                        g.fetch()
+                        my_branch = g.branch()
 
-                        branches = g.branches()
-                        if !branches.include?(branch_name)
-                            out.warning("No branch '#{branch_name}' found in '#{sm}'")
+                        if where && my_branch != where
+                            out.info("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                        else
+                            g.fetch()
+                            branches = g.branches()
+                            if !branches.include?(branch_name)
+                                out.warning("No branch '#{branch_name}' found in '#{sm}'")
+                            end
+                            g.switch(branch_name)
                         end
-                        g.switch(branch_name)
                     end
                 end
             end

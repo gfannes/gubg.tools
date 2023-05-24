@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 
-$LOAD_PATH << File.join(ENV['gubg'], 'gubg.tools/src')
+if gubg = ENV['gubg']
+    $LOAD_PATH << File.join(gubg, 'gubg.tools/src')
+else
+    $LOAD_PATH << __dir__
+end
 
 require('supr/app')
 

@@ -89,15 +89,18 @@ module Supr
                 if j == 0
                     each(&block)
                 else
+                    block.(self)
+
                     queue = Queue.new()
-                    each{|sm|queue.push(sm)}
+                    # We only MT on the first level to get rid of index.lock issues
+                    @submodules.each{|sm|queue.push(sm)}
 
                     threads = (0...j).map do
                         Thread.new do
                             loop do
                                 begin
                                     sm = queue.pop(true)
-                                    block.(sm)
+                                    sm.each(&block)
                                 rescue ThreadError
                                     break
                                 end
