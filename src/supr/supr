@@ -3,7 +3,7 @@
 if gubg = ENV['gubg']
     $LOAD_PATH << File.join(gubg, 'gubg.tools/src')
 else
-    $LOAD_PATH << __dir__
+    $LOAD_PATH << File.dirname(__dir__)
 end
 
 require('supr/app')
