@@ -95,7 +95,7 @@ module Supr
                     {
                         verb: :remote,
                         value: :ip,
-                        descr: "Remote run command",
+                        descr: "Remote run command, special command 'stop' will stop the server",
                     },
                     {
                         verb: :serve,
