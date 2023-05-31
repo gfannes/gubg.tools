@@ -12,10 +12,14 @@ module Supr
 
         def self.collect_sha_and_branch(m)
             scope("Collect SHA checksums and branch info for '#{m.root_absdir()}'", level: 1) do |out|
+                sha__sm = {}
                 m.each do |sm|
                     g = Git::Env.new(sm)
                     sm.sha = g.sha()
                     sm.my_branch = g.branch()
+
+                    out.fail("Submodule '#{sm}' has the same hash as '#{sha__sm[sm.sha]}', is it checked-out correctly?") if sha__sm.has_key?(sm.sha)
+                    sha__sm[sm.sha] = sm
                 end
             end
         end
