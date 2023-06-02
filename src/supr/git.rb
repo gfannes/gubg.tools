@@ -108,7 +108,7 @@ module Supr
                         git_fp = sm.filepath('.git')
                         out.fail("Invalid path to .git") unless git_fp
 
-                        if File.exists?(git_fp)
+                        if File.exist?(git_fp)
                             out.(".git is present", level: 3)
                         else
                             out.("Updating submodule '#{sm}'", level: 2) do

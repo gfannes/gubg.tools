@@ -53,7 +53,7 @@ module Supr
             state_fp = @options.state_fp || ->(name){name && "#{name}.supr"}.(@rest.shift())
 
             scope("Collecting state from file '#{state_fp}'", level: 1) do |out|
-                out.fail("State file '#{state_fp}' does not exist") unless File.exists?(state_fp)
+                out.fail("State file '#{state_fp}' does not exist") unless File.exist?(state_fp)
 
                 str = File.read(state_fp)
                 @root = Supr::Git.from_naft(str)
