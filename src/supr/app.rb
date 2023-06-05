@@ -196,7 +196,9 @@ module Supr
                             client.puts("[Status](code:OK)")
                         end
                     rescue Errno::EPIPE => exc
-                        out.warning("Aborting, client closed connection")
+                        out.warning("Aborting, client closed connection: #{exc}")
+                    rescue RuntimeError => exc
+                        out.warning("Aborting: #{exc}")
                     ensure
                         client.close()
                     end
