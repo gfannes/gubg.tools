@@ -166,16 +166,16 @@ module Supr
                             str
                         end
 
-                        @root = Supr::Git.from_naft(state_str)
-                        @root.setup_root_dir(@root_dir)
-
-                        debug.("Applying state")
-                        Supr::Git.apply(@root, force: @options.force) do |line|
-                            client.puts(line)
-                        end
-                        debug.("Done applying state")
-
                         begin
+                            @root = Supr::Git.from_naft(state_str)
+                            @root.setup_root_dir(@root_dir)
+
+                            debug.("Applying state")
+                            Supr::Git.apply(@root, force: @options.force) do |line|
+                                client.puts(line)
+                            end
+                            debug.("Done applying state")
+
                             cmd = cmd_str.split(' ')
 
                             debug.("Running command '#{cmd*' '}'")
@@ -195,10 +195,9 @@ module Supr
                         else
                             client.puts("[Status](code:OK)")
                         end
+
                     rescue Errno::EPIPE => exc
                         out.warning("Aborting, client closed connection: #{exc}")
-                    rescue RuntimeError => exc
-                        out.warning("Aborting: #{exc}")
                     ensure
                         client.close()
                     end
