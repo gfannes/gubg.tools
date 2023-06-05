@@ -52,7 +52,7 @@ module Supr
         def fail(*args)
             sym = '💀'
             output(sym, *args)
-            raise('Fatal error')
+            raise("Fatal error: "+args.map{|e|e.to_s()}*'')
         end
 
         def warning(*args, &block)
