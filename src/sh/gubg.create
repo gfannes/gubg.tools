@@ -146,7 +146,12 @@ when 'ut'
     if :pop_and_parse_path
         path = args.shift().split('/')
         base, rel, name = [], [], nil
-        base << path.shift() while !%w[auro gubg].include?(path[0])
+        loop do
+            items = %w[auro gubg]
+            raise("Path does not contain #{items}") if path.empty?()
+            break if items.include?(path[0])
+            base << path.shift()
+        end
         rel << path.shift() while path.size() > 1
         name = path.shift()
     end
