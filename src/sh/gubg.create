@@ -1,193 +1,216 @@
 #!/usr/bin/ruby
 
 require('fileutils')
+require('optparse')
 
-what = ARGV.shift()
-args = ARGV
+class App
+    def initialize()
+        parse_cli_args_()
+    end
 
-def generate_files(base, rel, name, options:, suffix: nil, **ext__generator)
-    ext__generator.each do |ext, generator|
-        folder = File.join(*base, *rel)
-        FileUtils.mkdir_p(folder)
+    def call()
+        case @what
+        when 'class' then create_class_()
+        when 'enum' then create_enum_()
+        when 'ut' then create_ut_()
+        else
+            puts(@help_msg)
+        end
+    end
 
-        fp = File.join(folder, "#{name}#{suffix}.#{ext}")
-        if File.exist?(fp)
-            if options[:force]
-                puts("Warning: removing existing file '#{fp}'")
-                FileUtils.rm(fp)
-            else
-                puts("Warning: File #{fp} already exists, I will skip this") 
-                next
+    private
+
+    def parse_cli_args_()
+        OptionParser.new() do |opts|
+        	opts.banner = "Usage: gubg.create [what] [options]* [rest]"
+            opts.on('-V', '--verbose LEVEL', 'Verbosity level') { |level| @verbose_level = level.to_i() }
+            opts.on('-C', '--root FOLDER', 'Root folder') { |folder| @root_dir = folder }
+        	opts.on('-f', '--force', 'Force') { @force = true }
+        	opts.on('-t', '--template', 'Create template') { @template = true }
+        	opts.on('-h', '--header', 'Only create header') { @header = true }
+
+            opts.separator('Verbs:')
+            %i[class enum ut].each do |what|
+                opts.separator("#{what}\tCreate #{what}")
+            end
+
+            opts.separator('Developed by Geert Fannes')
+
+            @help_msg = opts.to_s()
+        end.parse!()
+
+        @what = ARGV.shift()
+        @args = ARGV
+    end
+
+    def create_ut_()
+        pop_and_parse_path_(%w[auro gubg])
+        raise("Expected base path (#{@base}) to contain 'test'") unless @base.include?('test')
+
+        ext__generator = {}
+
+        ext__generator[:cpp] = ->(fo) do
+            fo.puts("#include <#{@rel*'/'}/#{@name}.hpp>")
+            fo.puts("#include <doctest.hpp>")
+            fo.puts("")
+            if !(rel1 = @rel[0..-2]).empty?()
+                fo.puts("using namespace #{rel1*'::'};")
+            end
+            fo.puts("")
+            fo.puts("TEST_CASE_FAST(\"XXX tests\", \"#{(@rel+[@name]).map{|e|"[#{e}]"}*''}\")")
+            fo.puts("{")
+            %w[Scn Exp].each do |name|
+                fo.puts("    struct #{name}")
+                fo.puts("    {")
+                fo.puts("    };")
+                fo.puts("    #{name} #{name.downcase()};")
+                fo.puts("")
+            end
+
+            fo.puts("    REQUIRE(false);")
+            fo.puts("}")
+        end
+
+        generate_files_(suffix: '_tests', **ext__generator)
+    end
+
+    def create_enum_()
+        pop_and_parse_path_(%w[auro gubg])
+
+        values = @args
+
+        ext__generator = {}
+
+        ext__generator[:hpp] = ->(fo) do
+            fo.puts("#ifndef HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
+            fo.puts("#define HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
+            fo.puts("")
+            fo.puts("#include <ostream>")
+            fo.puts("")
+            fo.puts(@rel.map{|e|"namespace #{e} {"}*' ')
+            fo.puts("")
+            fo.puts("    enum class #{@name}")
+            fo.puts("    {")
+            values.each do |value|
+                fo.puts("        #{value},")
+            end
+            fo.puts("    };")
+            fo.puts("")
+            fo.puts("    std::ostream &operator<<(std::ostream &, #{@name});")
+            fo.puts("")
+            fo.puts("#{'}'*@rel.size()} // namespace #{@rel*'::'}")
+            fo.puts("")
+            fo.puts("#endif")
+        end
+
+        ext__generator[:cpp] = ->(fo) do
+            fo.puts("#include <#{@rel*'/'}/#{@name}.hpp>")
+            fo.puts("")
+            fo.puts(@rel.map{|e|"namespace #{e} {"}*' ')
+            fo.puts("")
+            fo.puts("    std::ostream &operator<<(std::ostream &os, #{@name} v)")
+            fo.puts("    {")
+            fo.puts("        switch (v)")
+            fo.puts("        {")
+            values.each do |value|
+                fo.puts("            case #{@name}::#{value}: os << \"#{value}\"; break;")
+            end
+            fo.puts("            default: os << \"#{@name}-\" << (int)v; break;")
+            fo.puts("        }")
+            fo.puts("        return os;")
+            fo.puts("    }")
+            fo.puts("")
+            fo.puts("#{'}'*@rel.size()} // namespace #{@rel*'::'}")
+        end
+
+        generate_files_(**ext__generator)
+    end
+
+    def create_class_()
+        pop_and_parse_path_(%w[gubg auro app])
+
+        ext__generator = {}
+
+        ext__generator[:hpp] = ->(fo) do
+            fo.puts("#ifndef HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
+            fo.puts("#define HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
+            fo.puts("")
+            fo.puts(@rel.map{|e|"namespace #{e} {"}*' ')
+            fo.puts("")
+            if @template
+                fo.puts("    template<typename T>")
+            end
+            fo.puts("    class #{@name}")
+            fo.puts("    {")
+            fo.puts("    public:")
+            fo.puts("    private:")
+            fo.puts("    };")
+            fo.puts("")
+            fo.puts("#{'}'*@rel.size()} // namespace #{@rel*'::'}")
+            fo.puts("")
+            fo.puts("#endif")
+        end
+
+        if !@template && !@header
+            ext__generator[:cpp] = ->(fo) do
+                fo.puts("#include <#{@rel*'/'}/#{@name}.hpp>")
+                fo.puts("")
+                fo.puts(@rel.map{|e|"namespace #{e} {"}*' ')
+                fo.puts("")
+                fo.puts("")
+                fo.puts("#{'}'*@rel.size()} // namespace #{@rel*'::'}")
             end
         end
 
-        puts("Creating '#{ext}' for '#{name}' in '#{fp}'")
-        File.open(fp, 'w') do |fo|
-            generator.(fo)
+        generate_files_(**ext__generator)
+    end
+
+    # rel_items should be an Array containing a string that can start 'rel'
+    def pop_and_parse_path_(rel_items)
+        path = @args.shift()
+        raise("Could not find path in the args") unless path
+        path = path.split('/')
+
+        @base = []
+        if @root_dir
+            @base = @root_dir.split('/')
+        else
+            loop do
+                raise("Path does not contain #{rel_items}") if path.empty?()
+                break if rel_items.include?(path[0])
+                @base << path.shift()
+            end
+        end
+
+        @rel = []
+        @rel << path.shift() while path.size() > 1
+
+        @name = path.shift()
+    end
+
+    def generate_files_(suffix: nil, **ext__generator)
+        ext__generator.each do |ext, generator|
+            folder = File.join(*@base, *@rel)
+            FileUtils.mkdir_p(folder)
+
+            fp = File.join(folder, "#{@name}#{suffix}.#{ext}")
+            if File.exist?(fp)
+                if @force
+                    puts("Warning: removing existing file '#{fp}'")
+                    FileUtils.rm(fp)
+                else
+                    puts("Warning: File #{fp} already exists, I will skip this") 
+                    next
+                end
+            end
+
+            puts("Creating '#{ext}' for '#{@name}' in '#{fp}'")
+            File.open(fp, 'w') do |fo|
+                generator.(fo)
+            end
         end
     end
 end
 
-case what
-when 'class'
-    if :pop_and_parse_path
-        path = args.shift().split('/')
-        base, rel, name = [], [], nil
-        base << path.shift() while !%w[gubg auro app].include?(path[0])
-        rel << path.shift() while path.size() > 1
-        name = path.shift()
-    end
-
-    options = {force: false, template: false, header: false}
-    while arg = args.shift()
-        arg = arg.to_sym()
-        options[arg] = true
-    end
-
-    ext__generator = {}
-
-    ext__generator[:hpp] = ->(fo) do
-        fo.puts("#ifndef HEADER_#{(rel+[name, 'hpp'])*'_'}_ALREAD_INCLUDED")
-        fo.puts("#define HEADER_#{(rel+[name, 'hpp'])*'_'}_ALREAD_INCLUDED")
-        fo.puts("")
-        fo.puts(rel.map{|e|"namespace #{e} {"}*' ')
-        fo.puts("")
-        if options[:template]
-            fo.puts("    template<typename T>")
-        end
-        fo.puts("    class #{name}")
-        fo.puts("    {")
-        fo.puts("    public:")
-        fo.puts("    private:")
-        fo.puts("    };")
-        fo.puts("")
-        fo.puts("#{'}'*rel.size()} // namespace #{rel*'::'}")
-        fo.puts("")
-        fo.puts("#endif")
-    end
-
-    if !options[:template] && !options[:header]
-        ext__generator[:cpp] = ->(fo) do
-            fo.puts("#include <#{rel*'/'}/#{name}.hpp>")
-            fo.puts("")
-            fo.puts(rel.map{|e|"namespace #{e} {"}*' ')
-            fo.puts("")
-            fo.puts("")
-            fo.puts("#{'}'*rel.size()} // namespace #{rel*'::'}")
-        end
-    end
-
-    generate_files(base, rel, name, options: options, **ext__generator)
-
-when 'enum'
-    if :pop_and_parse_path
-        path = args.shift().split('/')
-        base, rel, name = [], [], nil
-        base << path.shift() while !%w[auro gubg].include?(path[0])
-        rel << path.shift() while path.size() > 1
-        name = path.shift()
-    end
-
-    options = {force: false}
-    if ix = args.index('force')
-        options[:force] = true
-        args.delete_at(ix)
-    end
-
-    values = args
-
-    ext__generator = {}
-
-    ext__generator[:hpp] = ->(fo) do
-        fo.puts("#ifndef HEADER_#{(rel+[name, 'hpp'])*'_'}_ALREAD_INCLUDED")
-        fo.puts("#define HEADER_#{(rel+[name, 'hpp'])*'_'}_ALREAD_INCLUDED")
-        fo.puts("")
-        fo.puts("#include <ostream>")
-        fo.puts("")
-        fo.puts(rel.map{|e|"namespace #{e} {"}*' ')
-        fo.puts("")
-        fo.puts("    enum class #{name}")
-        fo.puts("    {")
-        values.each do |value|
-            fo.puts("        #{value},")
-        end
-        fo.puts("    };")
-        fo.puts("")
-        fo.puts("    std::ostream &operator<<(std::ostream &, #{name});")
-        fo.puts("")
-        fo.puts("#{'}'*rel.size()} // namespace #{rel*'::'}")
-        fo.puts("")
-        fo.puts("#endif")
-    end
-
-    ext__generator[:cpp] = ->(fo) do
-        fo.puts("#include <#{rel*'/'}/#{name}.hpp>")
-        fo.puts("")
-        fo.puts(rel.map{|e|"namespace #{e} {"}*' ')
-        fo.puts("")
-        fo.puts("    std::ostream &operator<<(std::ostream &os, #{name} v)")
-        fo.puts("    {")
-        fo.puts("        switch (v)")
-        fo.puts("        {")
-        values.each do |value|
-            fo.puts("            case #{name}::#{value}: os << \"#{value}\"; break;")
-        end
-        fo.puts("            default: os << \"#{name}-\" << (int)v; break;")
-        fo.puts("        }")
-        fo.puts("        return os;")
-        fo.puts("    }")
-        fo.puts("")
-        fo.puts("#{'}'*rel.size()} // namespace #{rel*'::'}")
-    end
-
-    generate_files(base, rel, name, options: options, **ext__generator)
-
-when 'ut'
-    if :pop_and_parse_path
-        path = args.shift().split('/')
-        base, rel, name = [], [], nil
-        loop do
-            items = %w[auro gubg]
-            raise("Path does not contain #{items}") if path.empty?()
-            break if items.include?(path[0])
-            base << path.shift()
-        end
-        rel << path.shift() while path.size() > 1
-        name = path.shift()
-    end
-    raise("Expected base path (#{base}) to contain 'test'") unless base.include?('test')
-
-    options = {force: false}
-    while arg = args.shift()
-        arg = arg.to_sym()
-        options[arg] = true
-    end
-
-    ext__generator = {}
-
-    ext__generator[:cpp] = ->(fo) do
-        fo.puts("#include <#{rel*'/'}/#{name}.hpp>")
-        fo.puts("#include <doctest.hpp>")
-        fo.puts("")
-        if !(rel1 = rel[0..-2]).empty?()
-            fo.puts("using namespace #{rel1*'::'};")
-        end
-        fo.puts("")
-        fo.puts("TEST_CASE_FAST(\"XXX tests\", \"#{(rel+[name]).map{|e|"[#{e}]"}*''}\")")
-        fo.puts("{")
-        %w[Scn Exp].each do |name|
-            fo.puts("    struct #{name}")
-            fo.puts("    {")
-            fo.puts("    };")
-            fo.puts("    #{name} #{name.downcase()};")
-            fo.puts("")
-        end
-
-        fo.puts("    REQUIRE(false);")
-        fo.puts("}")
-    end
-
-    generate_files(base, rel, name, options: options, suffix: '_tests', **ext__generator)
-
-else raise("Don't know how to create '#{what}'")
-end
+app = App.new()
+app.()
