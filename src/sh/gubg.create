@@ -25,7 +25,7 @@ class App
         	opts.banner = "Usage: gubg.create [what] [options]* [rest]"
             opts.on('-V', '--verbose LEVEL', 'Verbosity level') { |level| @verbose_level = level.to_i() }
             opts.on('-C', '--root FOLDER', 'Root folder') { |folder| @root_dir = folder }
-        	opts.on('-f', '--force', 'Force') { @force = true }
+        	opts.on('-f', '--force', 'Forcefully overwrite an already existing file') { @force = true }
         	opts.on('-t', '--template', 'Create template') { @template = true }
         	opts.on('-h', '--header', 'Only create header') { @header = true }
 
