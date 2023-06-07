@@ -25,3 +25,5 @@
   * When client goes in suspend, and VPN is lost, connection is stuck and requires a restart of the server
 * Detect at client side when submods are not checked-out
   * If difficult, check that the githash is different from the parents
+* Provide feedback when the server is applying the state
+* After apply, check that the collected state matches with the wantend state
