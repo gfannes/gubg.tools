@@ -27,3 +27,5 @@
   * If difficult, check that the githash is different from the parents
 * Provide feedback when the server is applying the state
 * After apply, check that the collected state matches with the wantend state
+* Send version from server to client
+  * Check for version compatibility
