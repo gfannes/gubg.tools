@@ -101,10 +101,11 @@ module Supr
             end
         end
 
-        def self.apply(m, force: nil)
+        def self.apply(m, force: nil, &block)
             scope("Applying git state", level: 1) do |out|
                 m.each do |sm|
                     out.("Applying '#{sm.sha}' for '#{sm}'", level: 3) do
+                        block.("Applying '#{sm.sha}' for '#{sm}'") if block
                         git_fp = sm.filepath('.git')
                         out.fail("Invalid path to .git") unless git_fp
 
