@@ -29,3 +29,4 @@
 * After apply, check that the collected state matches with the wantend state
 * Send version from server to client
   * Check for version compatibility
+* Support commands, like 'stop', without applying state

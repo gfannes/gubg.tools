@@ -159,6 +159,12 @@ module Supr
                             str
                         end
 
+                        cmd = cmd_str.split(' ')
+                        if cmd == %w[stop]
+                            out.warning("Received 'stop' command")
+                            break
+                        end
+
                         state_str = out.("Reading repo state") do
                             # Read all data, until the client closes its write-end of the connection
                             str = client.read()
@@ -176,16 +182,9 @@ module Supr
                             end
                             debug.("Done applying state")
 
-                            cmd = cmd_str.split(' ')
-
                             debug.("Running command '#{cmd*' '}'")
-                            if cmd == %w[stop]
-                                out.warning("Received 'stop' command")
-                                break
-                            else
-                                Supr::Git.run(@root_dir, cmd) do |line|
-                                    client.puts(line)
-                                end
+                            Supr::Git.run(@root_dir, cmd) do |line|
+                                client.puts(line)
                             end
                             debug.("Done running command")
                         rescue Errno::ENOENT => exc
