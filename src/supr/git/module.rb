@@ -84,7 +84,7 @@ module Supr
             end
 
             def each_mt(j: nil, &block)
-                j ||= Etc.nprocessors()
+                j ||= 2*Etc.nprocessors()
 
                 if j == 0
                     each(&block)
