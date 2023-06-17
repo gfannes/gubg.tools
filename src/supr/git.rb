@@ -352,6 +352,31 @@ module Supr
             end
         end
 
+        def self.stash(m, args, where: nil)
+            scope("Stashing with '#{args}' in '#{@root_dir}'", level: 1) do |out|
+                m.each do |sm|
+                    out.("Processing '#{sm}'", level: 2) do
+                        git = Git::Env.new(sm)
+
+                        my_branch = git.branch()
+
+                        if where && my_branch != where
+                            out.info("Skipping '#{sm}', its branch '#{my_branch}' does not match with '#{where}'")
+                        else
+                            case args[0]
+                            when 'apply'
+                                if !git.stash_list().empty?()
+                                    git.stash(*args)
+                                end
+                            else
+                                git.stash(*args)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
         def self.create(m, branch_name, where: nil, force: nil, noop: nil)
             scope("Creating local branches '#{branch_name}' from '#{@root_dir}'", level: 1) do |out|
                 out.fail("No branch name was specified") unless branch_name

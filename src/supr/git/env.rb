@@ -122,6 +122,14 @@ module Supr
             def can_fast_forward?(from, to)
                 run_('merge-base', '--is-ancestor', from, to)
             end
+
+            def stash_list()
+                run_('stash', 'list')
+            end
+
+            def stash(*args)
+                run_('stash', *args)
+            end
             
             private
             def run_(*args, allow_fail: nil)

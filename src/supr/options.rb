@@ -6,7 +6,7 @@ module Supr
         attr_reader(:print_help, :help_msg, :j, :verbose_level, :time, :state_fp, :output_fp, :root_dir, :force, :continue, :where, :ip, :port, :noop, :rest)
 
         def initialize()
-            @version = 'v1.0.3'.freeze()
+            @version = 'v1.0.4'.freeze()
 
             # We set @continue to `false` to allow Supr::Cmd.run() to discriminate between commands that
             # can be continued, and others
@@ -30,6 +30,12 @@ module Supr
                         verb: :clean,
                         flags: %i[where force],
                         descr: "Drop all local changes",
+                    },
+                    {
+                        verb: :stash,
+                        flags: %i[where],
+                        value: :command,
+                        descr: "Perform stash operations",
                     },
                     {
                         verb: :create,

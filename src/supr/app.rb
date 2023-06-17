@@ -69,6 +69,10 @@ module Supr
             Supr::Git.clean(@root, force: @options.force)
         end
 
+        def run_stash_()
+            Supr::Git.stash(@root, @rest, where: @options.where)
+        end
+
         def run_create_()
             Supr::Git.collect_sha_and_branch(@root)
 

@@ -193,11 +193,11 @@ class App
             folder = File.join(*@base, *@rel)
             FileUtils.mkdir_p(folder)
 
-            fp = File.join(folder, "#{@name}#{suffix}.#{ext}")
-            if File.exist?(fp)
+            fp = (Pathname.new(folder)/"#{@name}#{suffix}").sub_ext(ext)
+            if fp.exist?()
                 if @force
                     puts("Warning: removing existing file '#{fp}'")
-                    FileUtils.rm(fp)
+                    fp.delete()
                 else
                     puts("Warning: File #{fp} already exists, I will skip this") 
                     next
