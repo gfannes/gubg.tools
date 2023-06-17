@@ -1,6 +1,7 @@
 #!/usr/bin/ruby
 
 require('fileutils')
+require('pathname')
 require('optparse')
 
 class App
@@ -193,7 +194,7 @@ class App
             folder = File.join(*@base, *@rel)
             FileUtils.mkdir_p(folder)
 
-            fp = (Pathname.new(folder)/"#{@name}#{suffix}").sub_ext(ext)
+            fp = (Pathname.new(folder)/"#{@name}#{suffix}").sub_ext(".#{ext}")
             if fp.exist?()
                 if @force
                     puts("Warning: removing existing file '#{fp}'")
