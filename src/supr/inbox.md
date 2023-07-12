@@ -30,3 +30,5 @@
 * Send version from server to client
   * Check for version compatibility
 * Support commands, like 'stop', without applying state
+* Support discarding changes in repo
+* Support running in a different folder
