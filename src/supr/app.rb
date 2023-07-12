@@ -202,8 +202,9 @@ module Supr
                     rescue Errno::EPIPE => exc
                         out.warning("Aborting, client closed connection: #{exc}")
                     else
-                        out.puts("[Done]")
+                        debug.("Bye")
                     ensure
+                        out.info("[Done]")
                         client.close()
                     end
                 end
