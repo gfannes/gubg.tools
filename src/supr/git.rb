@@ -431,7 +431,7 @@ module Supr
                                     git.checkout(sm.sha)
                                 end
                             end
-                            out.("Deleting branch '#{branch_name}'", level: 2, noop: noop) do
+                            out.("Deleting branch '#{branch_name}'", level: 1, noop: noop) do
                                 git.delete_branch(branch_name)
                             end
                         end
