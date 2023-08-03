@@ -1,2 +1,2 @@
 #!/usr/bin/env ruby
-system('hx', *ARGV)
+system('nvim', *ARGV)
