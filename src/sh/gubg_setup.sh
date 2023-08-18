@@ -45,7 +45,7 @@ c() {
 }
 
 # cargo install zoxide
-eval "$(zoxide init bash)"
+eval "$(zoxide init $gubg_shell)"
 
 #VI commandline setup
 # autoload edit-command-line; zle -N edit-command-line
