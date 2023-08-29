@@ -5,3 +5,6 @@ indent = {tab-width=4, unit="    "}
 [[language]]
 name = "ruby"
 indent = {tab-width=4, unit="    "}
+
+[language-server.clangd]
+args = ["--header-insertion=never"]
