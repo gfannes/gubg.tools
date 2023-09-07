@@ -47,11 +47,6 @@ c() {
 # cargo install zoxide
 eval "$(zoxide init $gubg_shell)"
 
-#VI commandline setup
-# autoload edit-command-line; zle -N edit-command-line
-# bindkey -M vicmd v edit-command-line
-# bindkey -v
-
 # https://blog.setale.me/2022/12/27/Switching-to-Helix-My-Experience-and-Tips/
 # Helix Search
 hxs() {

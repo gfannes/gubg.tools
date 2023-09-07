@@ -17,11 +17,21 @@ alias n=nvim
 case $gubg_shell in
   bash)
   export PS1="\[\033[1;32m\]\u\[\033[1;32m\]@\[\033[1;34m\]\h \[\033[1;34m\]\W\[\033[1;32m\]>\[\033[0m\] "
+  echo Enabling VI commandline setup
+  set -o vi
+  bind -m vi-insert "\C-r": reverse-search-history
   ;;
+
   zsh)
   # export newline=$'\n'
   # export PS1='${newline}[%F{blue}%n%f@%F{green}%m%f :: %~]${newline}# '
   export PS1='[%F{blue}%n%f@%F{green}%m%f :: %~]# '
+
+  echo Enabling VI commandline setup
+  autoload edit-command-line; zle -N edit-command-line
+  bindkey -M vicmd v edit-command-line
+  bindkey -v
+  bindkey -M viins '^R' history-incremental-search-backward
   ;;
 esac
 
