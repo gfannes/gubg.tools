@@ -45,7 +45,7 @@ class App
     end
 
     def create_ut_()
-        pop_and_parse_path_(%w[auro gubg])
+        pop_and_parse_path_(%w[auro gubg], %w[public private protected src])
         raise("Expected base path (#{@base}) to contain 'test'") unless @base.include?('test')
 
         ext__generator = {}
@@ -76,7 +76,7 @@ class App
     end
 
     def create_enum_()
-        pop_and_parse_path_(%w[auro gubg])
+        pop_and_parse_path_(%w[auro gubg], %w[public private protected src])
 
         values = @args
 
@@ -128,7 +128,7 @@ class App
     end
 
     def create_class_()
-        pop_and_parse_path_(%w[gubg auro app])
+        pop_and_parse_path_(%w[gubg auro app], %w[public private protected src])
 
         ext__generator = {}
 
@@ -166,8 +166,9 @@ class App
         generate_files_(**ext__generator)
     end
 
-    # rel_items should be an Array containing a string that can start 'rel'
-    def pop_and_parse_path_(rel_items)
+    # rel_items should be an Array containing strings that indicate the start of 'rel'
+    # host_items should be an Array containing strings where 'rel' can start from 
+    def pop_and_parse_path_(rel_items, host_items)
         path = @args.shift()
         raise("Could not find path in the args") unless path
         path = path.split('/')
@@ -177,9 +178,10 @@ class App
             @base = @root_dir.split('/')
         else
             loop do
-                raise("Path does not contain #{rel_items}") if path.empty?()
+                raise("Path does not contain #{rel_items} nor #{host_items}") if path.empty?()
                 break if rel_items.include?(path[0])
                 @base << path.shift()
+                break if host_items.include?(@base[-1])
             end
         end
 
