@@ -7,4 +7,7 @@ alias ge='noglob ge'
 
 source "$gubg_script_dir/all_.sh"
 
+autoload -Uz compinit && compinit
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+
 unset gubg_script_dir
