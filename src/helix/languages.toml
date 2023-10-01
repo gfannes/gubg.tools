@@ -7,4 +7,5 @@ name = "ruby"
 indent = {tab-width=4, unit="    "}
 
 [language-server.clangd]
+# command = "lspmitm"
 args = ["--header-insertion=never"]
