@@ -27,7 +27,7 @@ export PATH=$PATH:/opt/local/auro/android-ndk-r21b
 export GST_PLUGIN_PATH=$auro_bin_dir
 
 function auro_notify {
-    export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}${auro_compiler_gstreamer}${auro_compiler_wwise}${auro_compiler_wall}${auro_compiler_color}
+    export auro_compiler=${auro_compiler_brand}-${auro_compiler_arch}-${auro_compiler_config}${auro_compiler_subconfig}${auro_compiler_linker}${auro_compiler_cpp}${auro_compiler_thread}${auro_compiler_pic}${auro_compiler_vlc}${auro_compiler_gstreamer}${auro_compiler_wwise}${auro_compiler_wall}${auro_compiler_color}
     echo auro_compiler: $auro_compiler
     echo auro_publish:  $auro_publish
     echo auro_ti_base:  $auro_ti_base
@@ -39,6 +39,8 @@ function auro_notify {
 export auro_compiler_brand=gcc
 export auro_compiler_arch=x64
 export auro_compiler_config=release
+export auro_compiler_subconfig=
+export auro_compiler_linker=
 export auro_compiler_cpp=
 export auro_compiler_thread=
 export auro_compiler_pic=
@@ -92,6 +94,16 @@ auro_notify
 }
 function profile {
 export auro_compiler_subconfig=-profile
+auro_notify
+}
+
+function use_mold {
+export auro_compiler_linker=-use_mold
+auro_notify
+}
+
+function use_nomold {
+export auro_compiler_linker=
 auro_notify
 }
 
