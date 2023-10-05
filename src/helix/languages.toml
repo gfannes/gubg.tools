@@ -6,6 +6,20 @@ indent = {tab-width=4, unit="    "}
 name = "ruby"
 indent = {tab-width=4, unit="    "}
 
+[[language]]
+name = "org"
+file-types = ["org"]
+language-servers = [ "org" ]
+indent = { tab-width = 2, unit = "  " }
+
 [language-server.clangd]
-# command = "lspmitm"
+command = "lspmitm"
 args = ["--header-insertion=never"]
+
+[language-server.marksman]
+command = "org"
+args = ["-m", "lsp", "-l", "/tmp/org.log"]
+
+[language-server.org]
+command = "org"
+args = ["-m", "lsp", "-l", "/tmp/org.log"]
