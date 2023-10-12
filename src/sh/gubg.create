@@ -58,7 +58,7 @@ class App
                 fo.puts("using namespace #{rel1*'::'};")
             end
             fo.puts("")
-            fo.puts("TEST_CASE_FAST(\"XXX tests\", \"#{(@rel+[@name]).map{|e|"[#{e}]"}*''}\")")
+            fo.puts("TEST_CASE_FAST(\"XXX tests\", \"#{(@rel+[@name]).map{|e|"[#{e}]"}*''}[XXX]\")")
             fo.puts("{")
             %w[Scn Exp].each do |name|
                 fo.puts("    struct #{name}")
