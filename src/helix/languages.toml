@@ -13,7 +13,6 @@ language-servers = [ "org" ]
 indent = { tab-width = 2, unit = "  " }
 
 [language-server.clangd]
-command = "lspmitm"
 args = ["--header-insertion=never"]
 
 [language-server.marksman]
