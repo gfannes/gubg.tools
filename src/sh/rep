@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require('open3')
+
+n = ARGV.shift().to_i
+
+n.times do |i|
+    puts(">> Iteration #{i}")
+    output, status = Open3.capture2e(*ARGV)
+    if !status.success?
+        puts(output)
+        puts("<< STOP iteration #{i} with error: #{status}")
+        fp = 'rep.log'
+        File.write(fp, output)
+        puts("Wrote output to '#{fp}'")
+        exit(-1)
+    end
+    puts("<<\n\n")
+end
