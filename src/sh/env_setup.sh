@@ -19,7 +19,8 @@ case $gubg_shell in
   export PS1="\[\033[1;32m\]\u\[\033[1;32m\]@\[\033[1;34m\]\h \[\033[1;34m\]\W\[\033[1;32m\]>\[\033[0m\] "
   echo Enabling VI commandline setup
   set -o vi
-  bind -m vi-insert "\C-r": reverse-search-history
+  # Does not work for Ubuntu22.04
+  # bind -m vi-insert "\C-r": reverse-search-history
   ;;
 
   zsh)
