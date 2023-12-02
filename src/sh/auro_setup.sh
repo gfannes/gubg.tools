@@ -99,6 +99,10 @@ function use_nomold {
 export auro_compiler_linker=
 auro_notify
 }
+function use_ld {
+export auro_compiler_linker=
+auro_notify
+}
 
 function cpp03 {
 export auro_compiler_cpp=-cpp03
