@@ -1,16 +1,4 @@
 export auro_publish=$HOME/pub
-export master=192.168.20.241
-export linbs=192.168.20.252
-export macbs=192.168.20.248
-export macm1=192.168.20.85
-export winbs=192.168.20.249
-export lindsp=192.168.20.250
-export windsp=192.168.20.251
-export crunch=192.168.20.253
-#Thomas machine, auro/****
-export marvin=10.5.0.6
-# Found via `journalctl -t sshd | mo geertf` on $crunch
-export biblbx=10.5.0.14
 
 export auro_bin_dir=$HOME/auro/bin
 
