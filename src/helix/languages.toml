@@ -7,6 +7,10 @@ name = "ruby"
 indent = {tab-width=4, unit="    "}
 
 [[language]]
+name = "markdown"
+indent = {tab-width=4, unit="\t"}
+
+[[language]]
 name = "org"
 file-types = ["org"]
 language-servers = [ "org" ]
