@@ -6,6 +6,8 @@ auto-save = true
 bufferline = "multiple"
 soft-wrap.enable = true
 lsp.display-inlay-hints = true
+# Enables italics over an SSH connection
+true-color = true
 
 [editor.cursor-shape]
 insert = "bar"
