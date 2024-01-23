@@ -28,7 +28,7 @@ namespace :tools do
 			end
 			sh "git config --global core.excludesfile ~/.gitignore"
 		end
-		%i[sh git ghist helix kak broot supr].each do |e|
+		%i[sh git ghist helix tmux broot supr].each do |e|
 			Rake::Task["gubg:tools:#{e}:prepare"].invoke()
 		end
 	end
@@ -55,11 +55,11 @@ namespace :tools do
 			end
 		end
 	end
-	namespace :kak do
+	namespace :tmux do
 		task :prepare do
 			case os()
 			when :linux, :macos
-				publish(here, 'src/kak', dst: Gubg.home_file('.config/kak'), mode: 0755)
+				publish(here, 'src/tmux', dst: Gubg.home_file(), mode: 0755){|fn|fn.gsub('~', '.')}
 			end
 		end
 	end
