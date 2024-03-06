@@ -29,6 +29,8 @@ class App
         	opts.on('-f', '--force', 'Forcefully overwrite an already existing file') { @force = true }
         	opts.on('-t', '--template', 'Create template') { @template = true }
         	opts.on('-h', '--header', 'Only create header') { @header = true }
+            @cpp_version = 20
+        	opts.on('-v', '--version NUMBER', "C++ version, default is #{@cpp_version}") { |version| @cpp_version = version.to_i() }
 
             opts.separator('Verbs:')
             %i[class enum ut].each do |what|
@@ -52,6 +54,7 @@ class App
 
         ext__generator[:cpp] = ->(fo) do
             fo.puts("#include <#{@rel*'/'}/#{@name}.hpp>")
+            fo.puts("")
             fo.puts("#include <doctest.hpp>")
             fo.puts("")
             if !(rel1 = @rel[0..-2]).empty?()
@@ -88,7 +91,7 @@ class App
             fo.puts("")
             fo.puts("#include <ostream>")
             fo.puts("")
-            fo.puts(@rel.map{|e|"namespace #{e} {"}*' ')
+            namespace_(:start, fo)
             fo.puts("")
             fo.puts("    enum class #{@name}")
             fo.puts("    {")
@@ -99,7 +102,7 @@ class App
             fo.puts("")
             fo.puts("    std::ostream &operator<<(std::ostream &, #{@name});")
             fo.puts("")
-            fo.puts("#{'}'*@rel.size()} // namespace #{@rel*'::'}")
+            namespace_(:stop, fo)
             fo.puts("")
             fo.puts("#endif")
         end
@@ -107,7 +110,7 @@ class App
         ext__generator[:cpp] = ->(fo) do
             fo.puts("#include <#{@rel*'/'}/#{@name}.hpp>")
             fo.puts("")
-            fo.puts(@rel.map{|e|"namespace #{e} {"}*' ')
+            namespace_(:start, fo)
             fo.puts("")
             fo.puts("    std::ostream &operator<<(std::ostream &os, #{@name} v)")
             fo.puts("    {")
@@ -121,7 +124,7 @@ class App
             fo.puts("        return os;")
             fo.puts("    }")
             fo.puts("")
-            fo.puts("#{'}'*@rel.size()} // namespace #{@rel*'::'}")
+            namespace_(:stop, fo)
         end
 
         generate_files_(**ext__generator)
@@ -136,7 +139,7 @@ class App
             fo.puts("#ifndef HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
             fo.puts("#define HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
             fo.puts("")
-            fo.puts(@rel.map{|e|"namespace #{e} {"}*' ')
+            namespace_(:start, fo)
             fo.puts("")
             if @template
                 fo.puts("    template<typename T>")
@@ -147,7 +150,7 @@ class App
             fo.puts("    private:")
             fo.puts("    };")
             fo.puts("")
-            fo.puts("#{'}'*@rel.size()} // namespace #{@rel*'::'}")
+            namespace_(:stop, fo)
             fo.puts("")
             fo.puts("#endif")
         end
@@ -156,10 +159,10 @@ class App
             ext__generator[:cpp] = ->(fo) do
                 fo.puts("#include <#{@rel*'/'}/#{@name}.hpp>")
                 fo.puts("")
-                fo.puts(@rel.map{|e|"namespace #{e} {"}*' ')
+                namespace_(:start, fo)
                 fo.puts("")
                 fo.puts("")
-                fo.puts("#{'}'*@rel.size()} // namespace #{@rel*'::'}")
+                namespace_(:stop, fo)
             end
         end
 
@@ -211,6 +214,24 @@ class App
             File.open(fp, 'w') do |fo|
                 generator.(fo)
             end
+        end
+    end
+
+    def namespace_(ss, fo)
+        case ss
+        when :start
+            if @cpp_version >= 20
+                fo.puts("namespace #{@rel*'::'} {")
+            else
+                fo.puts(@rel.map{|e|"namespace #{e} {"}*' ')
+            end
+        when :stop
+            if @cpp_version >= 20
+                fo.puts("} // namespace #{@rel*'::'}")
+            else
+                fo.puts("#{'}'*@rel.size()} // namespace #{@rel*'::'}")
+            end
+        else raise("Unknown ss #{ss}")
         end
     end
 end
