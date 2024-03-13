@@ -18,6 +18,11 @@ file-types = ["org"]
 language-servers = [ "org" ]
 indent = { tab-width = 2, unit = "  " }
 
+[[language]]
+name = "v"
+file-types = ["v"]
+language-servers = ["v-analyzer"]
+
 [language-server.clangd]
 args = ["--header-insertion=never"]
 
