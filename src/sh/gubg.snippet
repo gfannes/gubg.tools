@@ -2,15 +2,24 @@
 
 is_auro = Dir.pwd()['/auro/']
 
+filetype = :cpp
+fp = ENV['helix_filepath']
+if fp
+    case File.extname(fp)
+    when '.h', '.c' then filetype = :c
+    when '.hpp', '.cpp' then filetype = :cpp
+    end
+end
+
 str = case ARGV[0]
 when 'test_case' then "#{is_auro ? 'TEST_CASE_FAST': 'TEST_CASE'}(\"\", \"#{is_auro ? '' : '[ut]'}\")\n{\n}\n"
 when 'section' then "SECTION(\"\")\n{\n}\n"
 when 'require' then "REQUIRE();"
 when 'require_mss' then "REQUIRE_MSS();"
 when 'stream' then "\" <<  << \""
-when 'mss_begin_bool' then "MSS_BEGIN(bool);\nMSS_END();\n"
-when 'mss_begin_RC' then "MSS_BEGIN(auro_ReturnCode_t);\nMSS_END();\n"
-when 'mss' then "MSS();"
+when 'mss_begin_bool' then {cpp: "MSS_BEGIN(bool);\nMSS_END();\n", c: "MSS_BEGIN_B();\nMSS_END_B();\n"}[filetype]
+when 'mss_begin_RC' then {cpp: "MSS_BEGIN(auro_ReturnCode_t);\nMSS_END();\n", c: "MSS_BEGIN_RC(auro_ReturnCode_t);\nMSS_END_RC();\n"}[filetype]
+when 'mss' then {cpp: "MSS();", c: "MSS_RCB();"}[filetype]
 when 'class' then  "class \n{public:\nprivate:};\n"
 end
 
