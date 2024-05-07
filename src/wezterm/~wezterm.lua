@@ -2,6 +2,9 @@ local wezterm = require 'wezterm'
 
 local config = wezterm.config_builder()
 
+config.default_prog = { '/bin/bash', '--init-file', '/home/geertf/gubg/bin/all-bash.sh' }
+
+config.font_size = 10.0
 config.color_scheme = 'Afterglow'
 
 local act = wezterm.action
