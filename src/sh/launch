@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+# Launched apps for solus/budgie
+# Add custom keybinding to 'home/geertf/gubg/bin/launch firefox' to launch firefox
+# Use filename of Gnome .desktop file
+
 app = ARGV.shift
 id = `xdotool search --onlyvisible --class #{app}`.to_i
 if id == 0
