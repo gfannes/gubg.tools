@@ -19,6 +19,8 @@ config.keys = {
   { key = '8', mods = 'ALT', action = act.ActivateTab(8-1), },
   { key = '9', mods = 'ALT', action = act.ActivateTab(9-1), },
   { key = '0', mods = 'ALT', action = act.ActivateTab(10-1), },
+
+  { key = 'Enter', mods = 'ALT', action = act.DisableDefaultAssignment,},
 }
 
 return config
