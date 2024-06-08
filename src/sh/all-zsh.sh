@@ -1,3 +1,6 @@
+#Make sure we do not output anything in interactive mode. Else, scp will fail.
+[[ -o interactive ]] || exit 0
+
 export gubg_shell=zsh
 export gubg_script_dir=$(dirname -- $0:A)
 
