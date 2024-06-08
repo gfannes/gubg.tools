@@ -7,6 +7,8 @@ config.default_prog = { '/bin/bash', '--init-file', '/home/geertf/gubg/bin/all-b
 config.font_size = 11.0
 config.color_scheme = 'Afterglow'
 
+config.hide_mouse_cursor_when_typing = false
+
 local act = wezterm.action
 config.keys = {
   { key = '1', mods = 'ALT', action = act.ActivateTab(1-1), },
