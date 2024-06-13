@@ -28,7 +28,7 @@ namespace :tools do
 			end
 			sh "git config --global core.excludesfile ~/.gitignore"
 		end
-		%i[sh git ghist helix tmux wezterm broot supr].each do |e|
+		%i[sh git ghist helix tmux wezterm broot supr flatpak].each do |e|
 			Rake::Task["gubg:tools:#{e}:prepare"].invoke()
 		end
 	end
@@ -140,6 +140,23 @@ namespace :tools do
 			case os()
 			when :windows
 				publish(here, 'src/supr', pattern: "supr.bat", dst: 'bin', mode: 0755)
+			end
+		end
+	end
+	namespace :flatpak do
+		task :prepare do
+			Dir.chdir(shared_dir('bin')) do
+				[
+					{name: 'smerge', flatpak: 'com.sublimemerge.App'},
+				].each do |h|
+					case os()
+					when :linux
+						File.open(h[:name], 'w', 0755) do |fo|
+							fo.puts('#!/bin/bash')
+							fo.puts("flatpak run #{h[:flatpak]} \"$@\"")
+						end
+					end
+				end
 			end
 		end
 	end
