@@ -86,8 +86,8 @@ class App
         ext__generator = {}
 
         ext__generator[:hpp] = ->(fo) do
-            fo.puts("#ifndef HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
-            fo.puts("#define HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
+            fo.puts("#ifndef HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREADY_INCLUDED")
+            fo.puts("#define HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREADY_INCLUDED")
             fo.puts("")
             fo.puts("#include <ostream>")
             fo.puts("")
@@ -136,8 +136,8 @@ class App
         ext__generator = {}
 
         ext__generator[:hpp] = ->(fo) do
-            fo.puts("#ifndef HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
-            fo.puts("#define HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREAD_INCLUDED")
+            fo.puts("#ifndef HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREADY_INCLUDED")
+            fo.puts("#define HEADER_#{(@rel+[@name, 'hpp'])*'_'}_ALREADY_INCLUDED")
             fo.puts("")
             namespace_(:start, fo)
             fo.puts("")
