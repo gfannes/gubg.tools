@@ -1,3 +1,3 @@
-call setup_env.bat
+call %gubg%\bin\setup_env.bat
 
 cmd
