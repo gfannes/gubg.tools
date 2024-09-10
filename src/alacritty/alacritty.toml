@@ -1,0 +1,11 @@
+[window]
+title = "title"
+
+[font]
+normal = {family="Cascadia Code NF", style="Regular"}
+size = 13
+
+[keyboard]
+bindings = [
+  {key="t", mods="Control|Shift", action="CreateNewTab"}
+]

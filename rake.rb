@@ -28,7 +28,7 @@ namespace :tools do
 			end
 			sh "git config --global core.excludesfile ~/.gitignore"
 		end
-		%i[sh git ghist helix tmux wezterm broot supr flatpak].each do |e|
+		%i[sh git ghist helix tmux wezterm broot supr flatpak alacritty].each do |e|
 			Rake::Task["gubg:tools:#{e}:prepare"].invoke()
 		end
 	end
@@ -158,6 +158,11 @@ namespace :tools do
 					end
 				end
 			end
+		end
+	end
+	namespace :alacritty do
+		task :prepare do
+			publish(here, 'src/alacritty', dst: Gubg.home_file('.config/alacritty'), mode: 0755)
 		end
 	end
 	
