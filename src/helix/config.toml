@@ -1,5 +1,6 @@
 # theme = "sonokai"
-theme = "darcula-solid"
+# theme = "darcula-solid"
+theme = "ayu_dark"
 
 [editor]
 auto-save = true
