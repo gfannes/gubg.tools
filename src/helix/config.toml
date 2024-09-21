@@ -1,6 +1,16 @@
-# theme = "sonokai"
 # theme = "darcula-solid"
-theme = "ayu_dark"
+
+# LSP type annotations are too visible
+# theme = "ayu_dark"
+
+# theme = "amberwood"
+# theme = "everblush"
+## theme = "sonokai"
+
+theme = "gruvbox_dark_hard"
+
+# Does not tabs in Helix
+# theme = "flexoki_dark"
 
 [editor]
 auto-save = true
