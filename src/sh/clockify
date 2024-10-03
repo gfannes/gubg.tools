@@ -41,7 +41,7 @@ table.each do |row|
     end
     
     day__jobs[day] << {
-        duration:  duration.gsub(':', ''),
+        duration:  (duration.split(':')[0...2])*'',
         description: description,
         story: story,
     }
