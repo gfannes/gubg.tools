@@ -29,7 +29,7 @@ export auro_compiler_vlc=
 export auro_compiler_wwise=
 export auro_compiler_wall=
 export auro_compiler_color=-color
-export auro_compiler_mss=-mss_log_in_release
+export auro_compiler_mss=-auro_mss_log_in_release
 export auro_test=ut
 
 function use_gcc {
@@ -158,7 +158,7 @@ function use_nocolor {
 }
 
 function use_mss {
-    export auro_compiler_mss=-mss_log_in_release
+    export auro_compiler_mss=-auro_mss_log_in_release
     auro_notify
 }
 function use_nomss {
