@@ -28,7 +28,7 @@ namespace :tools do
 			end
 			sh "git config --global core.excludesfile ~/.gitignore"
 		end
-		%i[sh git ghist helix tmux wezterm broot supr flatpak alacritty].each do |e|
+		%i[sh git ghist helix tmux wezterm broot supr flatpak alacritty yazi].each do |e|
 			Rake::Task["gubg:tools:#{e}:prepare"].invoke()
 		end
 	end
@@ -60,6 +60,14 @@ namespace :tools do
 			case os()
 			when :linux, :macos
 				publish(here, 'src/tmux', dst: Gubg.home_file(), mode: 0755){|fn|fn.gsub('~', '.')}
+			end
+		end
+	end
+	namespace :yazi do
+		task :prepare do
+			case os()
+			when :linux, :macos
+				publish(here, 'src/yazi', dst: Gubg.home_file('.config/yazi'))
 			end
 		end
 	end
