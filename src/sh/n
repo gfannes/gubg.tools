@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+files = []
+search = []
+ARGV.each do |arg|
+    if md = /^(.+):(\d+)$/.match(arg)
+        name = md[1]
+        line = md[2].to_i
+    else
+        name = arg
+        line = 0
+    end
+
+    if File.exist?(name)
+        files << { name:, line: }
+    else
+        search << arg
+    end
+end
+
+if files.empty? || !search.empty?
+    cmd = %w[fzf]
+    cmd << '--ansi'
+    cmd << '--multi'
+    cmd << "--preview 'bat --color=always --style=plain {}'"
+    cmd << "--query #{search * ' '}" unless search.empty?
+    names = `#{cmd * ' '}`.split
+    if names.empty?
+        puts("Nothing interesting found")
+        exit(0)
+    end
+    names.each do |name|
+        files << { name:, line: 0 }
+    end
+end
+
+cmd = %w[nvim]
+files.each do |f|
+    name = f[:name]
+    name += ":#{f[:line]}" unless f[:line].zero?
+    cmd << name
+end
+system(cmd * ' ')
