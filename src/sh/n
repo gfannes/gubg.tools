@@ -20,11 +20,12 @@ end
 
 if files.empty? || !search.empty?
     cmd = %w[fzf]
+    cmd << '--read0'
     cmd << '--ansi'
     cmd << '--multi'
     cmd << "--preview 'bat --color=always --style=plain {}'"
     cmd << "--query #{search * ' '}" unless search.empty?
-    names = `#{cmd * ' '}`.split
+    names = `mo -0 | #{cmd * ' '}`.split
     if names.empty?
         puts("Nothing interesting found")
         exit(0)
