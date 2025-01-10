@@ -37,8 +37,7 @@ end
 
 cmd = %w[nvim]
 files.each do |f|
-    name = f[:name]
-    name += ":#{f[:line]}" unless f[:line].zero?
-    cmd << name
+    cmd << "+#{f[:line]}" unless f[:line].zero?
+    cmd << f[:name]
 end
 system(cmd * ' ')
