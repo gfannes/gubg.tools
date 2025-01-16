@@ -11,9 +11,10 @@ alias mymount="sudo mount -o rw,noauto,async,user,umask=1000 "
 alias myumount="sudo umount "
 
 alias gsf="git submodule foreach "
+alias lg=lazygit
 
 case $gubg_shell in
-  bash)
+bash)
   export PS1="\[\033[1;32m\]\u\[\033[1;32m\]@\[\033[1;34m\]\h \[\033[1;34m\]\W\[\033[1;32m\]>\[\033[0m\] "
   echo Enabling VI commandline setup
   set -o vi
@@ -21,13 +22,14 @@ case $gubg_shell in
   # bind -m vi-insert "\C-r": reverse-search-history
   ;;
 
-  zsh)
+zsh)
   # export newline=$'\n'
   # export PS1='${newline}[%F{blue}%n%f@%F{green}%m%f :: %~]${newline}# '
   export PS1='[%F{blue}%n%f@%F{green}%m%f :: %~]# '
 
   echo Enabling VI commandline setup
-  autoload edit-command-line; zle -N edit-command-line
+  autoload edit-command-line
+  zle -N edit-command-line
   bindkey -M vicmd v edit-command-line
   bindkey -v
   bindkey -M viins '^R' history-incremental-search-backward
@@ -40,12 +42,12 @@ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 function use_ccache {
-    # In this folder there are wrappers for gcc and clang that need to come
-    # first in the path
-    # manjaro
-    export PATH=/usr/lib/ccache/bin/:$PATH
-    # macos installed with brew
-    export PATH=/opt/homebrew/opt/ccache/libexec:$PATH
+  # In this folder there are wrappers for gcc and clang that need to come
+  # first in the path
+  # manjaro
+  export PATH=/usr/lib/ccache/bin/:$PATH
+  # macos installed with brew
+  export PATH=/opt/homebrew/opt/ccache/libexec:$PATH
 }
 
 # Necessary for fixing a problem with valgrind wrt `Fatal error at startup`
