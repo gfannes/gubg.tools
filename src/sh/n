@@ -3,16 +3,22 @@
 files = []
 search = []
 ARGV.each do |arg|
-    if md = /^(.+):(\d+)$/.match(arg)
+    if md = /^(.+):(\d+):(\d+)$/.match(arg)
         name = md[1]
         line = md[2].to_i
+        col = md[3].to_i
+    elsif md = /^(.+):(\d+)$/.match(arg)
+        name = md[1]
+        line = md[2].to_i
+        col = 0
     else
         name = arg
         line = 0
+        col = 0
     end
 
     if File.exist?(name)
-        files << { name:, line: }
+        files << { name:, line:, col: }
     else
         search << arg
     end
@@ -31,13 +37,13 @@ if files.empty? || !search.empty?
         exit(0)
     end
     names.each do |name|
-        files << { name:, line: 0 }
+        files << { name:, line: 0, col: 0 }
     end
 end
 
 cmd = %w[nvim]
 files.each do |f|
-    cmd << "+#{f[:line]}" unless f[:line].zero?
+    cmd << "+#{f[:line]},#{f[:col]}" unless f[:line].zero?
     cmd << f[:name]
 end
 system(cmd * ' ')
