@@ -30,7 +30,7 @@ if files.empty? || !search.empty?
     cmd << '--ansi'
     cmd << '--multi'
     cmd << "--preview 'bat --color=always --style=plain {}'"
-    cmd << "--query #{search * ' '}" unless search.empty?
+    cmd << "--query \"#{search * ' '}\"" unless search.empty?
     names = `mo -0 | #{cmd * ' '}`.split
     if names.empty?
         puts("Nothing interesting found")
