@@ -34,7 +34,7 @@ loop do
         end
     end
 
-    hx_cmd = %w[n]
+    hx_cmd = %w[hx]
 
     fp__errors.each do |fp, errors|
         puts("\nFound #{errors.size} errors in #{fp}")
