@@ -7,6 +7,7 @@ indent = {tab-width=4, unit="    "}
 [[language]]
 name = "ruby"
 indent = {tab-width=4, unit="    "}
+formatter = { command = "rubocop", args = ["--stdin", "foo.rb", "-a", "--stderr", "--fail-level", "fatal"] }
 
 [[language]]
 name = "markdown"
