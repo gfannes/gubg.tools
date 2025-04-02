@@ -1,0 +1,1 @@
+lazygit %1
