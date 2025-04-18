@@ -1,24 +1,24 @@
 [[language]]
 name = "cpp"
 file-types = ["cpp", "hpp", "c", "h", "hxx", "chai"]
-language-servers = [ "clangd", "chimp" ]
+language-servers = [ "clangd", "champ" ]
 indent = {tab-width=4, unit="    "}
 
 [[language]]
 name = "zig"
 file-types = ["zig"]
-language-servers = [ "zls", "chimp" ]
+language-servers = [ "zls", "champ" ]
 indent = {tab-width=4, unit="    "}
 
 [[language]]
 name = "ruby"
 indent = {tab-width=4, unit="    "}
 formatter = { command = "rubocop", args = ["--stdin", "foo.rb", "-a", "--stderr", "--fail-level", "fatal"] }
-language-servers = [ "solargraph", "chimp" ]
+language-servers = [ "solargraph", "champ" ]
 
 [[language]]
 name = "markdown"
-language-servers = [ "chimp" ]
+language-servers = [ "champ" ]
 indent = {tab-width=4, unit="\t"}
 
 [[language]]
@@ -43,9 +43,9 @@ args = ["-m", "lsp", "-l", "/tmp/org.log"]
 command = "org"
 args = ["-m", "lsp", "-l", "/tmp/org.log"]
 
-[language-server.chimp]
-command = "/home/geertf/gubg/bin/chimp"
-args = ["lsp", "-g", "am", "-g", "chimp"]
+[language-server.champ]
+command = "/home/geertf/gubg/bin/champ"
+args = ["lsp", "-g", "am", "-g", "champ"]
 
 [language-server.lspmitm]
 command = "/home/geertf/gubg/bin/lspmitm"
