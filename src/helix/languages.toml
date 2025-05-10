@@ -45,7 +45,8 @@ args = ["-m", "lsp", "-l", "/tmp/org.log"]
 
 [language-server.champ]
 command = "/home/geertf/gubg/bin/champ"
-args = ["lsp", "-g", "am", "-g", "champ"]
+# Default groves are configured in '~/.config/champ/config.zon'
+args = ["lsp"]
 
 [language-server.lspmitm]
 command = "/home/geertf/gubg/bin/lspmitm"
