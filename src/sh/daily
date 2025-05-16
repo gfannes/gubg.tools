@@ -1,6 +1,30 @@
 #!/usr/bin/ruby
 
+# Arguments are assumed to be Integers. They are summed and used as a day-based offset from now, skipping weekend days.
+
+offset = 0
+ARGV.each do |arg|
+    offset += arg.to_i
+end
+
+day = 24*60*60
+if offset < 0
+    offset *= -1
+    day *= -1
+end
+
+time = Time.now()
+offset.times do
+    loop do
+        time += day
+        break unless time.saturday? || time.sunday?
+    end
+end
+
 home_dir = ENV['HOME']
-fp = Time.now().strftime("#{home_dir}/gatenkaas/daily/%Y-%m-%d.md")
-File.open(fp, 'w'){} unless File.exist?(fp)
+fp = time.strftime("#{home_dir}/gatenkaas/daily/%Y-%m-%d.md")
+
+require('fileutils')
+FileUtils.touch(fp) unless File.exist?(fp)
+
 print(fp)
