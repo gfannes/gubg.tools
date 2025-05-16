@@ -1,0 +1,6 @@
+#!/usr/bin/ruby
+
+home_dir = ENV['HOME']
+fp = Time.now().strftime("#{home_dir}/gatenkaas/daily/%Y-%m-%d.md")
+File.open(fp, 'w'){} unless File.exist?(fp)
+print(fp)
