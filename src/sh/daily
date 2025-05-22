@@ -1,19 +1,40 @@
 #!/usr/bin/ruby
 
-# Arguments are assumed to be Integers. They are summed and used as a day-based offset from now, skipping weekend days.
+# First argument must be in %w[create open]
+# Next arguments are assumed to be Integers. They are summed and used as a day-based offset from now, skipping weekend days.
 
+require('fileutils')
+
+action = nil
 offset = 0
 ARGV.each do |arg|
-    offset += arg.to_i
+    if action.nil?
+        action = arg
+    else
+        offset += arg.to_i
+    end
 end
 
 day = 24*60*60
-if offset < 0
+if offset <= 0
     offset *= -1
     day *= -1
 end
 
-time = Time.now()
+time = nil
+# Start from the date of the currently opened daily, if any
+File.open('/tmp/daily', 'w') do |fo|
+    fo.puts(ENV['helix_filepath'])
+    if md = /gatenkaas.daily.(\d\d\d\d)-(\d\d)-(\d\d)\.md/.match(ENV['helix_filepath']||'')
+        y, m, d = md[1].to_i, md[2].to_i, md[3].to_i
+        fo.puts("Found daily for #{y} #{m} #{d}")
+        time = Time.new(y, m, d)
+    else
+        fo.puts("This is not a daily file")
+    end
+end
+time = Time.now() unless time
+
 offset.times do
     loop do
         time += day
@@ -22,9 +43,26 @@ offset.times do
 end
 
 home_dir = ENV['HOME']
-fp = time.strftime("#{home_dir}/gatenkaas/daily/%Y-%m-%d.md")
 
-require('fileutils')
-FileUtils.touch(fp) unless File.exist?(fp)
+fp = nil
+case action
+when 'create'
+    fp = time.strftime("#{home_dir}/gatenkaas/daily/%Y-%m-%d.md")
 
-print(fp)
+    FileUtils.touch(fp) unless File.exist?(fp)
+when 'open'
+    100.times do
+        tmp_fp = time.strftime("#{home_dir}/gatenkaas/daily/%Y-%m-%d.md")
+        if File.exist?(tmp_fp)
+            fp = tmp_fp
+            break
+        end
+        time += day
+    end
+else puts("Error: unknown action '#{action}'") end
+
+if fp.nil?()
+    puts("Error: could not find file to #{action}")
+else
+    print(fp)
+end
