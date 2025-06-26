@@ -1,5 +1,36 @@
-#!/usr/bin/sh
-tmux new-session -d
-tmux split-window -h
-tmux resize-pane -R 90
-tmux -2 attach-session -d
+#!/usr/bin/ruby
+
+# Attaches/creates a new tmux session with toplevel folder name
+# A few windows are created with custom commands auto-started
+
+require('open3')
+
+# Use toplevel folder name as tmux session name
+session = File.basename(Dir.pwd)
+
+found_session = false
+`tmux ls`.split("\n").each do |line|
+    parts = line.split(":")
+    if parts[0] == session
+        found_session = true
+        break
+    end
+end
+
+if found_session
+    puts("Found existing session '#{session}'")
+else
+    puts("Starting new session '#{session}'")
+    `tmux new-session -s #{session} -d`
+
+    windows = ['hx', nil, 'y']
+    windows.each_with_index do |cmd, ix0|
+        ix1 = ix0+1
+        `tmux new-window -t #{session}:#{ix1}` unless ix1 == 1
+        `tmux send-keys -t #{session}:#{ix1} '#{cmd}' C-m` if cmd
+    end
+
+    `tmux select-window -t #{session}:1` unless windows.empty?()
+end
+
+`tmux attach -t #{session}`
