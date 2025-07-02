@@ -22,15 +22,15 @@ if offset <= 0
 end
 
 time = nil
-# Start from the date of the currently opened daily, if any
+# Start from the date of the currently opened day log, if any
 File.open('/tmp/daily', 'w') do |fo|
     fo.puts(ENV['helix_filepath'])
-    if md = /gatenkaas.daily.(\d\d\d\d)-(\d\d)-(\d\d)\.md/.match(ENV['helix_filepath']||'')
+    if md = /gatenkaas.log.day.(\d\d\d\d)-(\d\d)-(\d\d)\.md/.match(ENV['helix_filepath']||'')
         y, m, d = md[1].to_i, md[2].to_i, md[3].to_i
-        fo.puts("Found daily for #{y} #{m} #{d}")
+        fo.puts("Found day log for #{y} #{m} #{d}")
         time = Time.new(y, m, d)
     else
-        fo.puts("This is not a daily file")
+        fo.puts("This is not a day log file")
     end
 end
 time = Time.now() unless time
@@ -47,12 +47,12 @@ home_dir = ENV['HOME']
 fp = nil
 case action
 when 'create'
-    fp = time.strftime("#{home_dir}/gatenkaas/daily/%Y-%m-%d.md")
+    fp = time.strftime("#{home_dir}/gatenkaas/log/day/%Y-%m-%d.md")
 
     FileUtils.touch(fp) unless File.exist?(fp)
 when 'open'
     100.times do
-        tmp_fp = time.strftime("#{home_dir}/gatenkaas/daily/%Y-%m-%d.md")
+        tmp_fp = time.strftime("#{home_dir}/gatenkaas/log/day/%Y-%m-%d.md")
         if File.exist?(tmp_fp)
             fp = tmp_fp
             break
