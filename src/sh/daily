@@ -1,67 +1,84 @@
 #!/usr/bin/ruby
 
-# First argument must be in %w[create open]
+# First argument must be in %i[create open]
+# Second argument must be in %i[day week month]
 # Next arguments are assumed to be Integers. They are summed and used as a day-based offset from now, skipping weekend days.
 
 require('fileutils')
 
 action = nil
+what = nil
 offset = 0
 ARGV.each do |arg|
     if action.nil?
-        action = arg
+        action = arg.to_sym
+    elsif what.nil?
+        what = arg.to_sym
     else
         offset += arg.to_i
     end
 end
 
-day = 24*60*60
+day = 24 * 60 * 60
 if offset <= 0
     offset *= -1
     day *= -1
 end
 
+duration = case what
+           when :day then day
+           when :week then day * 7
+           when :month then day * 30
+           else raise("Error: Unkown what '#{what}'") end
+
 time = nil
 # Start from the date of the currently opened day log, if any
 File.open('/tmp/daily', 'w') do |fo|
     fo.puts(ENV['helix_filepath'])
-    if md = /gatenkaas.log.day.(\d\d\d\d)-(\d\d)-(\d\d)\.md/.match(ENV['helix_filepath']||'')
-        y, m, d = md[1].to_i, md[2].to_i, md[3].to_i
+    if md = /gatenkaas.log.day.(\d\d\d\d)-(\d\d)-(\d\d)\.md/.match(ENV['helix_filepath'] || '')
+        y = md[1].to_i
+        m = md[2].to_i
+        d = md[3].to_i
         fo.puts("Found day log for #{y} #{m} #{d}")
         time = Time.new(y, m, d)
     else
         fo.puts("This is not a day log file")
     end
 end
-time = Time.now() unless time
+time ||= Time.now
 
 offset.times do
     loop do
-        time += day
+        time += duration
         break unless time.saturday? || time.sunday?
     end
 end
 
 home_dir = ENV['HOME']
 
+format = { day: -> { time.strftime('%Y-%m-%d') }, week: -> { week = time.strftime('%W').to_i + 1; time.strftime("%Y-#{week}") }, month: lambda {
+    time.strftime('%Y-%m')
+}, }[what]
+
 fp = nil
 case action
-when 'create'
-    fp = time.strftime("#{home_dir}/gatenkaas/log/day/%Y-%m-%d.md")
+when :create
+    fp = "#{home_dir}/gatenkaas/log/#{what}/#{format.()}.md"
 
     FileUtils.touch(fp) unless File.exist?(fp)
-when 'open'
+when :open
     100.times do
-        tmp_fp = time.strftime("#{home_dir}/gatenkaas/log/day/%Y-%m-%d.md")
+        tmp_fp = "#{home_dir}/gatenkaas/log/#{what}/#{format.()}.md"
         if File.exist?(tmp_fp)
             fp = tmp_fp
             break
         end
-        time += day
-    end
-else puts("Error: unknown action '#{action}'") end
 
-if fp.nil?()
+        time += duration
+    end
+else raise("Error: unknown action '#{action}'") end
+
+if fp.nil?
     puts("Error: could not find file to #{action}")
 else
     print(fp)
