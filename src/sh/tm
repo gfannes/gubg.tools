@@ -23,7 +23,7 @@ else
     puts("Starting new session '#{session}'")
     `tmux new-session -s #{session} -d`
 
-    windows = ['hx', nil, 'y']
+    windows = ['hx', nil, nil]
     windows.each_with_index do |cmd, ix0|
         ix1 = ix0+1
         `tmux new-window -t #{session}:#{ix1}` unless ix1 == 1
