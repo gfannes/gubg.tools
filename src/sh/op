@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+
+require('open3')
+
+if :combine_argv_into_resolved_filenames
+    fns = []
+
+    fn = nil
+    ARGV.each do |part|
+        if fn
+            fn += " #{part}"
+        else
+            fn = part
+        end
+
+        if File.exist?(fn)
+            fns << fn
+            fn = nil
+        end
+    end
+    raise("Error: Could not find '#{fn}' on file system") if fn
+end
+
+app = if RUBY_PLATFORM.include?("darwin")
+          'open'
+      else
+          'xdg-open'
+      end
+Open3.capture2e(app, *fns)

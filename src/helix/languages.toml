@@ -22,6 +22,10 @@ language-servers = [ "champ" ]
 indent = {tab-width=4, unit="\t"}
 
 [[language]]
+name = "java"
+language-servers = [ "champ" ]
+
+[[language]]
 name = "org"
 file-types = ["org"]
 language-servers = [ "org" ]
