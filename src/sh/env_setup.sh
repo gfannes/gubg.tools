@@ -12,6 +12,7 @@ alias myumount="sudo umount "
 
 alias gsf="git submodule foreach "
 alias lg=lazygit
+alias j=joshuto
 
 case $gubg_shell in
 bash)
