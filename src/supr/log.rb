@@ -103,7 +103,7 @@ module Supr
     end
 end
 
-def scope(*args, level:, &block)
+def scope(*args, level: 2, **kwargs, &block)
     Supr::Logger.open(*args, level: level, &block)
 end
 

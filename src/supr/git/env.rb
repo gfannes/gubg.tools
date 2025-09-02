@@ -130,6 +130,10 @@ module Supr
             def stash(*args)
                 run_('stash', *args)
             end
+
+            def remote(type: :fetch)
+                run_('remote', '-v')
+            end
             
             private
             def run_(*args, allow_fail: nil)
