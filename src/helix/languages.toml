@@ -17,6 +17,12 @@ formatter = { command = "rubocop", args = ["--stdin", "foo.rb", "-a", "--stderr"
 language-servers = [ "solargraph", "champ" ]
 
 [[language]]
+name = "python"
+indent = {tab-width=4, unit="    "}
+formatter = { command = "black", args = ["-"] }
+language-servers = [ "pylsp" ]
+
+[[language]]
 name = "markdown"
 language-servers = [ "champ" ]
 indent = {tab-width=4, unit="\t"}
