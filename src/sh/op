@@ -29,6 +29,8 @@ if cmd.empty? && fns.size == 1
         cmd = %w[tar xzvf]
     elsif fn[/\.tar\.xz$/]
         cmd = %w[tar xvf]
+    elsif fn[/\.zip$/]
+        cmd = %w[unzip]
     end
 end
 
