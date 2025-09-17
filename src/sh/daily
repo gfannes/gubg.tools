@@ -32,17 +32,19 @@ duration = case what
            else raise("Error: Unkown what '#{what}'") end
 
 time = nil
-# Start from the date of the currently opened day log, if any
-File.open('/tmp/daily', 'w') do |fo|
-    fo.puts(ENV['helix_filepath'])
-    if md = /gatenkaas.log.day.(\d\d\d\d)-(\d\d)-(\d\d)\.md/.match(ENV['helix_filepath'] || '')
-        y = md[1].to_i
-        m = md[2].to_i
-        d = md[3].to_i
-        fo.puts("Found day log for #{y} #{m} #{d}")
-        time = Time.new(y, m, d)
-    else
-        fo.puts("This is not a day log file")
+if false
+    # Start from the date of the currently opened day log, if any
+    File.open('/tmp/daily', 'w') do |fo|
+        fo.puts(ENV['helix_filepath'])
+        if md = /gatenkaas.log.day.(\d\d\d\d)-(\d\d)-(\d\d)\.md/.match(ENV['helix_filepath'] || '')
+            y = md[1].to_i
+            m = md[2].to_i
+            d = md[3].to_i
+            fo.puts("Found day log for #{y} #{m} #{d}")
+            time = Time.new(y, m, d)
+        else
+            fo.puts("This is not a day log file")
+        end
     end
 end
 time ||= Time.now
