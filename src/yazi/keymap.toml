@@ -125,14 +125,16 @@ keymap = [
 	{ on = [ ",", "r" ], run = "sort random --reverse=no",                      desc = "Sort randomly" },
 
 	# Goto
-	{ on = [ "g", "h" ],       run = "cd ~",             desc = "Go home" },
-	{ on = [ "g", "c" ],       run = "cd ~/.config",     desc = "Goto ~/.config" },
-	{ on = [ "g", "d" ],       run = "cd ~/Downloads",   desc = "Goto ~/Downloads" },
-	{ on = [ "g", "a" ],       run = "cd ~/am",          desc = "Go to the 'am' directory" },
-	{ on = [ "g", "s" ],       run = "cd ~/as",          desc = "Go to the 'as' directory" },
-	{ on = [ "g", "p" ],       run = "cd ~/pub",         desc = "Go to the 'pub' directory" },
-	{ on = [ "g", "t" ],       run = "cd ~/story",       desc = "Go to the 'story' directory" },
-	{ on = [ "g", "w" ],       run = "cd ~/aws",         desc = "Go to the 'aws' directory" },
+	{ on = [ "g", "h" ],       run = "cd ~",               desc = "Go home" },
+	{ on = [ "g", "c" ],       run = "cd ~/.config",       desc = "Goto ~/.config" },
+	{ on = [ "g", "d" ],       run = "cd ~/Downloads",     desc = "Goto ~/Downloads" },
+	{ on = [ "g", "a" ],       run = "cd ~/am",            desc = "Go to the 'am' directory" },
+	{ on = [ "g", "s" ],       run = "cd ~/as",            desc = "Go to the 'as' directory" },
+	{ on = [ "g", "p" ],       run = "cd ~/pub",           desc = "Go to the 'pub' directory" },
+	{ on = [ "g", "t" ],       run = "cd ~/story",         desc = "Go to the 'story' directory" },
+	{ on = [ "g", "w" ],       run = "cd ~/aws",           desc = "Go to the 'aws' directory" },
+	{ on = [ "g", "g" ],       run = "cd ~/gatenkaas",     desc = "Go to the 'gatenkaas' directory" },
+	{ on = [ "g", "l" ],       run = "cd ~/gatenkaas/log", desc = "Go to the 'gatenkaas/log' directory" },
 	{ on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
 
 	# Tabs
