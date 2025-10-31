@@ -2,12 +2,16 @@
 
 require('open3')
 
-folder = ARGV.shift
+file_or_folder = ARGV.shift
 
 # Upload: from here to s3://
-cmd = ['aws', 's3', 'sync', folder, "s3://#{folder}"]+ARGV
+if File.directory?(file_or_folder)
+    cmd = ['aws', 's3', 'sync', file_or_folder, "s3://#{file_or_folder}"] + ARGV
+else
+    cmd = ['aws', 's3', 'cp', file_or_folder, "s3://#{file_or_folder}"] + ARGV
+end
 
-puts("Running '#{cmd*' '}'")
+puts("Running '#{cmd * ' '}'")
 Open3.popen2(*cmd) do |_stdin, stdout, wait_thr|
     while line = stdout.gets
         line.chomp!
@@ -16,8 +20,5 @@ Open3.popen2(*cmd) do |_stdin, stdout, wait_thr|
 
     status = wait_thr.value
     puts(status)
-    if status.success?
-        exit(0)
-    end
+    exit(0) if status.success?
 end
-
