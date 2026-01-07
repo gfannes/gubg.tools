@@ -1,3 +1,4 @@
 #!/bin/bash
 
-basename -- "$@" | tr -d '\n' | xclip -selection clipboard
+# Note that we use $* iso $@: this will combine all args (with a space) and supports a filepath that contains spaces
+basename -- "$*" | tr -d '\n' | xclip -selection clipboard
