@@ -26,7 +26,8 @@ language-servers = [ "pylsp" ]
 name = "markdown"
 language-servers = [ "champ" ]
 indent = {tab-width=4, unit="\t"}
-comment-tokens = ["-", "+", "*", "- [ ]", ">"]
+# comment-tokens = ["-", "+", "*", "- [ ]", ">"]
+comment-tokens = ["-", "+", "*", ">"]
 
 [[language]]
 name = "java"
