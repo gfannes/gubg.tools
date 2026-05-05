@@ -134,9 +134,13 @@ keymap = [
 	{ on = [ "g", "t" ],       run = "cd ~/story",         desc = "Go to the 'story' directory" },
 	{ on = [ "g", "w" ],       run = "cd ~/aws",           desc = "Go to the 'aws' directory" },
 	{ on = [ "g", "G" ],       run = "cd ~/gatenkaas",     desc = "Go to the 'gatenkaas' directory" },
-	{ on = [ "g", "l" ],       run = "cd ~/gatenkaas/log", desc = "Go to the 'gatenkaas/log' directory" },
 	{ on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
 	{ on = [ "g", "f" ],       run = "follow",           desc = "Follow hovered symlink" },
+
+	# Lazygit
+	# Install git.yazi plugin with `ya pkg add yazi-rs/plugins:git`
+	# { on = [ "g", "l" ],       run = "shell 'lazygit -p \"$0\"' --block", desc = "Open lazygit in hovered directory" },
+	{ on = [ "g", "l" ],       run = "shell 'lazygit' --block", desc = "Open lazygit here" },
 
 	# Tabs
 	{ on = "t", run = "tab_create --current", desc = "Create a new tab with CWD" },

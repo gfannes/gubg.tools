@@ -167,6 +167,10 @@ previewers = [
 	# Fallback
 	{ url = "*", run = "file" },
 ]
+prepend_fetchers = [
+	{ id = "git", url = "*", run = "git", group = "git" }, # Remove 'id' for yazi > v26.1.22
+	{ id = "git", url = "*/", run = "git", group = "git" }, # Remove 'id' for yazi > v26.1.22
+]
 
 [input]
 cursor_blink = false
