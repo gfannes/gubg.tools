@@ -67,7 +67,11 @@ case action
 when :create
     fp = "#{home_dir}/gatenkaas/log/#{what}/#{format.()}.md"
 
-    FileUtils.touch(fp) unless File.exist?(fp)
+    unless File.exist?(fp)
+        File.open(fp, "w") do |fo|
+            fo.puts("# &auro")
+        end
+    end
 when :open
     100.times do
         tmp_fp = "#{home_dir}/gatenkaas/log/#{what}/#{format.()}.md"
