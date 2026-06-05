@@ -80,6 +80,8 @@ keymap = [
 	{ on = ";",         run = "shell --interactive",         desc = "Run a shell command" },
 	{ on = ":",         run = "shell --block --interactive", desc = "Run a shell command (block until finishes)" },
 	{ on = "b",         run = "shell 'bash' --block --confirm", desc = "Run bash" },
+	# Can be used from within Helix. Does not work very well but it is something.
+	{ on = "B",         run = "shell 'exec bash </dev/tty >/dev/tty 2>&1' --block --confirm", desc = "Run bash" },
 	{ on = ".",         run = "hidden toggle",               desc = "Toggle the visibility of hidden files" },
 	{ on = "s",         run = "search --via=fd",             desc = "Search files by name via fd" },
 	{ on = "S",         run = "search --via=rg",             desc = "Search files by content via ripgrep" },
