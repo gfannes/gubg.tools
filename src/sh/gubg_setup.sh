@@ -7,7 +7,8 @@ export PATH=$PATH:$HOME/software/bin
 export PATH=$PATH:$HOME/.gem/ruby/2.6.0/bin
 export PATH=$PATH:$HOME/.cargo/bin
 export EDITOR=$gubg/bin/editor
-export GIT_EXTERNAL_DIFF=$gubg/bin/git_diff.sh
+# Setup in gubg.sh if still necessary: this uses meld and causes issues over ssh
+# export GIT_EXTERNAL_DIFF=$gubg/bin/git_diff.sh
 
 export PYTHONPATH=$PYTHONPATH:$gubg/gubg.io/src
 export PYTHONPATH=$PYTHONPATH:$gubg/gubg.ml/src
