@@ -5,15 +5,15 @@ require('open3')
 file_or_folder = ARGV.shift
 
 # Download: from s3:// to here
-if File.directory?(file_or_folder)
-    cmd = ['aws', 's3', 'sync', "s3://#{file_or_folder}", file_or_folder] + ARGV
-else
-    cmd = ['aws', 's3', 'cp', "s3://#{file_or_folder}", file_or_folder] + ARGV
-end
+cmd = if File.directory?(file_or_folder)
+          ['aws', 's3', 'sync', "s3://#{file_or_folder}", file_or_folder] + ARGV
+      else
+          ['aws', 's3', 'cp', "s3://#{file_or_folder}", file_or_folder] + ARGV
+      end
 
 puts("Running '#{cmd * ' '}'")
 Open3.popen2(*cmd) do |_stdin, stdout, wait_thr|
-    while line = stdout.gets
+    while (line = stdout.gets)
         line.chomp!
         puts line
     end
