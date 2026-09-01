@@ -41,6 +41,14 @@ namespace app {
     -h    --help                         Print this help
     -p    --pack     FOLDER   FILEPATH   Pack FOLDER into FILEPATH
     -u    --unpack   FILEPATH FOLDER     Unpack FILEPATH into FOLDER
+Example:
+[folder](name:root){
+    [file](name:a.txt)(content:This is file a.txt)
+    [file](name:b.txt)(content:This is file b.txt)
+    [folder](name:c){
+        [file](name:c.txt){content:This is file c.txt}
+    }
+}
 Developed by Geert Fannes
 )eod";
     }
