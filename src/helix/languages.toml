@@ -1,6 +1,6 @@
 [[language]]
 name = "cpp"
-file-types = ["cpp", "hpp", "c", "h", "hxx", "chai"]
+file-types = ["cpp", "hpp", "c", "h", "hxx", "chai", "ino"]
 language-servers = [ "clangd", "champ" ]
 indent = {tab-width=4, unit="    "}
 
