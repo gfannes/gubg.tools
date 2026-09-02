@@ -90,7 +90,7 @@ namespace app {
 
     bool App::unpack_(const std::filesystem::path &folder, gubg::naft::Range &r)
     {
-        MSS_BEGIN(bool, "");
+        MSS_BEGIN(bool);
         L(C(folder));
 
         MSS(std::filesystem::is_directory(folder), std::cout << "Error: I expected `" << folder << "` to be a folder" << std::endl);
