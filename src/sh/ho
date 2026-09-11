@@ -5,14 +5,13 @@ def make_absolute(fn)
 end
 
 ARGV.each do |fn|
-    next unless fn[0]
-
-    fn = make_absolute(fn)
-
     system("tmux", "send-keys", "-t", ":hx", "Escape") or abort "tmux failed"
     # Wait a bit to avoid Helix interpreting Escape and :open together
     sleep(0.05)
-    system("tmux", "send-keys", "-t", ":hx", ":open #{fn}", "Enter") or abort "tmux failed"
+
+    system("tmux", "send-keys", "-t", ":hx", ":open '#{make_absolute(fn)}'", "Enter") or abort "tmux failed"
+    sleep(0.05)
 end
 
+# Focus Helix
 system("tmux", "select-window", "-t", ":hx") or abort "tmux failed"
