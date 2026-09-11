@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+def make_absolute(fn)
+    fn[0] == '/' ? fn : File.join(Dir.pwd, fn)
+end
+
+ARGV.each do |fn|
+    next unless fn[0]
+
+    fn = make_absolute(fn)
+
+    system("tmux", "send-keys", "-t", ":hx", "Escape") or abort "tmux failed"
+    # Wait a bit to avoid Helix interpreting Escape and :open together
+    sleep(0.05)
+    system("tmux", "send-keys", "-t", ":hx", ":open #{fn}", "Enter") or abort "tmux failed"
+end
+
+system("tmux", "select-window", "-t", ":hx") or abort "tmux failed"
